@@ -4,6 +4,7 @@ Crea la app, carga configuración y registra extensiones y blueprints.
 """
 
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from flask import Flask
@@ -12,47 +13,51 @@ from flask_cors import CORS
 from app.extensions import db, jwt
 from app.routes.auth import auth_bp
 
-# Carga variables desde backend/.env (si existe)
-load_dotenv()
+# Carga backend/.env con ruta absoluta (no depende del directorio desde el que ejecutas)
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BACKEND_DIR / ".env")
 
 
 def create_app():
     """Crea y configura la instancia de Flask."""
-    app = Flask(__name__)
+    flask_app = Flask(__name__)
 
     # --- Configuración básica ---
-    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-cambiar-en-produccion")
-    app.config["JWT_SECRET_KEY"] = os.getenv(
+    flask_app.config["SECRET_KEY"] = os.getenv(
+        "SECRET_KEY", "dev-secret-cambiar-en-produccion"
+    )
+    flask_app.config["JWT_SECRET_KEY"] = os.getenv(
         "JWT_SECRET_KEY", "dev-jwt-secret-cambiar-en-produccion"
     )
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # URI de PostgreSQL: se usará cuando DATABASE_URL esté definida en .env
+    # URI de PostgreSQL (Render usa a veces postgres://; SQLAlchemy requiere postgresql://)
     database_url = os.getenv("DATABASE_URL")
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+    if database_url and database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    flask_app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 
     # --- Extensiones ---
-    jwt.init_app(app)
-    CORS(app)
+    jwt.init_app(flask_app)
+    CORS(flask_app)
 
-    # SQLAlchemy: solo se vincula a la app si hay URL (sin conexión activa aún)
     if database_url:
-        db.init_app(app)
+        db.init_app(flask_app)
     else:
-        # Los modelos quedan definidos; la BD se conectará al configurar DATABASE_URL
-        app.logger.info(
-            "DATABASE_URL no configurada: modelos cargados sin conexión a PostgreSQL."
+        flask_app.logger.warning(
+            "DATABASE_URL no configurada: API sin base de datos. "
+            "Completa backend/.env para usar PostgreSQL."
         )
 
-    # Importar modelos para registro en el metadata de SQLAlchemy
-    import app.models  # noqa: F401
+    # Import relativo: evita confundir el paquete app con la instancia Flask
+    from . import models  # noqa: F401
 
     # --- Blueprints ---
-    app.register_blueprint(auth_bp)
+    flask_app.register_blueprint(auth_bp)
 
-    @app.route("/api/health", methods=["GET"])
+    @flask_app.route("/api/health", methods=["GET"])
     def health():
         """Comprobación rápida de que el servidor responde."""
         return {"status": "ok", "app": "Bloom API"}
 
-    return app
+    return flask_app
