@@ -1,9 +1,41 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+
+
+
 function Register() {
   const inputClass =
     'w-full min-h-[44px] rounded-lg border border-[#E5E7EB] bg-white px-4 py-3 text-base text-[#3D2B1F] placeholder:text-[#9CA3AF] transition-colors focus:border-[#8C52FF] focus:outline-none focus:ring-2 focus:ring-[#8C52FF]/20'
 
   const labelClass = 'mb-1.5 block text-sm font-normal text-[#3D2B1F]'
+  const [name, setName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [email, setEmail] = useState("")
+  const [location, setLocation] = useState("")
+  const [password, setPassword] = useState("")
+  const navigate = useNavigate()
 
+  const handleRegister = async (e) => {
+    e.preventDefault()
+    const response = await fetch("http://127.0.0.1:5000/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        nombre: name, 
+        apellido: lastName, 
+        email, 
+        ciudad: location, 
+        pais: location, 
+        password 
+      })
+    })
+    const data = await response.json()
+    console.log(data)
+    if (response.ok) {
+      navigate("/login")
+    }
+  }
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FDFAF6] px-4 py-8">
       <div className="w-full max-w-md">
@@ -12,7 +44,7 @@ function Register() {
             Únete a Bloom 🌸
           </h1>
 
-          <form className="flex flex-col gap-4" noValidate>
+          <form className="flex flex-col gap-4" noValidate  onSubmit={handleRegister}>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="nombre" className={labelClass}>
@@ -25,6 +57,8 @@ function Register() {
                   autoComplete="given-name"
                   placeholder="Tu nombre"
                   className={inputClass}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
 
@@ -39,6 +73,9 @@ function Register() {
                   autoComplete="family-name"
                   placeholder="Tu apellido"
                   className={inputClass}
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+
                 />
               </div>
             </div>
@@ -54,6 +91,8 @@ function Register() {
                 autoComplete="email"
                 placeholder="Tu email"
                 className={inputClass}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -68,6 +107,8 @@ function Register() {
                 autoComplete="address-level2"
                 placeholder="Ej. Madrid, España"
                 className={inputClass}
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
               />
             </div>
 
@@ -82,6 +123,8 @@ function Register() {
                 autoComplete="new-password"
                 placeholder="Crea una contraseña"
                 className={inputClass}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
