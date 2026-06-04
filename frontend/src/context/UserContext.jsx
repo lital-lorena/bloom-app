@@ -4,7 +4,7 @@ const UserContext = createContext()
 
 export function UserProvider({children}) {
     const [user, setUser] = useState(null)
-    const [token, setToken] = useState(null)
+    const [token, setToken] = useState(localStorage.getItem("token"))
 
     const login = (userData, userToken) =>{
         setUser(userData)
@@ -24,7 +24,7 @@ export function UserProvider({children}) {
     )
 }
 
-    export function useUser() {
+export function useUser() {
         return useContext(UserContext)
         
     }
