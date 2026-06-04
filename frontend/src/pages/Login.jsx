@@ -1,8 +1,36 @@
+import { useState } from 'react'
+import { useUser } from '../context/UserContext'
+import { useNavigate } from 'react-router-dom'
+
+
 function Login() {
   const inputClass =
     'w-full min-h-[44px] rounded-lg border border-[#E5E7EB] bg-white px-4 py-3 text-base text-[#3D2B1F] placeholder:text-[#9CA3AF] transition-colors focus:border-[#8C52FF] focus:outline-none focus:ring-2 focus:ring-[#8C52FF]/20'
 
   const labelClass = 'mb-1.5 block text-sm font-normal text-[#3D2B1F]'
+
+  const[email, setEmail] = useState("")
+  const[password, setPassword] = useState("")
+  const { login } = useUser()
+  const navigate = useNavigate()
+
+  const handleLogin = async(e)=>{
+    e.preventDefault()
+    const response = await fetch("http://127.0.0.1:5000/api/auth/login", {
+        method:"POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+})
+    const data = await response.json()
+    console.log(response.status, response.ok, data)
+    if (response.ok) {
+        console.log("response.ok es TRUE, llamando login y navigate...")
+        login(data.user, data.access_token)
+        navigate("/feed")
+      } else {
+        console.log("response.ok es FALSE:", response.status)
+      }
+}
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FDFAF6] px-4 py-8">
@@ -12,7 +40,7 @@ function Login() {
             Bienvenida a Bloom 🌸
           </h1>
 
-          <form className="flex flex-col gap-4" noValidate>
+          <form className="flex flex-col gap-4" noValidate  onSubmit={handleLogin}>
             <div>
               <label htmlFor="email" className={labelClass}>
                 Email
@@ -24,6 +52,8 @@ function Login() {
                 autoComplete="email"
                 placeholder="Tu email"
                 className={inputClass}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -38,6 +68,8 @@ function Login() {
                 autoComplete="current-password"
                 placeholder="Tu contraseña"
                 className={inputClass}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
