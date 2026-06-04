@@ -1,7 +1,10 @@
+import Login from './pages/Login'
+
 function App() {
   return (
     <div>
-      <h1>Bloom 🌸</h1>
+    
+      <Login />
     </div>
   )
 }
