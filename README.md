@@ -60,3 +60,120 @@ Lorena — Full Stack Developer en formación 🌸
 
 GitHub: [@lital-lorena]([https://github.com/lital-lorena](https://github.com/lital-lorena))
 
+## API Endpoints
+
+Base URL local: `http://localhost:5000`
+
+Todas las rutas que reciben datos esperan cuerpo **JSON** (`Content-Type: application/json`).
+
+---
+
+### Comprobar estado del servidor
+
+| | |
+|---|---|
+| **Método** | `GET` |
+| **URL** | `/api/health` |
+| **Descripción** | Verifica que la API está en ejecución. No requiere autenticación. |
+| **Body** | No aplica |
+
+**Ejemplo de respuesta** `200 OK`:
+
+```json
+{
+  "status": "ok",
+  "app": "Bloom API"
+}
+```
+
+---
+
+### Registro de usuaria
+
+| | |
+|---|---|
+| **Método** | `POST` |
+| **URL** | `/api/auth/register` |
+| **Descripción** | Crea una cuenta nueva, guarda la contraseña hasheada en PostgreSQL y devuelve un token JWT. |
+| **Body** | `nombre`, `email`, `password`, `pais`, `ciudad` (todos obligatorios) |
+
+**Body de ejemplo:**
+
+```json
+{
+  "nombre": "Ana García",
+  "email": "ana@ejemplo.com",
+  "password": "miClaveSegura123",
+  "pais": "España",
+  "ciudad": "Madrid"
+}
+```
+
+**Ejemplo de respuesta** `201 Created`:
+
+```json
+{
+  "message": "Registro exitoso.",
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "nombre": "Ana García",
+    "email": "ana@ejemplo.com",
+    "rol": "usuaria",
+    "pais": "España",
+    "ciudad": "Madrid"
+  }
+}
+```
+
+**Errores frecuentes:**
+
+| Código | Motivo |
+|--------|--------|
+| `400` | Falta algún campo o el body no es JSON válido |
+| `409` | El email ya está registrado |
+
+---
+
+### Inicio de sesión
+
+| | |
+|---|---|
+| **Método** | `POST` |
+| **URL** | `/api/auth/login` |
+| **Descripción** | Valida email y contraseña y devuelve un token JWT si las credenciales son correctas. |
+| **Body** | `email`, `password` (ambos obligatorios) |
+
+**Body de ejemplo:**
+
+```json
+{
+  "email": "ana@ejemplo.com",
+  "password": "miClaveSegura123"
+}
+```
+
+**Ejemplo de respuesta** `200 OK`:
+
+```json
+{
+  "message": "Inicio de sesión exitoso.",
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "nombre": "Ana García",
+    "email": "ana@ejemplo.com",
+    "rol": "usuaria",
+    "pais": "España",
+    "ciudad": "Madrid"
+  }
+}
+```
+
+**Errores frecuentes:**
+
+| Código | Motivo |
+|--------|--------|
+| `400` | Falta `email` o `password` |
+| `401` | Email o contraseña incorrectos |
+
