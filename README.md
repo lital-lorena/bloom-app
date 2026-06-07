@@ -17,23 +17,16 @@ Mujeres en proceso de cambio de carrera, sin límite de sector.
 ## ¿Qué puede hacer una usuaria?
 
 - Registrarse y hacer login
-
 - Ver y editar su perfil con foto
-
 - Crear posts con texto, foto y link
-
 - Ver el feed de todas las usuarias
-
 - Dar likes y comentar posts
-
 - Filtrar por país, ciudad o temática
-
 - Recibir notificaciones en tiempo real
 
 ## ¿Qué puede hacer el admin?
 
 - Moderar y eliminar contenido inapropiado
-
 - Gestionar usuarias
 
 ## Stack tecnológico
@@ -70,12 +63,14 @@ Todas las rutas que reciben datos esperan cuerpo **JSON** (`Content-Type: applic
 
 ### Comprobar estado del servidor
 
-| | |
-|---|---|
-| **Método** | `GET` |
-| **URL** | `/api/health` |
+
+|                 |                                                                   |
+| --------------- | ----------------------------------------------------------------- |
+| **Método**      | `GET`                                                             |
+| **URL**         | `/api/health`                                                     |
 | **Descripción** | Verifica que la API está en ejecución. No requiere autenticación. |
-| **Body** | No aplica |
+| **Body**        | No aplica                                                         |
+
 
 **Ejemplo de respuesta** `200 OK`:
 
@@ -90,12 +85,14 @@ Todas las rutas que reciben datos esperan cuerpo **JSON** (`Content-Type: applic
 
 ### Registro de usuaria
 
-| | |
-|---|---|
-| **Método** | `POST` |
-| **URL** | `/api/auth/register` |
+
+|                 |                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------- |
+| **Método**      | `POST`                                                                                      |
+| **URL**         | `/api/auth/register`                                                                        |
 | **Descripción** | Crea una cuenta nueva, guarda la contraseña hasheada en PostgreSQL y devuelve un token JWT. |
-| **Body** | `nombre`, `email`, `password`, `pais`, `ciudad` (todos obligatorios) |
+| **Body**        | `nombre`, `email`, `password`, `pais`, `ciudad` (todos obligatorios)                        |
+
 
 **Body de ejemplo:**
 
@@ -128,21 +125,25 @@ Todas las rutas que reciben datos esperan cuerpo **JSON** (`Content-Type: applic
 
 **Errores frecuentes:**
 
-| Código | Motivo |
-|--------|--------|
-| `400` | Falta algún campo o el body no es JSON válido |
-| `409` | El email ya está registrado |
+
+| Código | Motivo                                        |
+| ------ | --------------------------------------------- |
+| `400`  | Falta algún campo o el body no es JSON válido |
+| `409`  | El email ya está registrado                   |
+
 
 ---
 
 ### Inicio de sesión
 
-| | |
-|---|---|
-| **Método** | `POST` |
-| **URL** | `/api/auth/login` |
+
+|                 |                                                                                      |
+| --------------- | ------------------------------------------------------------------------------------ |
+| **Método**      | `POST`                                                                               |
+| **URL**         | `/api/auth/login`                                                                    |
 | **Descripción** | Valida email y contraseña y devuelve un token JWT si las credenciales son correctas. |
-| **Body** | `email`, `password` (ambos obligatorios) |
+| **Body**        | `email`, `password` (ambos obligatorios)                                             |
+
 
 **Body de ejemplo:**
 
@@ -172,8 +173,141 @@ Todas las rutas que reciben datos esperan cuerpo **JSON** (`Content-Type: applic
 
 **Errores frecuentes:**
 
-| Código | Motivo |
-|--------|--------|
-| `400` | Falta `email` o `password` |
-| `401` | Email o contraseña incorrectos |
 
+| Código | Motivo                         |
+| ------ | ------------------------------ |
+| `400`  | Falta `email` o `password`     |
+| `401`  | Email o contraseña incorrectos |
+
+
+
+
+
+
+## Posts
+
+### Ver todos los posts
+
+| Campo | Valor |
+
+|---|---|
+
+| Método | GET |
+
+| URL | /api/posts |
+
+| Autenticación | No requerida |
+
+| Body | No aplica |
+
+Ejemplo de respuesta 200 OK:
+
+```json
+
+[
+
+  {
+
+    "id": 1,
+
+    "texto": "Mi primer post en Bloom 🌸",
+
+    "url": null,
+
+    "fecha": "2026-06-07T17:18:59.482409+00:00",
+
+    "autora": {
+
+      "id": 6,
+
+      "nombre": "Prueba",
+
+      "avatar": null
+
+    }
+
+  }
+
+]
+
+```
+
+### Crear post
+
+| Campo | Valor |
+
+|---|---|
+
+| Método | POST |
+
+| URL | /api/posts |
+
+| Autenticación | Bearer Token (JWT) |
+
+| Body | texto (obligatorio), url (opcional) |
+
+Body de ejemplo:
+
+```json
+
+{
+
+  "texto": "Mi primer post en Bloom 🌸",
+
+  "url": "[https://ejemplo.com](https://ejemplo.com)"
+
+}
+
+```
+
+Respuesta 201 Created:
+
+```json
+
+{
+
+  "message": "Post creado.",
+
+  "id": 1
+
+}
+
+```
+
+### Borrar post
+
+| Campo | Valor |
+
+|---|---|
+
+| Método | DELETE |
+
+| URL | /api/posts/<id> |
+
+| Autenticación | Bearer Token (JWT) |
+
+| Body | No aplica |
+
+Respuesta 200 OK:
+
+```json
+
+{
+
+  "message": "Post eliminado."
+
+}
+
+```
+
+Errores frecuentes:
+
+| Código | Motivo |
+
+|---|---|
+
+| 400 | El texto es obligatorio |
+
+| 403 | No puedes borrar un post que no es tuyo |
+
+| 404 | Post no encontrado |
