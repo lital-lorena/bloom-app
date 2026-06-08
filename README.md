@@ -180,10 +180,6 @@ Todas las rutas que reciben datos esperan cuerpo **JSON** (`Content-Type: applic
 | `401`  | Email o contraseña incorrectos |
 
 
-
-
-
-
 ## Posts
 
 ### Ver todos los posts
@@ -311,3 +307,58 @@ Errores frecuentes:
 | 403 | No puedes borrar un post que no es tuyo |
 
 | 404 | Post no encontrado |
+
+### Editar post
+
+| Campo | Valor |
+
+|---|---|
+
+| Método | PUT |
+
+| URL | /api/posts/<id>|
+
+| Autenticación | Bearer Token (JWT) |
+
+| Body | texto (obligatorio) |
+
+Body de ejemplo:
+
+```json
+
+{
+
+  "texto": "Texto actualizado 🌸"
+
+}
+
+```
+
+Respuesta 200 OK:
+
+```json
+
+{
+
+  "message": "Post actualizado.",
+
+  "id": 2
+
+}
+
+```
+
+Errores frecuentes:
+
+| Código | Motivo |
+
+|---|---|
+
+| 400 | El texto es obligatorio |
+
+| 403 | No puedes editar un post que no es tuyo |
+
+| 404 | Post no encontrado |
+
+
+
