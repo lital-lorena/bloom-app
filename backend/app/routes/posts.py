@@ -57,3 +57,16 @@ def delete_post(post_id):
     db.session.commit()
 
     return jsonify({"message": "Post eliminado."}), 200
+@posts_bp.route('/<int:post_id>', methods=['PUT'])
+@jwt_required()
+def update_post(post_id):
+    user_id = get_jwt_identity()
+    post = Post.query.get_or_404(post_id)
+    if str(post.user_id) != str(user_id):
+        return jsonify({'error': 'No puedes editar este post.'}), 403
+    data = request.get_json(silent=True)
+    if not data or not data.get('texto', '').strip():
+        return jsonify({'error': 'El texto es obligatorio.'}), 400
+    post.texto = data['texto'].strip()
+    db.session.commit()
+    return jsonify({'message': 'Post actualizado.', 'id': post.id}), 200
