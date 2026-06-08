@@ -7,7 +7,7 @@ function Feed() {
 
   const [posts, setPosts] = useState([])
   const [text, setText] = useState("")
-  const { token } = useUser()
+  const { token,user } = useUser()
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -39,10 +39,23 @@ function Feed() {
       const updatedPosts = await updatedResponse.json()
       setPosts(updatedPosts)
     }
-
-
-
   }
+
+    const handleDeletePost = async (postId) => {
+      const response = await fetch(`http://127.0.0.1:5000/api/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      if (response.ok) {
+        setPosts(posts.filter((post) => post.id != postId))
+      }
+    }
+
+
+
+  
   return (
     <div className="min-h-screen bg-[#FDFAF6] px-4 py-8">
       <div className="max-w-2xl mx-auto">
@@ -69,6 +82,14 @@ function Feed() {
             <p className="text-sm font-semibold text-[#8C52FF] mb-2">{post.autora.nombre}</p>
             <p className="text-[#3D2B1F] text-base">{post.texto}</p>
             <p className="text-xs text-[#9CA3AF] mt-3">{new Date(post.fecha).toLocaleDateString()}</p>
+            {user && post.autora.id === user.id && (
+              <button
+                onClick={() => handleDeletePost(post.id)}
+                className="mt-2 text-sm text-red-400 hover:text-red-600"
+              >
+                Borrar
+              </button>
+            )}
           </div>
         ))}
       </div>
