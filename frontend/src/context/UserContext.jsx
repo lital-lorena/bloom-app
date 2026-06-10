@@ -3,8 +3,8 @@ import { createContext, useContext,useState } from "react";
 const UserContext = createContext()
 
 export function UserProvider({children}) {
-    const [user, setUser] = useState(null)
     const [token, setToken] = useState(localStorage.getItem("token"))
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")))
 
     const login = (userData, userToken) =>{
         setUser(userData)

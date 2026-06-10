@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '../context/UserContext'
 
-
-
 function Feed() {
 
   const [posts, setPosts] = useState([])
   const [text, setText] = useState("")
-  const { token,user } = useUser()
+  const { token, user } = useUser()
+  const [editingId, setEditingId] = useState(null)
+  const [editText, setEditText] = useState("")
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -15,9 +15,7 @@ function Feed() {
       const data = await response.json()
       setPosts(data)
     }
-
     fetchPost()
-
   }, [])
 
   const handleCreatePost = async (e) => {
@@ -41,21 +39,40 @@ function Feed() {
     }
   }
 
-    const handleDeletePost = async (postId) => {
-      const response = await fetch(`http://127.0.0.1:5000/api/posts/${postId}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      })
-      if (response.ok) {
-        setPosts(posts.filter((post) => post.id != postId))
+  const handleDeletePost = async (postId) => {
+    const response = await fetch(`http://127.0.0.1:5000/api/posts/${postId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
       }
+    })
+    if (response.ok) {
+      setPosts(posts.filter((post) => post.id !== postId))
     }
+  }
 
+  const handleEditPost = async (postId) => {
+    const response = await fetch(`http://127.0.0.1:5000/api/posts/${postId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ texto: editText })
+    })
 
+    if (response.ok) {
+      setPosts(posts.map((post) =>
+        post.id === postId ? { ...post, texto: editText } : post
+      ))
+      setEditingId(null)
+      setEditText("")
+    }
+  }
 
-  
+  console.log("posts:", posts)
+  console.log("user:", user)
+
   return (
     <div className="min-h-screen bg-[#FDFAF6] px-4 py-8">
       <div className="max-w-2xl mx-auto">
@@ -77,21 +94,56 @@ function Feed() {
           </button>
         </form>
 
-        {posts.map((post) => (
-          <div key={post.id} className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-4 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
-            <p className="text-sm font-semibold text-[#8C52FF] mb-2">{post.autora.nombre}</p>
-            <p className="text-[#3D2B1F] text-base">{post.texto}</p>
-            <p className="text-xs text-[#9CA3AF] mt-3">{new Date(post.fecha).toLocaleDateString()}</p>
-            {user && post.autora.id === user.id && (
-              <button
-                onClick={() => handleDeletePost(post.id)}
-                className="mt-2 text-sm text-red-400 hover:text-red-600"
-              >
-                Borrar
-              </button>
-            )}
-          </div>
-        ))}
+        {posts.map((post) => {
+          console.log("user.id:", user?.id, "autora.id:", post.autora.id)
+          return (
+            <div key={post.id} className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-4 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+              <p className="text-sm font-semibold text-[#8C52FF] mb-2">{post.autora.nombre}</p>
+
+              {editingId === post.id ? (
+                <div className="mt-2">
+                  <textarea
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    className="w-full border border-[#E5E7EB] rounded-lg p-3 text-[#3D2B1F] resize-none"
+                    rows={3}
+                  />
+                  <button
+                    onClick={() => handleEditPost(post.id)}
+                    className="mt-2 text-sm bg-[#8C52FF] text-white px-4 py-1 rounded-lg"
+                  >
+                    Guardar
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-[#3D2B1F] text-base">{post.texto}</p>
+                  <button
+                    onClick={() => {
+                      setEditingId(post.id)
+                      setEditText(post.texto)
+                    }}
+                    className="mt-2 text-sm text-[#8C52FF] hover:text-[#7440E8]"
+                  >
+                    Editar
+                  </button>
+                </div>
+              )}
+
+              <p className="text-xs text-[#9CA3AF] mt-3">{new Date(post.fecha).toLocaleDateString()}</p>
+
+              {user && post.autora.id === user.id && (
+                <button
+                  onClick={() => handleDeletePost(post.id)}
+                  className="mt-2 text-sm text-red-400 hover:text-red-600"
+                >
+                  Borrar
+                </button>
+              )}
+            </div>
+          )
+        })}
+
       </div>
     </div>
   )
