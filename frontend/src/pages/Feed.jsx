@@ -94,9 +94,7 @@ function Feed() {
           </button>
         </form>
 
-        {posts.map((post) => {
-          console.log("user.id:", user?.id, "autora.id:", post.autora.id)
-          return (
+        {posts.map((post) => (
             <div key={post.id} className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-4 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
               <p className="text-sm font-semibold text-[#8C52FF] mb-2">{post.autora.nombre}</p>
 
@@ -116,33 +114,34 @@ function Feed() {
                   </button>
                 </div>
               ) : (
-                <div>
-                  <p className="text-[#3D2B1F] text-base">{post.texto}</p>
-                  <button
-                    onClick={() => {
-                      setEditingId(post.id)
-                      setEditText(post.texto)
-                    }}
-                    className="mt-2 text-sm text-[#8C52FF] hover:text-[#7440E8]"
-                  >
-                    Editar
-                  </button>
-                </div>
+                <p className="text-[#3D2B1F] text-base">{post.texto}</p>
               )}
 
               <p className="text-xs text-[#9CA3AF] mt-3">{new Date(post.fecha).toLocaleDateString()}</p>
 
-              {user && post.autora.id === user.id && (
-                <button
-                  onClick={() => handleDeletePost(post.id)}
-                  className="mt-2 text-sm text-red-400 hover:text-red-600"
-                >
-                  Borrar
-                </button>
+              {user && String(post.autora.id) === String(user.id) && (
+                <div className="mt-2 flex gap-3">
+                  {editingId !== post.id && (
+                    <button
+                      onClick={() => {
+                        setEditingId(post.id)
+                        setEditText(post.texto)
+                      }}
+                      className="text-sm text-[#8C52FF] hover:text-[#7440E8]"
+                    >
+                      Editar
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDeletePost(post.id)}
+                    className="text-sm text-red-400 hover:text-red-600"
+                  >
+                    Borrar
+                  </button>
+                </div>
               )}
             </div>
-          )
-        })}
+        ))}
 
       </div>
     </div>
