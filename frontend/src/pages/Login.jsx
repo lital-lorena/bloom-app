@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useUser } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'
 
+const REMEMBERED_EMAIL_KEY = 'remembered_email'
 
 function Login() {
   const inputClass =
@@ -9,8 +10,8 @@ function Login() {
 
   const labelClass = 'mb-1.5 block text-sm font-normal text-[#3D2B1F]'
 
-  const[email, setEmail] = useState("")
-  const[password, setPassword] = useState("")
+  const [email, setEmail] = useState(() => localStorage.getItem(REMEMBERED_EMAIL_KEY) || "")
+  const [password, setPassword] = useState("")
   const { login } = useUser()
   const navigate = useNavigate()
 
@@ -24,7 +25,7 @@ function Login() {
     const data = await response.json()
     console.log(response.status, response.ok, data)
     if (response.ok) {
-        console.log("response.ok es TRUE, llamando login y navigate...")
+        localStorage.setItem(REMEMBERED_EMAIL_KEY, email)
         login(data.user, data.access_token)
         navigate("/feed")
       } else {

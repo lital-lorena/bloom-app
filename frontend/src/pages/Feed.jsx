@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 
 function Feed() {
 
   const [posts, setPosts] = useState([])
   const [text, setText] = useState("")
-  const { token, user } = useUser()
+  const [suggestion, setSuggestion] = useState("")
+  const [suggestLoading, setSuggestLoading] = useState(false)
+  const { token, user, logout } = useUser()
+  const navigate = useNavigate()
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState("")
 
@@ -33,6 +37,7 @@ function Feed() {
 
     if (response.ok) {
       setText("")
+      setSuggestion("")
       const updatedResponse = await fetch("http://127.0.0.1:5000/api/posts")
       const updatedPosts = await updatedResponse.json()
       setPosts(updatedPosts)
@@ -70,13 +75,52 @@ function Feed() {
     }
   }
 
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
+
+  const handleSuggest = async () => {
+    if (!text.trim()) return
+
+    setSuggestLoading(true)
+    setSuggestion("")
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/ai/suggest", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ texto: text })
+      })
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuggestion(data.sugerencia)
+      }
+    } finally {
+      setSuggestLoading(false)
+    }
+  }
+
   console.log("posts:", posts)
   console.log("user:", user)
 
   return (
     <div className="min-h-screen bg-[#FDFAF6] px-4 py-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-[#3D2B1F] mb-6">Feed 🌸</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-[#3D2B1F]">Feed 🌸</h1>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="text-sm text-[#8C52FF] hover:text-[#7440E8] font-medium"
+          >
+            Cerrar sesión
+          </button>
+        </div>
 
         <form onSubmit={handleCreatePost} className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-6">
           <textarea
@@ -86,6 +130,27 @@ function Feed() {
             className="w-full border border-[#E5E7EB] rounded-lg p-3 text-[#3D2B1F] placeholder:text-[#9CA3AF] resize-none"
             rows={3}
           />
+          <button
+            type="button"
+            onClick={handleSuggest}
+            disabled={suggestLoading || !text.trim()}
+            className="mt-3 text-sm text-[#8C52FF] hover:text-[#7440E8] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {suggestLoading ? "Generando sugerencia..." : "✨ Sugerencia"}
+          </button>
+          {suggestion && (
+            <div className="mt-3 rounded-lg border border-[#E5E7EB] bg-[#FDFAF6] p-3">
+              <p className="text-sm font-semibold text-[#3D2B1F] mb-2">Sugerencia de IA</p>
+              <p className="text-sm text-[#3D2B1F] whitespace-pre-wrap">{suggestion}</p>
+              <button
+                type="button"
+                onClick={() => setText(suggestion)}
+                className="mt-2 text-sm text-[#8C52FF] hover:text-[#7440E8]"
+              >
+                Usar esta sugerencia
+              </button>
+            </div>
+          )}
           <button
             type="submit"
             className="mt-3 bg-[#8C52FF] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#7440E8]"
