@@ -11,8 +11,11 @@ from flask import Flask
 from flask_cors import CORS
 
 from app.extensions import db, jwt
+from app.routes.ai import ai_bp
 from app.routes.auth import auth_bp
 from app.routes.posts import posts_bp
+from app.routes.users import users_bp
+
 
 # Carga backend/.env con ruta absoluta (no depende del directorio desde el que ejecutas)
 BACKEND_DIR = Path(__file__).resolve().parent.parent
@@ -56,6 +59,9 @@ def create_app():
     # --- Blueprints ---
     flask_app.register_blueprint(auth_bp)
     flask_app.register_blueprint(posts_bp)
+    flask_app.register_blueprint(users_bp)
+    flask_app.register_blueprint(ai_bp)
+
 
     @flask_app.route("/api/health", methods=["GET"])
     def health():
