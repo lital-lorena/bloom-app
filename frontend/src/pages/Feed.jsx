@@ -209,61 +209,63 @@ function Feed() {
         </form>
 
         {posts.map((post) => (
-            <div key={post.id} className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-4 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
-              <p className="text-sm font-semibold text-[#8C52FF] mb-2">{post.autora.nombre}</p>
+          <div key={post.id} className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-4 shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+            <p className="text-sm font-semibold text-[#8C52FF] mb-2">{post.autora.nombre}</p>
 
-              {editingId === post.id ? (
-                <div className="mt-2">
-                  <textarea
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    className="w-full border border-[#E5E7EB] rounded-lg p-3 text-[#3D2B1F] resize-none"
-                    rows={3}
+            {editingId === post.id ? (
+              <div className="mt-2">
+                <textarea
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  className="w-full border border-[#E5E7EB] rounded-lg p-3 text-[#3D2B1F] resize-none"
+                  rows={3}
+                />
+                <button
+                  onClick={() => handleEditPost(post.id)}
+                  className="mt-2 text-sm bg-[#8C52FF] text-white px-4 py-1 rounded-lg"
+                >
+                  Guardar
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="text-[#3D2B1F] text-base">{post.texto}</p>
+                {post.url && (
+
+                  <img
+                    src={post.url}
+                    alt="Imagen del post"
+                    className="mt-3 w-full rounded-lg object-contain border border-[#E5E7EB]"
                   />
-                  <button
-                    onClick={() => handleEditPost(post.id)}
-                    className="mt-2 text-sm bg-[#8C52FF] text-white px-4 py-1 rounded-lg"
-                  >
-                    Guardar
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <p className="text-[#3D2B1F] text-base">{post.texto}</p>
-                  {post.url && (
-                    <img
-                      src={post.url}
-                      alt="Imagen del post"
-                      className="mt-3 w-full max-h-80 rounded-lg object-cover border border-[#E5E7EB]"
-                    />
-                  )}
-                </>
-              )}
+                )}
+              </>
+            )}
+        
 
-              <p className="text-xs text-[#9CA3AF] mt-3">{new Date(post.fecha).toLocaleDateString()}</p>
+            <p className="text-xs text-[#9CA3AF] mt-3">{new Date(post.fecha).toLocaleDateString()}</p>
 
-              {user && String(post.autora.id) === String(user.id) && (
-                <div className="mt-2 flex gap-3">
-                  {editingId !== post.id && (
-                    <button
-                      onClick={() => {
-                        setEditingId(post.id)
-                        setEditText(post.texto)
-                      }}
-                      className="text-sm text-[#8C52FF] hover:text-[#7440E8]"
-                    >
-                      Editar
-                    </button>
-                  )}
+            {user && String(post.autora.id) === String(user.id) && (
+              <div className="mt-2 flex gap-3">
+                {editingId !== post.id && (
                   <button
-                    onClick={() => handleDeletePost(post.id)}
-                    className="text-sm text-red-400 hover:text-red-600"
+                    onClick={() => {
+                      setEditingId(post.id)
+                      setEditText(post.texto)
+                    }}
+                    className="text-sm text-[#8C52FF] hover:text-[#7440E8]"
                   >
-                    Borrar
+                    Editar
                   </button>
-                </div>
-              )}
-            </div>
+                )}
+                <button
+                  onClick={() => handleDeletePost(post.id)}
+                  className="text-sm text-red-400 hover:text-red-600"
+                >
+                  Borrar
+                </button>
+              </div>
+            )}
+          </div>
         ))}
 
       </div>

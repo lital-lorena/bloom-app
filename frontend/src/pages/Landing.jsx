@@ -86,8 +86,8 @@ export default function Landing() {
                 <p className="text-center text-gray-500 mb-12">"Mujeres como tú que ya dieron el salto. Léelas, inspírate, únete."</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                     {[
-                        { quote: "Bloom me dio el empuje que necesitaba para dar el salto a tech.", name: "Sara", age: "34 Años León" },
-                        { quote: "Encontré mi comunidad y mi nuevo camino profesional.", name: "Sandra", age: "36 años Chile" }
+                        { quote: "Bloom me dio el empuje que necesitaba para dar el salto a tech.", name: "Sandra", age: "35 Años Chile" },
+                        { quote: "Encontré mi comunidad y mi nuevo camino profesional.", name: "Sara", age: "34 años León" }
                     ].map((t, i) => (
                         <div key={i} className="bg-white rounded-2xl p-8 shadow-sm">
                             <p className="text-[#2d1b4e] text-lg italic mb-6">"{t.quote}"</p>

@@ -15,23 +15,28 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const { login } = useUser()
   const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleLogin = async (e) => {
     e.preventDefault()
+    setLoading(true)
+    setError("")
     const response = await fetch("http://127.0.0.1:5000/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     })
     const data = await response.json()
-    console.log(response.status, response.ok, data)
     if (response.ok) {
       localStorage.setItem(REMEMBERED_EMAIL_KEY, email)
       login(data.user, data.access_token)
       navigate("/feed")
     } else {
-      console.log("response.ok es FALSE:", response.status)
+      console.log("data del error:", data)
+      setError(data.error || "Email o contraseña incorrectos")
     }
+    setLoading(false)
   }
 
   return (
@@ -116,12 +121,16 @@ function Login() {
                 </span>
               </p>
             </div>
+            {error && (
+              <p className="text-sm text-red-500 text-center">{error}</p>
+            )}
 
             <button
               type="submit"
-              className="mt-2 min-h-[44px] w-full rounded-lg bg-[#8C52FF] px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-[#7440E8] focus:outline-none focus:ring-2 focus:ring-[#8C52FF]/40 focus:ring-offset-2"
+              disabled={loading}
+              className="mt-2 min-h-[44px] w-full rounded-lg bg-[#8C52FF] px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-[#7440E8] disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Entrar
+              {loading ? "Entrando..." : "Entrar"}
             </button>
 
             <p className="text-center text-sm text-[#3D2B1F]">
