@@ -302,9 +302,13 @@ function Feed() {
                 <div className="flex items-start gap-3 px-5 pt-5">
                   <Avatar name={post.autora.nombre} />
                   <div className="min-w-0 flex-1">
-                    <p className="font-serif text-base font-semibold" style={{ color: PURPLE }}>
+                    <button
+                      onClick={() => navigate(`/usuario/${post.autora.id}`)}
+                      className="font-serif text-base font-semibold hover:underline text-left"
+                      style={{ color: PURPLE }}
+                    >
                       {post.autora.nombre}
-                    </p>
+                    </button>
                     <p className="text-xs" style={{ color: GRAY }}>
                       {formatDate(post.fecha)}
                     </p>

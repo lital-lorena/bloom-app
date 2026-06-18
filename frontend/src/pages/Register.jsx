@@ -1,8 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-
-
-
+import { Link, useNavigate } from 'react-router-dom'
 
 function Register() {
   const inputClass =
@@ -14,10 +11,14 @@ function Register() {
   const [email, setEmail] = useState("")
   const [location, setLocation] = useState("")
   const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const navigate = useNavigate()
 
   const handleRegister = async (e) => {
     e.preventDefault()
+    setLoading(true)
+    setError("")
     const response = await fetch("http://127.0.0.1:5000/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -31,11 +32,14 @@ function Register() {
       })
     })
     const data = await response.json()
-    console.log(data)
     if (response.ok) {
       navigate("/login")
+    } else {
+      setError(data.error || "No se pudo crear la cuenta. Inténtalo de nuevo.")
     }
+    setLoading(false)
   }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FDFAF6] px-4 py-8">
       <div className="w-full max-w-md">
@@ -80,7 +84,6 @@ function Register() {
                   className={inputClass}
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))}
-
                 />
               </div>
             </div>
@@ -134,12 +137,24 @@ function Register() {
               />
             </div>
 
+            {error && (
+              <p className="text-sm text-red-500 text-center">{error}</p>
+            )}
+
             <button
               type="submit"
-              className="mt-2 min-h-[44px] w-full rounded-lg bg-[#8C52FF] px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-[#7440E8] focus:outline-none focus:ring-2 focus:ring-[#8C52FF]/40 focus:ring-offset-2"
+              disabled={loading}
+              className="mt-2 min-h-[44px] w-full rounded-lg bg-[#8C52FF] px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-[#7440E8] disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Unirme a Bloom
+              {loading ? "Creando cuenta..." : "Unirme a Bloom"}
             </button>
+
+            <p className="text-center text-sm text-[#3D2B1F]">
+              ¿Ya tienes cuenta?{' '}
+              <Link to="/login" className="font-medium text-[#8C52FF] hover:text-[#7440E8] transition-colors">
+                Inicia sesión →
+              </Link>
+            </p>
           </form>
         </div>
       </div>

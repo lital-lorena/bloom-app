@@ -67,14 +67,14 @@ export default function Profile() {
         typeof avatar === "string"
             ? avatar
             : avatar instanceof File
-              ? URL.createObjectURL(avatar)
-              : null
+                ? URL.createObjectURL(avatar)
+                : null
 
     const letter = (name || "?").trim().charAt(0).toUpperCase()
 
     const labelClass = "mb-1.5 block text-sm font-medium"
     const inputClass =
-        "w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-base capitalize outline-none transition-colors focus:border-[#8C52FF]"
+        "w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-base outline-none transition-colors focus:border-[#8C52FF]"
 
     return (
         <div className="min-h-screen font-sans" style={{ backgroundColor: CREAM, color: PLUM }}>
@@ -143,6 +143,16 @@ export default function Profile() {
                         <h1 className="font-serif text-2xl font-semibold" style={{ color: PLUM }}>
                             {name}
                         </h1>
+                        {story && (
+                            <p className="mt-2 text-sm leading-relaxed text-[#6B5B73] max-w-xs mx-auto break-all">
+                                {story}
+                            </p>
+                        )}
+                        {(city || country) && (
+                            <p className="mt-1 text-xs" style={{ color: PURPLE }}>
+                                📍  {city || country}
+                            </p>
+                        )}
                     </div>
 
                     {/* FORMULARIO */}
