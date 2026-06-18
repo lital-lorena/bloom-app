@@ -21,13 +21,13 @@ function Register() {
     const response = await fetch("http://127.0.0.1:5000/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        nombre: name, 
-        apellido: lastName, 
-        email, 
-        ciudad: location, 
-        pais: location, 
-        password 
+      body: JSON.stringify({
+        nombre: name,
+        apellido: lastName,
+        email,
+        ciudad: location,
+        pais: location,
+        password
       })
     })
     const data = await response.json()
@@ -40,11 +40,14 @@ function Register() {
     <div className="flex min-h-screen items-center justify-center bg-[#FDFAF6] px-4 py-8">
       <div className="w-full max-w-md">
         <div className="rounded-xl border border-[#E5E7EB] bg-white p-5 shadow-[0_1px_4px_rgba(0,0,0,0.06)] sm:p-6">
-          <h1 className="mb-6 text-center font-serif text-2xl font-bold leading-tight text-[#3D2B1F] sm:text-[32px]">
-            Únete a Bloom 🌸
-          </h1>
+          <div className="flex flex-col items-center mb-6">
+            <img src="/src/assets/bloom_flor.png" alt="Bloom" className="h-16 w-16 object-contain mb-3" />
+            <h1 className="text-center font-serif text-2xl font-bold leading-tight text-[#3D2B1F] sm:text-[32px]">
+              Únete a Bloom
+            </h1>
+          </div>
 
-          <form className="flex flex-col gap-4" noValidate  onSubmit={handleRegister}>
+          <form className="flex flex-col gap-4" noValidate onSubmit={handleRegister}>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="nombre" className={labelClass}>
@@ -53,12 +56,13 @@ function Register() {
                 <input
                   id="nombre"
                   type="text"
+                  autoCapitalize="words"
                   name="nombre"
                   autoComplete="given-name"
                   placeholder="Tu nombre"
                   className={inputClass}
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setName(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))}
                 />
               </div>
 
@@ -69,12 +73,13 @@ function Register() {
                 <input
                   id="apellido"
                   type="text"
+                  autoCapitalize="words"
                   name="apellido"
                   autoComplete="family-name"
                   placeholder="Tu apellido"
                   className={inputClass}
                   value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  onChange={(e) => setLastName(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))}
 
                 />
               </div>
@@ -103,12 +108,13 @@ function Register() {
               <input
                 id="ciudad-pais"
                 type="text"
+                autoCapitalize="words"
                 name="ciudadPais"
                 autoComplete="address-level2"
                 placeholder="Ej. Madrid, España"
                 className={inputClass}
                 value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                onChange={(e) => setLocation(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))}
               />
             </div>
 

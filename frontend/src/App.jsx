@@ -4,12 +4,14 @@ import Register from './pages/Register'
 import Feed from './pages/Feed'
 import PrivateRoute from './components/PrivateRoute'
 import Profile from './pages/Profile'
+import Landing from './pages/Landing'
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/" element={<Landing />} />
       <Route path="/feed" element={<PrivateRoute>
         <Feed />
       </PrivateRoute>} />

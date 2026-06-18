@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 
@@ -6,12 +6,24 @@ function Feed() {
 
   const [posts, setPosts] = useState([])
   const [text, setText] = useState("")
+  const [postImage, setPostImage] = useState(null)
   const [suggestion, setSuggestion] = useState("")
   const [suggestLoading, setSuggestLoading] = useState(false)
   const { token, user, logout } = useUser()
   const navigate = useNavigate()
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState("")
+
+  const postImagePreview = useMemo(
+    () => (postImage ? URL.createObjectURL(postImage) : null),
+    [postImage]
+  )
+
+  useEffect(() => {
+    return () => {
+      if (postImagePreview) URL.revokeObjectURL(postImagePreview)
+    }
+  }, [postImagePreview])
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -24,19 +36,36 @@ function Feed() {
 
   const handleCreatePost = async (e) => {
     e.preventDefault()
-    const response = await fetch("http://127.0.0.1:5000/api/posts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({ texto: text })
-    })
+
+    let response
+    if (postImage) {
+      const formData = new FormData()
+      formData.append("texto", text)
+      formData.append("image", postImage)
+      response = await fetch("http://127.0.0.1:5000/api/posts", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+        body: formData
+      })
+    } else {
+      response = await fetch("http://127.0.0.1:5000/api/posts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ texto: text })
+      })
+    }
+
     const data = await response.json()
     console.log(data)
 
     if (response.ok) {
       setText("")
+      setPostImage(null)
       setSuggestion("")
       const updatedResponse = await fetch("http://127.0.0.1:5000/api/posts")
       const updatedPosts = await updatedResponse.json()
@@ -130,6 +159,26 @@ function Feed() {
             className="w-full border border-[#E5E7EB] rounded-lg p-3 text-[#3D2B1F] placeholder:text-[#9CA3AF] resize-none"
             rows={3}
           />
+          <label
+            htmlFor="post-image"
+            className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#8C52FF]/10 px-4 py-2 text-sm font-medium text-[#8C52FF] transition-colors hover:bg-[#8C52FF]/20"
+          >
+            📷 Añadir foto
+          </label>
+          <input
+            id="post-image"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => setPostImage(e.target.files[0] || null)}
+          />
+          {postImagePreview && (
+            <img
+              src={postImagePreview}
+              alt="Vista previa"
+              className="mt-3 h-20 w-20 rounded-lg object-cover border border-[#E5E7EB]"
+            />
+          )}
           <button
             type="button"
             onClick={handleSuggest}
@@ -179,7 +228,16 @@ function Feed() {
                   </button>
                 </div>
               ) : (
-                <p className="text-[#3D2B1F] text-base">{post.texto}</p>
+                <>
+                  <p className="text-[#3D2B1F] text-base">{post.texto}</p>
+                  {post.url && (
+                    <img
+                      src={post.url}
+                      alt="Imagen del post"
+                      className="mt-3 w-full max-h-80 rounded-lg object-cover border border-[#E5E7EB]"
+                    />
+                  )}
+                </>
               )}
 
               <p className="text-xs text-[#9CA3AF] mt-3">{new Date(post.fecha).toLocaleDateString()}</p>
