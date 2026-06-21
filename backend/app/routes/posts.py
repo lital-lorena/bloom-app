@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
+from app.routes.ai import clasificar_post
 import cloudinary
 import cloudinary.uploader
 import os
@@ -28,10 +29,12 @@ def get_posts():
             "texto": post.texto,
             "url": post.url,
             "fecha": post.fecha_creacion.isoformat(),
+             "temas": post.temas,
             "autora": {
                 "id": post.autora.id,
                 "nombre": post.autora.nombre,
                 "avatar": post.autora.avatar,
+                "profesion": post.autora.profesion,
             }
         })
     return jsonify(result), 200
@@ -67,6 +70,11 @@ def create_post():
             url=data.get("url"),
             user_id=user_id,
         )
+        # Clasificar con IA
+    try:
+        post.temas = clasificar_post(post.texto)
+    except Exception:
+        post.temas = None
 
     db.session.add(post)
     db.session.commit()
