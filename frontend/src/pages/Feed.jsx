@@ -298,7 +298,7 @@ function Feed() {
               Temas para ti
             </h3>
             <div className="flex flex-wrap gap-2">
-              {["Cambio de carrera", "Mentoría", "Vuelta al trabajo", "Entrevistas", "Confianza"].map((tag) => (
+            {["Cambio Profesional", "Nuevos Comienzos", "Habilidades Transferibles", "Confianza Profesional", "Aprendizaje Continuo", "Entrevistas Laborales", "Emprendimiento", "Logros y Avances"].map((tag) => (
                 <button
                   key={tag}
                   onClick={() => setFiltroTema(tag)}

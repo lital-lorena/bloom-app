@@ -118,6 +118,57 @@ def suggest():
 
     return jsonify({"sugerencia": respuesta_raw}), 200
 
+@ai_bp.route("/resumen", methods=["GET"])
+def resumen_semanal():
+    """Genera un resumen cálido de los posts de la última semana."""
+    from datetime import datetime, timezone, timedelta
+    from app.models.post import Post
+
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        return jsonify({"error": "GROQ_API_KEY no configurada."}), 500
+
+    # Posts de los últimos 7 días
+    hace_una_semana = datetime.now(timezone.utc) - timedelta(days=7)
+    posts = Post.query.filter(Post.fecha_creacion >= hace_una_semana).all()
+
+    if not posts:
+        return jsonify({
+            "resumen": "Aún no hay publicaciones esta semana. ¡Sé la primera en compartir tu historia!"
+        }), 200
+
+    # Juntar los textos de los posts
+    textos = "\n".join([f"- {post.texto}" for post in posts])
+
+    client = Groq(api_key=api_key)
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Eres la voz cálida de Bloom, una red social de reinvencion profesional femenina.\n\n"
+                    "TAREA: Recibir las publicaciones de la semana y escribir un resumen breve y motivador.\n\n"
+                    "REGLAS:\n"
+                    "- Maximo 2 frases\n"
+                    "- Tono cálido, cercano y femenino\n"
+                    "- Menciona los temas más repetidos de la semana\n"
+                    "- NO menciones nombres propios\n"
+                    "- Empieza con 'Esta semana...'\n"
+                    "- NO uses comillas\n"
+                    "- Ejemplo: 'Esta semana varias mujeres celebraron su primer trabajo en tech. "
+                    "El tema más repetido fue vencer el miedo a empezar de cero.'"
+                ),
+            },
+            {"role": "user", "content": textos},
+        ],
+        max_tokens=150,
+        temperature=0.6,
+    )
+
+    resumen = completion.choices[0].message.content.strip()
+    return jsonify({"resumen": resumen}), 200
+
 
 def clasificar_post(texto):
     """Clasifica un post en 1-2 temas usando Groq."""
@@ -134,15 +185,20 @@ def clasificar_post(texto):
                 "content": (
                     "Eres un clasificador de texto para Bloom, una red social de reinvencion profesional femenina.\n\n"
                     "TAREA: Recibir un post y devolver 1 o 2 temas de ESTA LISTA:\n"
-                    "Cambio de carrera, Primer logro, Superando miedos, Maternidad y trabajo, "
-                    "Aprendiendo tech, Mentorias, Entrevistas, Emprendimiento, Vuelta al trabajo, "
-                    "Confianza, Networking, Formacion\n\n"
-                    "REGLAS:\n"
+                    "Cambio Profesional, Nuevos Comienzos, Sindrome del Impostor, "
+                    "Gestion del Miedo, Confianza Profesional, Habilidades Transferibles, "
+                    "Aprendizaje Continuo, Busqueda de Empleo, Entrevistas Laborales, "
+                    "Networking, Emprendimiento, Regreso al Trabajo, "
+                    "Equilibrio Personal, Logros y Avances\n\n"
+                    "REGLAS ESTRICTAS:\n"
+                    "- SOLO puedes usar temas EXACTOS de la lista de arriba\n"
+                    "- COPIA el tema tal cual aparece, con las mismas palabras y mayusculas\n"
+                    "- NUNCA inventes temas nuevos ni variaciones\n"
                     "- Devuelve SOLO los temas separados por coma\n"
                     "- Maximo 2 temas\n"
                     "- No expliques nada\n"
-                    "- Si no encaja en ninguno, devuelve: General\n"
-                    "- Ejemplo de respuesta: Cambio de carrera, Primer logro"
+                    "- Si no encaja en ninguno, devuelve: Cambio Profesional\n"
+                    "- Ejemplo de respuesta correcta: Emprendimiento, Nuevos Comienzos"
                 ),
             },
             {"role": "user", "content": texto},
