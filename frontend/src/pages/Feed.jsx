@@ -76,6 +76,7 @@ function Feed() {
   const [editSuggestLoading, setEditSuggestLoading] = useState(false)
   const [profile, setProfile] = useState(null)
   const [filtroTema, setFiltroTema] = useState(null)
+  const [resumen, setResumen] = useState("")
 
   const postImagePreview = useMemo(
     () => (postImage ? URL.createObjectURL(postImage) : null),
@@ -103,7 +104,15 @@ function Feed() {
         setProfile(data)
       }
     }
+    const fetchResumen = async () => {
+      const response = await fetch("http://127.0.0.1:5000/api/ai/resumen")
+      if (response.ok) {
+        const data = await response.json()
+        setResumen(data.resumen)
+      }
+    }
     fetchPosts()
+    fetchResumen()
     if (token) fetchProfile()
   }, [])
 
@@ -298,7 +307,7 @@ function Feed() {
               Temas para ti
             </h3>
             <div className="flex flex-wrap gap-2">
-            {["Cambio Profesional", "Nuevos Comienzos", "Habilidades Transferibles", "Confianza Profesional", "Aprendizaje Continuo", "Entrevistas Laborales", "Emprendimiento", "Logros y Avances"].map((tag) => (
+              {["Cambio Profesional", "Nuevos Comienzos", "Habilidades Transferibles", "Confianza Profesional", "Aprendizaje Continuo", "Entrevistas Laborales", "Emprendimiento", "Logros y Avances"].map((tag) => (
                 <button
                   key={tag}
                   onClick={() => setFiltroTema(tag)}
@@ -615,20 +624,20 @@ function Feed() {
             </div>
           </div>
 
-          {/* Círculo semanal */}
+          {/* Resumen de la semana */}
           <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
-            <h3 className="mb-2 text-sm font-semibold" style={{ color: PLUM }}>
-              Círculo semanal
+            <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: PLUM }}>
+              <SparkleIcon /> Esta semana en Bloom
             </h3>
-            <p className="text-sm leading-relaxed" style={{ color: GRAY }}>
-              Únete a la conversación del jueves sobre cómo negociar tu valor profesional.
-            </p>
-            <button
-              className="mt-4 w-full rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-black/5"
-              style={{ borderColor: `${PURPLE}44`, color: PURPLE }}
-            >
-              Reservar mi lugar
-            </button>
+            {resumen ? (
+              <p className="text-sm leading-relaxed" style={{ color: GRAY }}>
+                {resumen}
+              </p>
+            ) : (
+              <p className="text-sm leading-relaxed" style={{ color: GRAY }}>
+                Cargando resumen de la comunidad...
+              </p>
+            )}
           </div>
         </aside>
       </main>
