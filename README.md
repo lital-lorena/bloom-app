@@ -1,4 +1,4 @@
-# 🌸 Bloom
+#  Bloom
 
 > A community platform for women reinventing their careers.
 
@@ -56,7 +56,7 @@ Mujeres en proceso de cambio de carrera, sin límite de sector.
 
 ## Autora
 
-Lorena — Full Stack Developer en formación 🌸  
+Lorena — Full Stack Developer en formación  
 
 GitHub: [@lital-lorena]([https://github.com/lital-lorena](https://github.com/lital-lorena))
 
