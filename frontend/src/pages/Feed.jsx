@@ -16,11 +16,7 @@ function Avatar({ name, size = "md", foto = null }) {
     lg: "h-16 w-16 text-2xl",
   }
   return foto ? (
-    <img
-      src={foto}
-      alt={name}
-      className={`flex-none rounded-full object-cover ${sizes[size]}`}
-    />
+    <img src={foto} alt={name} className={`flex-none rounded-full object-cover ${sizes[size]}`} />
   ) : (
     <div
       className={`flex flex-none items-center justify-center rounded-full font-serif font-semibold ${sizes[size]}`}
@@ -51,10 +47,7 @@ function SparkleIcon() {
 function formatDate(value) {
   try {
     return new Intl.DateTimeFormat("es-ES", {
-      day: "numeric",
-      month: "long",
-      hour: "2-digit",
-      minute: "2-digit",
+      day: "numeric", month: "long", hour: "2-digit", minute: "2-digit",
     }).format(new Date(value))
   } catch {
     return String(value ?? "")
@@ -76,11 +69,22 @@ function Feed() {
   const [editSuggestLoading, setEditSuggestLoading] = useState(false)
   const [profile, setProfile] = useState(null)
   const [filtroTema, setFiltroTema] = useState(null)
+  const [filtroPais, setFiltroPais] = useState(null)
+  const [filtroCiudad, setFiltroCiudad] = useState(null)
   const [resumen, setResumen] = useState("")
   const [pregunta, setPregunta] = useState("")
   const [comentariosAbiertos, setComentariosAbiertos] = useState({})
   const [comentarios, setComentarios] = useState({})
   const [nuevoComentario, setNuevoComentario] = useState({})
+
+  const paisesDisponibles = [...new Set(posts.map(p => p.autora.pais).filter(Boolean).map(p => p.trim()))]
+  const ciudadesDisponibles = [...new Set(
+    posts
+      .filter(p => !filtroPais || p.autora.pais?.trim() === filtroPais)
+      .map(p => p.autora.ciudad)
+      .filter(Boolean)
+      .map(c => c.trim())
+  )]
 
   const postImagePreview = useMemo(
     () => (postImage ? URL.createObjectURL(postImage) : null),
@@ -88,9 +92,7 @@ function Feed() {
   )
 
   useEffect(() => {
-    return () => {
-      if (postImagePreview) URL.revokeObjectURL(postImagePreview)
-    }
+    return () => { if (postImagePreview) URL.revokeObjectURL(postImagePreview) }
   }, [postImagePreview])
 
   useEffect(() => {
@@ -139,10 +141,7 @@ function Feed() {
       } else {
         response = await fetch("http://127.0.0.1:5000/api/posts", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
           body: JSON.stringify({ texto: text })
         })
       }
@@ -164,9 +163,7 @@ function Feed() {
       method: "DELETE",
       headers: { "Authorization": `Bearer ${token}` }
     })
-    if (response.ok) {
-      setPosts(posts.filter((post) => post.id !== postId))
-    }
+    if (response.ok) setPosts(posts.filter((post) => post.id !== postId))
   }
 
   const handleLike = async (postId, likedByMe) => {
@@ -178,9 +175,7 @@ function Feed() {
     if (response.ok) {
       const data = await response.json()
       setPosts(posts.map((post) =>
-        post.id === postId
-          ? { ...post, likes_count: data.likes, liked_by_me: !likedByMe }
-          : post
+        post.id === postId ? { ...post, likes_count: data.likes, liked_by_me: !likedByMe } : post
       ))
     }
   }
@@ -198,10 +193,7 @@ function Feed() {
     if (!texto.trim()) return
     const response = await fetch(`http://127.0.0.1:5000/api/comments/${postId}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify({ contenido: texto })
     })
     if (response.ok) {
@@ -219,25 +211,17 @@ function Feed() {
   const handleEditPost = async (postId) => {
     const response = await fetch(`http://127.0.0.1:5000/api/posts/${postId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify({ texto: editText })
     })
     if (response.ok) {
-      setPosts(posts.map((post) =>
-        post.id === postId ? { ...post, texto: editText } : post
-      ))
+      setPosts(posts.map((post) => post.id === postId ? { ...post, texto: editText } : post))
       setEditingId(null)
       setEditText("")
     }
   }
 
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+  const handleLogout = () => { logout(); navigate('/login') }
 
   const handleSuggest = async () => {
     if (!text.trim()) return
@@ -246,18 +230,11 @@ function Feed() {
     try {
       const response = await fetch("http://127.0.0.1:5000/api/ai/suggest", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ texto: text })
       })
       const data = await response.json()
-      if (response.ok) {
-        setSuggestion(data.sugerencia)
-      } else {
-        setSuggestion(data.error || "No se pudo generar una sugerencia.")
-      }
+      setSuggestion(response.ok ? data.sugerencia : (data.error || "No se pudo generar una sugerencia."))
     } catch {
       setSuggestion("Error de conexión. Inténtalo de nuevo.")
     } finally {
@@ -272,18 +249,11 @@ function Feed() {
     try {
       const response = await fetch("http://127.0.0.1:5000/api/ai/suggest", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ texto: editText })
       })
       const data = await response.json()
-      if (response.ok) {
-        setEditSuggestion(data.sugerencia)
-      } else {
-        setEditSuggestion(data.error || "No se pudo generar una sugerencia.")
-      }
+      setEditSuggestion(response.ok ? data.sugerencia : (data.error || "No se pudo generar una sugerencia."))
     } catch {
       setEditSuggestion("Error de conexión. Inténtalo de nuevo.")
     } finally {
@@ -302,17 +272,11 @@ function Feed() {
         <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
           <a href="/" className="flex items-center gap-2">
             <img src="/src/assets/bloom_flor.png" alt="Bloom" className="h-9 w-9 object-contain" />
-            <span className="font-serif text-xl font-semibold" style={{ color: PLUM }}>
-              Bloom
-            </span>
+            <span className="font-serif text-xl font-semibold" style={{ color: PLUM }}>Bloom</span>
           </a>
           <div className="flex items-center gap-6">
-            <a href="/feed" className="text-sm font-semibold" style={{ color: PURPLE }}>
-              Feed
-            </a>
-            <a href="/profile" className="text-sm font-medium hover:opacity-70" style={{ color: PLUM }}>
-              Mi perfil
-            </a>
+            <a href="/feed" className="text-sm font-semibold" style={{ color: PURPLE }}>Feed</a>
+            <a href="/profile" className="text-sm font-medium hover:opacity-70" style={{ color: PLUM }}>Mi perfil</a>
             <button
               onClick={handleLogout}
               className="rounded-full border border-black/10 px-4 py-1.5 text-sm font-medium hover:bg-black/5"
@@ -324,7 +288,7 @@ function Feed() {
         </nav>
       </header>
 
-      {/* ── CONTENIDO PRINCIPAL: 3 COLUMNAS ── */}
+      {/* ── CONTENIDO PRINCIPAL ── */}
       <main className="mx-auto flex max-w-6xl gap-6 px-5 py-8">
 
         {/* ── SIDEBAR IZQUIERDA ── */}
@@ -342,7 +306,6 @@ function Feed() {
                   {profile?.ciudad || user?.ciudad}{(profile?.pais || user?.pais) ? `, ${profile?.pais || user?.pais}` : ""}
                 </p>
               )}
-
             </div>
             <button
               onClick={() => navigate('/profile')}
@@ -355,9 +318,7 @@ function Feed() {
 
           {/* Temas */}
           <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 text-sm font-semibold" style={{ color: PLUM }}>
-              Temas para ti
-            </h3>
+            <h3 className="mb-3 text-sm font-semibold" style={{ color: PLUM }}>Temas para ti</h3>
             <div className="flex flex-wrap gap-2">
               {["Cambio Profesional", "Nuevos Comienzos", "Habilidades Transferibles", "Confianza Profesional", "Aprendizaje Continuo", "Entrevistas Laborales", "Emprendimiento", "Logros y Avances"].map((tag) => (
                 <button
@@ -371,19 +332,46 @@ function Feed() {
               ))}
             </div>
           </div>
+
+          {/* Filtro por ubicación */}
+          <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
+            <h3 className="mb-3 text-sm font-semibold" style={{ color: PLUM }}>Filtrar por ubicación</h3>
+            <div className="flex flex-col gap-3">
+              <select
+                value={filtroPais || ""}
+                onChange={(e) => { setFiltroPais(e.target.value || null); setFiltroCiudad(null) }}
+                className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none cursor-pointer"
+                style={{ color: PLUM, backgroundColor: "white" }}
+              >
+                <option value="">Todos los países</option>
+                {paisesDisponibles.map((pais) => (
+                  <option key={pais} value={pais}>{pais}</option>
+                ))}
+              </select>
+              {filtroPais && (
+                <select
+                  value={filtroCiudad || ""}
+                  onChange={(e) => setFiltroCiudad(e.target.value || null)}
+                  className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none cursor-pointer"
+                  style={{ color: PLUM, backgroundColor: "white" }}
+                >
+                  <option value="">Todas las ciudades</option>
+                  {ciudadesDisponibles.map((ciudad) => (
+                    <option key={ciudad} value={ciudad}>{ciudad}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </div>
+
         </aside>
 
-        {/* ── COLUMNA CENTRAL: FEED ── */}
+        {/* ── COLUMNA CENTRAL ── */}
         <div className="min-w-0 flex-1">
 
-          {/* Título */}
           <div className="mb-6">
-            <h1 className="font-serif text-3xl font-semibold" style={{ color: PLUM }}>
-              Comunidad
-            </h1>
-            <p className="mt-1 text-sm" style={{ color: GRAY }}>
-              Comparte tu historia. Alguien aquí ha pasado por lo mismo.
-            </p>
+            <h1 className="font-serif text-3xl font-semibold" style={{ color: PLUM }}>Comunidad</h1>
+            <p className="mt-1 text-sm" style={{ color: GRAY }}>Comparte tu historia. Alguien aquí ha pasado por lo mismo.</p>
           </div>
 
           {/* ── CREAR POST ── */}
@@ -393,10 +381,7 @@ function Feed() {
                 <Avatar name={profile?.nombre || user?.nombre} foto={profile?.avatar || user?.avatar} />
                 <textarea
                   value={text}
-                  onChange={(e) => {
-                    const val = e.target.value
-                    setText(val.charAt(0).toUpperCase() + val.slice(1))
-                  }}
+                  onChange={(e) => { const val = e.target.value; setText(val.charAt(0).toUpperCase() + val.slice(1)) }}
                   placeholder="¿Qué quieres compartir hoy?"
                   rows={3}
                   className="min-h-[72px] w-full resize-none rounded-xl bg-transparent text-base leading-relaxed outline-none placeholder:text-[#9CA3AF]"
@@ -414,12 +399,8 @@ function Feed() {
                 >
                   <p className="mb-3 text-sm leading-relaxed" style={{ color: PLUM }}>{suggestion}</p>
                   {!isError(suggestion) && (
-                    <button
-                      type="button"
-                      onClick={() => { setText(suggestion); setSuggestion("") }}
-                      className="text-sm font-semibold hover:opacity-70"
-                      style={{ color: PURPLE }}
-                    >
+                    <button type="button" onClick={() => { setText(suggestion); setSuggestion("") }}
+                      className="text-sm font-semibold hover:opacity-70" style={{ color: PURPLE }}>
                       Usar esta sugerencia
                     </button>
                   )}
@@ -428,16 +409,9 @@ function Feed() {
 
               {postImagePreview && (
                 <div className="relative mt-4">
-                  <img
-                    src={postImagePreview}
-                    alt="Vista previa"
-                    className="h-32 w-32 rounded-xl object-cover border border-black/5"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setPostImage(null)}
-                    className="absolute -right-2 -top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white"
-                  >
+                  <img src={postImagePreview} alt="Vista previa" className="h-32 w-32 rounded-xl object-cover border border-black/5" />
+                  <button type="button" onClick={() => setPostImage(null)}
+                    className="absolute -right-2 -top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white">
                     ✕
                   </button>
                 </div>
@@ -446,30 +420,16 @@ function Feed() {
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-black/10 px-4 py-2 text-sm font-medium hover:bg-black/5" style={{ color: PLUM }}>
                   <CameraIcon /> Añadir foto
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => setPostImage(e.target.files[0] || null)}
-                  />
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => setPostImage(e.target.files[0] || null)} />
                 </label>
-
-                <button
-                  type="button"
-                  onClick={handleSuggest}
-                  disabled={suggestLoading || !text.trim()}
+                <button type="button" onClick={handleSuggest} disabled={suggestLoading || !text.trim()}
                   className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
-                  style={{ borderColor: `${PURPLE}66`, color: PURPLE }}
-                >
+                  style={{ borderColor: `${PURPLE}66`, color: PURPLE }}>
                   <SparkleIcon /> {suggestLoading ? "Pensando..." : "Sugerencia"}
                 </button>
-
-                <button
-                  type="submit"
-                  disabled={postLoading || (!text.trim() && !postImage)}
+                <button type="submit" disabled={postLoading || (!text.trim() && !postImage)}
                   className="ml-auto rounded-full px-6 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-                  style={{ backgroundColor: PURPLE }}
-                >
+                  style={{ backgroundColor: PURPLE }}>
                   {postLoading ? "Publicando..." : "Publicar"}
                 </button>
               </div>
@@ -489,17 +449,20 @@ function Feed() {
                 <p className="text-sm" style={{ color: PLUM }}>
                   Filtrando por: <span className="font-semibold" style={{ color: PURPLE }}>{filtroTema}</span>
                 </p>
-                <button
-                  onClick={() => setFiltroTema(null)}
+                <button onClick={() => setFiltroTema(null)}
                   className="ml-auto rounded-full bg-black/5 px-3 py-1 text-xs font-medium hover:bg-black/10"
-                  style={{ color: PLUM }}
-                >
+                  style={{ color: PLUM }}>
                   ✕ Quitar filtro
                 </button>
               </div>
             )}
 
-            {posts.filter((post) => !filtroTema || (post.temas && post.temas.includes(filtroTema))).map((post) => {
+            {posts.filter((post) => {
+              const porTema = !filtroTema || (post.temas && post.temas.includes(filtroTema))
+              const porPais = !filtroPais || post.autora.pais?.trim() === filtroPais
+              const porCiudad = !filtroCiudad || post.autora.ciudad?.trim() === filtroCiudad
+              return porTema && porPais && porCiudad
+            }).map((post) => {
               const isOwner = user && String(post.autora.id) === String(user.id)
               const isEditing = editingId === post.id
               return (
@@ -507,11 +470,9 @@ function Feed() {
                   <div className="flex items-start gap-3 px-5 pt-5">
                     <Avatar name={post.autora.nombre} foto={post.autora.avatar} />
                     <div className="min-w-0 flex-1">
-                      <button
-                        onClick={() => navigate(`/usuario/${post.autora.id}`)}
+                      <button onClick={() => navigate(`/usuario/${post.autora.id}`)}
                         className="font-serif text-base font-semibold hover:underline text-left capitalize"
-                        style={{ color: PURPLE }}
-                      >
+                        style={{ color: PURPLE }}>
                         {post.autora.nombre}
                       </button>
                       <p className="text-xs" style={{ color: GRAY }}>
@@ -521,33 +482,22 @@ function Feed() {
                     </div>
                   </div>
 
-                  {/* Texto del post o textarea de edición */}
                   <div className="px-5 py-3">
                     {isEditing ? (
                       <>
-                        <textarea
-                          value={editText}
-                          onChange={(e) => setEditText(e.target.value)}
-                          rows={3}
+                        <textarea value={editText} onChange={(e) => setEditText(e.target.value)} rows={3}
                           className="w-full resize-none rounded-xl border border-black/10 p-3 text-base leading-relaxed outline-none"
-                          style={{ color: PLUM }}
-                        />
+                          style={{ color: PLUM }} />
                         {editSuggestion && (
-                          <div
-                            className="mt-3 rounded-xl border p-4"
+                          <div className="mt-3 rounded-xl border p-4"
                             style={{
                               borderColor: isError(editSuggestion) ? "#dc262633" : `${PURPLE}33`,
                               backgroundColor: isError(editSuggestion) ? "#dc26260D" : `${PURPLE}0D`
-                            }}
-                          >
+                            }}>
                             <p className="mb-3 text-sm leading-relaxed" style={{ color: PLUM }}>{editSuggestion}</p>
                             {!isError(editSuggestion) && (
-                              <button
-                                type="button"
-                                onClick={() => { setEditText(editSuggestion); setEditSuggestion("") }}
-                                className="text-sm font-semibold hover:opacity-70"
-                                style={{ color: PURPLE }}
-                              >
+                              <button type="button" onClick={() => { setEditText(editSuggestion); setEditSuggestion("") }}
+                                className="text-sm font-semibold hover:opacity-70" style={{ color: PURPLE }}>
                                 Usar esta sugerencia
                               </button>
                             )}
@@ -556,18 +506,13 @@ function Feed() {
                       </>
                     ) : (
                       <>
-                        <p className="whitespace-pre-wrap text-base leading-relaxed" style={{ color: PLUM }}>
-                          {post.texto}
-                        </p>
+                        <p className="whitespace-pre-wrap text-base leading-relaxed" style={{ color: PLUM }}>{post.texto}</p>
                         {post.temas && (
                           <div className="mt-3 flex flex-wrap gap-2">
                             {post.temas.split(",").map((tema) => (
-                              <button
-                                key={tema.trim()}
-                                onClick={() => setFiltroTema(tema.trim())}
+                              <button key={tema.trim()} onClick={() => setFiltroTema(tema.trim())}
                                 className="rounded-full px-3 py-1 text-xs font-medium hover:opacity-80 cursor-pointer"
-                                style={{ backgroundColor: LAVENDER, color: PURPLE }}
-                              >
+                                style={{ backgroundColor: LAVENDER, color: PURPLE }}>
                                 {tema.trim()}
                               </button>
                             ))}
@@ -579,32 +524,25 @@ function Feed() {
 
                   {post.url && (
                     <div className="px-5 pb-3">
-                      <img
-                        src={post.url}
-                        alt="Imagen del post"
-                        className="w-full rounded-xl object-contain"
-                      />
+                      <img src={post.url} alt="Imagen del post" className="w-full rounded-xl object-contain" />
                     </div>
                   )}
+
                   {/* Like y comentar */}
                   <div className="flex items-center gap-3 border-t border-black/5 px-5 py-3">
-                    <button
-                      onClick={() => token && handleLike(post.id, post.liked_by_me)}
+                    <button onClick={() => token && handleLike(post.id, post.liked_by_me)}
                       className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5 transition-colors"
-                      style={{ color: post.liked_by_me ? PURPLE : GRAY }}
-                    >
+                      style={{ color: post.liked_by_me ? PURPLE : GRAY }}>
                       {post.liked_by_me ? "💜" : "🤍"} {post.likes_count || 0}
                     </button>
-                    <button
-                      onClick={() => toggleComentarios(post.id)}
+                    <button onClick={() => toggleComentarios(post.id)}
                       className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5 transition-colors"
-                      style={{ color: GRAY }}
-                    >
+                      style={{ color: GRAY }}>
                       💬 {comentarios[post.id]?.length || 0}
                     </button>
                   </div>
 
-                  {/* Sección comentarios */}
+                  {/* Comentarios */}
                   {comentariosAbiertos[post.id] && (
                     <div className="border-t border-black/5 px-5 py-4 flex flex-col gap-3">
                       {(comentarios[post.id] || []).map((c) => (
@@ -619,20 +557,15 @@ function Feed() {
                       {token && (
                         <div className="flex items-center gap-2 mt-1">
                           <Avatar name={profile?.nombre || user?.nombre} foto={profile?.avatar || user?.avatar} size="sm" />
-                          <input
-                            type="text"
-                            value={nuevoComentario[post.id] || ""}
+                          <input type="text" value={nuevoComentario[post.id] || ""}
                             onChange={(e) => setNuevoComentario(prev => ({ ...prev, [post.id]: e.target.value }))}
                             onKeyDown={(e) => e.key === "Enter" && handleComentario(post.id)}
                             placeholder="Escribe un comentario..."
                             className="flex-1 rounded-full border border-black/10 px-4 py-1.5 text-sm outline-none"
-                            style={{ color: PLUM }}
-                          />
-                          <button
-                            onClick={() => handleComentario(post.id)}
+                            style={{ color: PLUM }} />
+                          <button onClick={() => handleComentario(post.id)}
                             className="rounded-full px-4 py-1.5 text-sm font-semibold text-white"
-                            style={{ backgroundColor: PURPLE }}
-                          >
+                            style={{ backgroundColor: PURPLE }}>
                             Enviar
                           </button>
                         </div>
@@ -640,51 +573,37 @@ function Feed() {
                     </div>
                   )}
 
-
-
-                  {/* Botones */}
+                  {/* Botones editar/borrar */}
                   {isOwner && (
                     <div className="flex items-center gap-2 border-t border-black/5 px-5 py-3">
                       {isEditing ? (
                         <>
-                          <button
-                            type="button"
-                            onClick={handleEditSuggest}
-                            disabled={editSuggestLoading || !editText.trim()}
+                          <button type="button" onClick={handleEditSuggest} disabled={editSuggestLoading || !editText.trim()}
                             className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
-                            style={{ borderColor: `${PURPLE}66`, color: PURPLE }}
-                          >
+                            style={{ borderColor: `${PURPLE}66`, color: PURPLE }}>
                             <SparkleIcon /> {editSuggestLoading ? "Pensando..." : "Sugerencia"}
                           </button>
-                          <button
-                            onClick={() => handleEditPost(post.id)}
+                          <button onClick={() => handleEditPost(post.id)}
                             className="rounded-full px-4 py-1.5 text-sm font-semibold text-white"
-                            style={{ backgroundColor: PURPLE }}
-                          >
+                            style={{ backgroundColor: PURPLE }}>
                             Guardar
                           </button>
-                          <button
-                            onClick={() => { setEditingId(null); setEditSuggestion("") }}
+                          <button onClick={() => { setEditingId(null); setEditSuggestion("") }}
                             className="rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5"
-                            style={{ color: GRAY }}
-                          >
+                            style={{ color: GRAY }}>
                             Cancelar
                           </button>
                         </>
                       ) : (
                         <>
-                          <button
-                            onClick={() => { setEditingId(post.id); setEditText(post.texto) }}
+                          <button onClick={() => { setEditingId(post.id); setEditText(post.texto) }}
                             className="rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5"
-                            style={{ color: PLUM }}
-                          >
+                            style={{ color: PLUM }}>
                             Editar
                           </button>
-                          <button
-                            onClick={() => handleDeletePost(post.id)}
+                          <button onClick={() => handleDeletePost(post.id)}
                             className="rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5"
-                            style={{ color: "#dc2626" }}
-                          >
+                            style={{ color: "#dc2626" }}>
                             Borrar
                           </button>
                         </>
@@ -699,29 +618,17 @@ function Feed() {
 
         {/* ── SIDEBAR DERECHA ── */}
         <aside className="hidden w-72 flex-none xl:block">
-
-
-
-          {/* Resumen de la semana */}
           <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
             <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: PLUM }}>
               <SparkleIcon /> Esta semana en Bloom
             </h3>
             {resumen ? (
               <>
-                <p className="text-sm leading-relaxed" style={{ color: GRAY }}>
-                  {resumen}
-                </p>
-                {pregunta && (
-                  <p className="mt-4 text-sm font-medium" style={{ color: PURPLE }}>
-                    {pregunta}
-                  </p>
-                )}
+                <p className="text-sm leading-relaxed" style={{ color: GRAY }}>{resumen}</p>
+                {pregunta && <p className="mt-4 text-sm font-medium" style={{ color: PURPLE }}>{pregunta}</p>}
               </>
             ) : (
-              <p className="text-sm leading-relaxed" style={{ color: GRAY }}>
-                Cargando resumen de la comunidad...
-              </p>
+              <p className="text-sm leading-relaxed" style={{ color: GRAY }}>Cargando resumen de la comunidad...</p>
             )}
           </div>
         </aside>
@@ -734,12 +641,10 @@ function Feed() {
             <img src="/src/assets/bloom_flor.png" alt="Bloom" className="h-7 w-7 object-contain" />
             <span className="font-serif text-lg font-semibold" style={{ color: PLUM }}>Bloom</span>
           </div>
-          <p className="text-center text-xs" style={{ color: GRAY }}>
-            © 2026 Bloom. Hecho con amor para mujeres que florecen.
-          </p>
+          <p className="text-center text-xs" style={{ color: GRAY }}>© 2026 Bloom. Hecho con amor para mujeres que florecen.</p>
         </div>
       </footer>
-    </div >
+    </div>
   )
 }
 

@@ -44,6 +44,8 @@ def get_posts():
                 "nombre": post.autora.nombre,
                 "avatar": post.autora.avatar,
                 "profesion": post.autora.profesion,
+                 "ciudad": post.autora.ciudad,      
+                 "pais": post.autora.pais,    
             }
         })
     return jsonify(result), 200
