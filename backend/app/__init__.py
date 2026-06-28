@@ -16,6 +16,7 @@ from app.routes.auth import auth_bp
 from app.routes.posts import posts_bp
 from app.routes.users import users_bp
 from app.routes.likes import likes_bp
+from app.routes.comments import comments_bp
 
 
 # Carga backend/.env con ruta absoluta (no depende del directorio desde el que ejecutas)
@@ -63,6 +64,7 @@ def create_app():
     flask_app.register_blueprint(users_bp)
     flask_app.register_blueprint(ai_bp)
     flask_app.register_blueprint(likes_bp, url_prefix="/api/likes")
+    flask_app.register_blueprint(comments_bp, url_prefix="/api/comments")
 
 
     @flask_app.route("/api/health", methods=["GET"])

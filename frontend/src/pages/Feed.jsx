@@ -78,6 +78,9 @@ function Feed() {
   const [filtroTema, setFiltroTema] = useState(null)
   const [resumen, setResumen] = useState("")
   const [pregunta, setPregunta] = useState("")
+  const [comentariosAbiertos, setComentariosAbiertos] = useState({})
+  const [comentarios, setComentarios] = useState({})
+  const [nuevoComentario, setNuevoComentario] = useState({})
 
   const postImagePreview = useMemo(
     () => (postImage ? URL.createObjectURL(postImage) : null),
@@ -180,6 +183,37 @@ function Feed() {
           : post
       ))
     }
+  }
+
+  const fetchComentarios = async (postId) => {
+    const response = await fetch(`http://127.0.0.1:5000/api/comments/${postId}`)
+    if (response.ok) {
+      const data = await response.json()
+      setComentarios(prev => ({ ...prev, [postId]: data }))
+    }
+  }
+
+  const handleComentario = async (postId) => {
+    const texto = nuevoComentario[postId] || ""
+    if (!texto.trim()) return
+    const response = await fetch(`http://127.0.0.1:5000/api/comments/${postId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ contenido: texto })
+    })
+    if (response.ok) {
+      const nuevo = await response.json()
+      setComentarios(prev => ({ ...prev, [postId]: [...(prev[postId] || []), nuevo] }))
+      setNuevoComentario(prev => ({ ...prev, [postId]: "" }))
+    }
+  }
+
+  const toggleComentarios = (postId) => {
+    setComentariosAbiertos(prev => ({ ...prev, [postId]: !prev[postId] }))
+    if (!comentariosAbiertos[postId]) fetchComentarios(postId)
   }
 
   const handleEditPost = async (postId) => {
@@ -552,7 +586,7 @@ function Feed() {
                       />
                     </div>
                   )}
-                  {/* Botón like — visible para todas */}
+                  {/* Like y comentar */}
                   <div className="flex items-center gap-3 border-t border-black/5 px-5 py-3">
                     <button
                       onClick={() => token && handleLike(post.id, post.liked_by_me)}
@@ -561,7 +595,50 @@ function Feed() {
                     >
                       {post.liked_by_me ? "💜" : "🤍"} {post.likes_count || 0}
                     </button>
+                    <button
+                      onClick={() => toggleComentarios(post.id)}
+                      className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5 transition-colors"
+                      style={{ color: GRAY }}
+                    >
+                      💬 {comentarios[post.id]?.length || 0}
+                    </button>
                   </div>
+
+                  {/* Sección comentarios */}
+                  {comentariosAbiertos[post.id] && (
+                    <div className="border-t border-black/5 px-5 py-4 flex flex-col gap-3">
+                      {(comentarios[post.id] || []).map((c) => (
+                        <div key={c.id} className="flex items-start gap-2">
+                          <Avatar name={c.autora.nombre} foto={c.autora.avatar} size="sm" />
+                          <div className="rounded-xl px-3 py-2 text-sm" style={{ backgroundColor: LAVENDER, color: PLUM }}>
+                            <span className="font-semibold" style={{ color: PURPLE }}>{c.autora.nombre} </span>
+                            {c.contenido}
+                          </div>
+                        </div>
+                      ))}
+                      {token && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <Avatar name={profile?.nombre || user?.nombre} foto={profile?.avatar || user?.avatar} size="sm" />
+                          <input
+                            type="text"
+                            value={nuevoComentario[post.id] || ""}
+                            onChange={(e) => setNuevoComentario(prev => ({ ...prev, [post.id]: e.target.value }))}
+                            onKeyDown={(e) => e.key === "Enter" && handleComentario(post.id)}
+                            placeholder="Escribe un comentario..."
+                            className="flex-1 rounded-full border border-black/10 px-4 py-1.5 text-sm outline-none"
+                            style={{ color: PLUM }}
+                          />
+                          <button
+                            onClick={() => handleComentario(post.id)}
+                            className="rounded-full px-4 py-1.5 text-sm font-semibold text-white"
+                            style={{ backgroundColor: PURPLE }}
+                          >
+                            Enviar
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
 
 
