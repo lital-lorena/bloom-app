@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
+import socket from '../socket'
 
 const PURPLE = "#8C52FF"
 const CREAM = "#fdf6f0"
@@ -76,6 +77,7 @@ function Feed() {
   const [comentariosAbiertos, setComentariosAbiertos] = useState({})
   const [comentarios, setComentarios] = useState({})
   const [nuevoComentario, setNuevoComentario] = useState({})
+  const [notificaciones, setNotificaciones] = useState([])
 
   const paisesDisponibles = [...new Set(posts.map(p => p.autora.pais).filter(Boolean).map(p => p.trim()))]
   const ciudadesDisponibles = [...new Set(
@@ -122,6 +124,24 @@ function Feed() {
     fetchResumen()
     if (token) fetchProfile()
   }, [])
+
+  useEffect(() => {
+    if (!token) return
+
+    socket.connect()
+    socket.emit("conectar_usuaria", { token })
+    console.log("Socket conectado, token enviado")
+
+    socket.on("nueva_notificacion", (data) => {
+      console.log("Notificacion recibida:", data)
+      setNotificaciones(prev => [data, ...prev])
+    })
+
+    return () => {
+      socket.off("nueva_notificacion")
+      socket.disconnect()
+    }
+  }, [token])
 
   const handleCreatePost = async (e) => {
     e.preventDefault()
@@ -277,6 +297,21 @@ function Feed() {
           <div className="flex items-center gap-6">
             <a href="/feed" className="text-sm font-semibold" style={{ color: PURPLE }}>Feed</a>
             <a href="/profile" className="text-sm font-medium hover:opacity-70" style={{ color: PLUM }}>Mi perfil</a>
+
+            {/* Notificaciones */}
+            {notificaciones.length > 0 && (
+              <div className="relative">
+                <button
+                  onClick={() => setNotificaciones([])}
+                  className="relative flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium hover:bg-black/5"
+                  style={{ color: PURPLE }}
+                >
+                  🔔 {notificaciones.length}
+                  <div className="absolute -right-1 -top-1 h-2 w-2 rounded-full" style={{ backgroundColor: PURPLE }}></div>
+                </button>
+              </div>
+            )}
+
             <button
               onClick={handleLogout}
               className="rounded-full border border-black/10 px-4 py-1.5 text-sm font-medium hover:bg-black/5"

@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 
-from app.extensions import db, jwt
+from app.extensions import db, jwt, socketio
 from app.routes.ai import ai_bp
 from app.routes.auth import auth_bp
 from app.routes.posts import posts_bp
@@ -46,6 +46,7 @@ def create_app():
     # --- Extensiones ---
     jwt.init_app(flask_app)
     CORS(flask_app)
+    socketio.init_app(flask_app, cors_allowed_origins="*")
 
     if database_url:
         db.init_app(flask_app)
@@ -71,5 +72,6 @@ def create_app():
     def health():
         """Comprobación rápida de que el servidor responde."""
         return {"status": "ok", "app": "Bloom API"}
+    from app import sockets  # noqa: F401
 
     return flask_app
