@@ -77,6 +77,7 @@ function Feed() {
   const [profile, setProfile] = useState(null)
   const [filtroTema, setFiltroTema] = useState(null)
   const [resumen, setResumen] = useState("")
+  const [pregunta, setPregunta] = useState("")
 
   const postImagePreview = useMemo(
     () => (postImage ? URL.createObjectURL(postImage) : null),
@@ -109,6 +110,7 @@ function Feed() {
       if (response.ok) {
         const data = await response.json()
         setResumen(data.resumen)
+        setPregunta(data.pregunta)
       }
     }
     fetchPosts()
@@ -161,6 +163,22 @@ function Feed() {
     })
     if (response.ok) {
       setPosts(posts.filter((post) => post.id !== postId))
+    }
+  }
+
+  const handleLike = async (postId, likedByMe) => {
+    const method = likedByMe ? "DELETE" : "POST"
+    const response = await fetch(`http://127.0.0.1:5000/api/likes/${postId}`, {
+      method,
+      headers: { "Authorization": `Bearer ${token}` }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      setPosts(posts.map((post) =>
+        post.id === postId
+          ? { ...post, likes_count: data.likes, liked_by_me: !likedByMe }
+          : post
+      ))
     }
   }
 
@@ -534,6 +552,18 @@ function Feed() {
                       />
                     </div>
                   )}
+                  {/* Botón like — visible para todas */}
+                  <div className="flex items-center gap-3 border-t border-black/5 px-5 py-3">
+                    <button
+                      onClick={() => token && handleLike(post.id, post.liked_by_me)}
+                      className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5 transition-colors"
+                      style={{ color: post.liked_by_me ? PURPLE : GRAY }}
+                    >
+                      {post.liked_by_me ? "💜" : "🤍"} {post.likes_count || 0}
+                    </button>
+                  </div>
+
+
 
                   {/* Botones */}
                   {isOwner && (
@@ -593,36 +623,7 @@ function Feed() {
         {/* ── SIDEBAR DERECHA ── */}
         <aside className="hidden w-72 flex-none xl:block">
 
-          {/* Mentoras */}
-          <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
-            <h3 className="mb-4 text-sm font-semibold" style={{ color: PLUM }}>
-              Mentoras para seguir
-            </h3>
-            <div className="flex flex-col gap-4">
-              {[
-                { name: "Elena Ríos", role: "Diseñadora de producto" },
-                { name: "Marta Solís", role: "Ingeniería → Marketing" },
-              ].map((mentor) => (
-                <div key={mentor.name} className="flex items-center gap-3">
-                  <Avatar name={mentor.name} size="sm" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold truncate" style={{ color: PLUM }}>
-                      {mentor.name}
-                    </p>
-                    <p className="text-xs truncate" style={{ color: GRAY }}>
-                      {mentor.role}
-                    </p>
-                  </div>
-                  <button
-                    className="rounded-full border px-3 py-1 text-xs font-semibold hover:opacity-80"
-                    style={{ borderColor: PURPLE, color: PURPLE }}
-                  >
-                    Seguir
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
+
 
           {/* Resumen de la semana */}
           <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
@@ -630,9 +631,16 @@ function Feed() {
               <SparkleIcon /> Esta semana en Bloom
             </h3>
             {resumen ? (
-              <p className="text-sm leading-relaxed" style={{ color: GRAY }}>
-                {resumen}
-              </p>
+              <>
+                <p className="text-sm leading-relaxed" style={{ color: GRAY }}>
+                  {resumen}
+                </p>
+                {pregunta && (
+                  <p className="mt-4 text-sm font-medium" style={{ color: PURPLE }}>
+                    {pregunta}
+                  </p>
+                )}
+              </>
             ) : (
               <p className="text-sm leading-relaxed" style={{ color: GRAY }}>
                 Cargando resumen de la comunidad...

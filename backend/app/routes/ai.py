@@ -167,7 +167,34 @@ def resumen_semanal():
     )
 
     resumen = completion.choices[0].message.content.strip()
-    return jsonify({"resumen": resumen}), 200
+   # Generar una pregunta relacionada con los temas de la semana
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Eres la moderadora de Bloom, una red social de reinvencion profesional femenina.\n\n"
+                    "TAREA: Leer el resumen de los posts de la semana y generar una pregunta para fomentar la conversacion.\n\n"
+                    f"RESUMEN: {resumen}\n\n"
+                    "REGLAS:\n"
+                    "- Enfoca la pregunta en los temas mas mencionados de la semana\n"
+                    "- Haz una pregunta abierta que invite a compartir experiencias\n"
+                    "- Que sea una sola pregunta\n"
+                    "- Empieza la pregunta con un emoji\n"
+                    "- Maximo 20 palabras\n"
+                    "- Ejemplo: '🙌 ¿Cual ha sido tu mayor logro en tu cambio de carrera hasta ahora?'"
+                ),
+            },
+            {"role": "user", "content": resumen},
+        ],
+        max_tokens=100,
+        temperature=0.8,
+    )
+
+    pregunta = completion.choices[0].message.content.strip()
+
+    return jsonify({"resumen": resumen, "pregunta": pregunta}), 200
 
 
 def clasificar_post(texto):

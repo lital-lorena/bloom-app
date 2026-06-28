@@ -8,6 +8,7 @@ import os
 from app.extensions import db
 from app.models.post import Post
 from app.models.user import User
+from app.models.like import Like
 
 posts_bp = Blueprint("posts", __name__, url_prefix="/api/posts")
 
@@ -20,16 +21,24 @@ def _configurar_cloudinary():
     )
 
 @posts_bp.route("", methods=["GET"])
+@jwt_required(optional=True)
 def get_posts():
+    user_id = get_jwt_identity()
     posts = Post.query.order_by(Post.fecha_creacion.desc()).all()
     result = []
     for post in posts:
+        likes_count = Like.query.filter_by(post_id=post.id).count()
+        liked_by_me = False
+        if user_id:
+            liked_by_me = Like.query.filter_by(post_id=post.id, user_id=user_id).first() is not None
         result.append({
             "id": post.id,
             "texto": post.texto,
             "url": post.url,
             "fecha": post.fecha_creacion.isoformat(),
-             "temas": post.temas,
+            "temas": post.temas,
+            "likes_count": likes_count,
+            "liked_by_me": liked_by_me,
             "autora": {
                 "id": post.autora.id,
                 "nombre": post.autora.nombre,
