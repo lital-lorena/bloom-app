@@ -9,6 +9,7 @@ from app.extensions import db
 from app.models.post import Post
 from app.models.user import User
 from app.models.like import Like
+from app.models.comment import Comment
 
 posts_bp = Blueprint("posts", __name__, url_prefix="/api/posts")
 
@@ -28,6 +29,7 @@ def get_posts():
     result = []
     for post in posts:
         likes_count = Like.query.filter_by(post_id=post.id).count()
+        comments_count = Comment.query.filter_by(post_id=post.id).count()
         liked_by_me = False
         if user_id:
             liked_by_me = Like.query.filter_by(post_id=post.id, user_id=user_id).first() is not None
@@ -38,6 +40,7 @@ def get_posts():
             "fecha": post.fecha_creacion.isoformat(),
             "temas": post.temas,
             "likes_count": likes_count,
+            "comments_count": comments_count,
             "liked_by_me": liked_by_me,
             "autora": {
                 "id": post.autora.id,

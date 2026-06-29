@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.extensions import db
 from app.models.user import User
 from app.models.post import Post
+from app.models.comment import Comment
 import cloudinary
 import cloudinary.uploader
 import os
@@ -91,11 +92,13 @@ def get_public_profile(user_id):
 
     posts = []
     for post in user.posts.order_by(Post.fecha_creacion.desc()).all():
+        comments_count = Comment.query.filter_by(post_id=post.id).count()
         posts.append({
             "id": post.id,
             "texto": post.texto,
             "url": post.url,
             "fecha": post.fecha_creacion.isoformat(),
+            "comments_count": comments_count,
         })
 
     return jsonify({

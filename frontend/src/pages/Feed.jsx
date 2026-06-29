@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
+import CommentList from '../components/CommentList'
 import socket from '../socket'
 
 const PURPLE = "#8C52FF"
@@ -78,6 +79,7 @@ function Feed() {
   const [comentarios, setComentarios] = useState({})
   const [nuevoComentario, setNuevoComentario] = useState({})
   const [notificaciones, setNotificaciones] = useState([])
+  const comentariosAbiertosRef = useRef({})
 
   const paisesDisponibles = [...new Set(posts.map(p => p.autora.pais).filter(Boolean).map(p => p.trim()))]
   const ciudadesDisponibles = [...new Set(
@@ -128,16 +130,31 @@ function Feed() {
   useEffect(() => {
     if (!token) return
 
-    socket.connect()
-    socket.emit("conectar_usuaria", { token })
-    console.log("Socket conectado, token enviado")
-
-    socket.on("nueva_notificacion", (data) => {
-      console.log("Notificacion recibida:", data)
-      setNotificaciones(prev => [data, ...prev])
+    socket.on("connect", () => {
+      console.log("✅ Socket listo, enviando token...")
+      socket.emit("conectar_usuaria", { token })
     })
 
+    socket.on("nueva_notificacion", (data) => {
+      console.log("🔔 Notificacion recibida:", data)
+      setNotificaciones(prev => [data, ...prev])
+
+      const postId = Number(data.post_id)
+      if (postId) {
+        setPosts(prev => prev.map(post =>
+          post.id === postId
+            ? { ...post, comments_count: (post.comments_count || 0) + 1 }
+            : post
+        ))
+        if (comentariosAbiertosRef.current[postId]) {
+          fetchComentarios(postId)
+        }
+      }
+    })
+    socket.connect()  // ⬅️ connect() va AL FINAL, después de registrar los listeners
+
     return () => {
+      socket.off("connect")
       socket.off("nueva_notificacion")
       socket.disconnect()
     }
@@ -205,7 +222,23 @@ function Feed() {
     if (response.ok) {
       const data = await response.json()
       setComentarios(prev => ({ ...prev, [postId]: data }))
+      setPosts(prev => prev.map(post =>
+        post.id === postId ? { ...post, comments_count: data.length } : post
+      ))
     }
+  }
+
+  const abrirPostDesdeNotificacion = (postId) => {
+    const id = Number(postId)
+    if (!id) return
+
+    setComentariosAbiertos(prev => ({ ...prev, [id]: true }))
+    comentariosAbiertosRef.current[id] = true
+    fetchComentarios(id)
+
+    setTimeout(() => {
+      document.getElementById(`post-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 150)
   }
 
   const handleComentario = async (postId) => {
@@ -219,13 +252,25 @@ function Feed() {
     if (response.ok) {
       const nuevo = await response.json()
       setComentarios(prev => ({ ...prev, [postId]: [...(prev[postId] || []), nuevo] }))
+      setPosts(prev => prev.map(post =>
+        post.id === postId ? { ...post, comments_count: (post.comments_count || 0) + 1 } : post
+      ))
       setNuevoComentario(prev => ({ ...prev, [postId]: "" }))
     }
   }
 
   const toggleComentarios = (postId) => {
-    setComentariosAbiertos(prev => ({ ...prev, [postId]: !prev[postId] }))
+    const nuevoEstado = !comentariosAbiertos[postId]
+    setComentariosAbiertos(prev => ({ ...prev, [postId]: nuevoEstado }))
+    comentariosAbiertosRef.current[postId] = nuevoEstado
     if (!comentariosAbiertos[postId]) fetchComentarios(postId)
+  }
+
+  const handleCommentsChange = (postId, updated) => {
+    setComentarios(prev => ({ ...prev, [postId]: updated }))
+    setPosts(prev => prev.map(post =>
+      post.id === postId ? { ...post, comments_count: updated.length } : post
+    ))
   }
 
   const handleEditPost = async (postId) => {
@@ -302,11 +347,16 @@ function Feed() {
             {notificaciones.length > 0 && (
               <div className="relative">
                 <button
-                  onClick={() => setNotificaciones([])}
-                  className="relative flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium hover:bg-black/5"
+                  onClick={() => {
+                    abrirPostDesdeNotificacion(notificaciones[0]?.post_id)
+                    setNotificaciones([])
+                  }}
+                  className="relative flex max-w-xs items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium hover:bg-black/5"
                   style={{ color: PURPLE }}
+                  title={notificaciones[0]?.mensaje}
                 >
                   🔔 {notificaciones.length}
+                  <span className="hidden truncate sm:inline">{notificaciones[0]?.mensaje}</span>
                   <div className="absolute -right-1 -top-1 h-2 w-2 rounded-full" style={{ backgroundColor: PURPLE }}></div>
                 </button>
               </div>
@@ -501,7 +551,7 @@ function Feed() {
               const isOwner = user && String(post.autora.id) === String(user.id)
               const isEditing = editingId === post.id
               return (
-                <article key={post.id} className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm hover:shadow-md transition-shadow">
+                <article id={`post-${post.id}`} key={post.id} className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-start gap-3 px-5 pt-5">
                     <Avatar name={post.autora.nombre} foto={post.autora.avatar} />
                     <div className="min-w-0 flex-1">
@@ -573,22 +623,20 @@ function Feed() {
                     <button onClick={() => toggleComentarios(post.id)}
                       className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5 transition-colors"
                       style={{ color: GRAY }}>
-                      💬 {comentarios[post.id]?.length || 0}
+                      💬 {post.comments_count ?? comentarios[post.id]?.length ?? 0}
                     </button>
                   </div>
 
                   {/* Comentarios */}
                   {comentariosAbiertos[post.id] && (
                     <div className="border-t border-black/5 px-5 py-4 flex flex-col gap-3">
-                      {(comentarios[post.id] || []).map((c) => (
-                        <div key={c.id} className="flex items-start gap-2">
-                          <Avatar name={c.autora.nombre} foto={c.autora.avatar} size="sm" />
-                          <div className="rounded-xl px-3 py-2 text-sm" style={{ backgroundColor: LAVENDER, color: PLUM }}>
-                            <span className="font-semibold" style={{ color: PURPLE }}>{c.autora.nombre} </span>
-                            {c.contenido}
-                          </div>
-                        </div>
-                      ))}
+                      <CommentList
+                        postId={post.id}
+                        comentarios={comentarios[post.id] || []}
+                        token={token}
+                        userId={user?.id}
+                        onCommentsChange={handleCommentsChange}
+                      />
                       {token && (
                         <div className="flex items-center gap-2 mt-1">
                           <Avatar name={profile?.nombre || user?.nombre} foto={profile?.avatar || user?.avatar} size="sm" />

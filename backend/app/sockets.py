@@ -8,8 +8,8 @@ def conectar_usuaria(data):
     try:
         token = data.get("token")
         decoded = decode_token(token)
-        user_id = decoded["sub"]
+        user_id = str(decoded["sub"])
         join_room(f"user_{user_id}")
-        print(f"Usuaria {user_id} conectada a su sala")
+        print(f"Usuaria {user_id} conectada a su sala user_{user_id}")
     except Exception as e:
         print(f"Error al conectar usuaria: {e}")

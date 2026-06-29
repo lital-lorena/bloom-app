@@ -12,5 +12,5 @@ db = SQLAlchemy()
 
 # Gestor de tokens JWT (login y rutas protegidas)
 jwt = JWTManager()
-socketio = SocketIO()
+socketio = SocketIO(async_mode="threading")
 
