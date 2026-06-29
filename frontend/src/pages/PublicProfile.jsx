@@ -44,6 +44,7 @@ export default function PublicProfile() {
     const { id } = useParams()
     const navigate = useNavigate()
     const { token, user } = useUser()
+    const isAdmin = user?.rol === "admin"
 
     const [profile, setProfile] = useState(null)
     const [loading, setLoading] = useState(true)
@@ -228,6 +229,7 @@ export default function PublicProfile() {
                                         comentarios={comentarios[post.id] || []}
                                         token={token}
                                         userId={user?.id}
+                                        isAdmin={isAdmin}
                                         onCommentsChange={handleCommentsChange}
                                     />
                                     {token ? (

@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.extensions import db, socketio
+from app.auth_utils import es_admin
 from app.models.comment import Comment
 from app.models.post import Post
 
@@ -114,7 +115,7 @@ def borrar_comment(comment_id):
     user_id = get_jwt_identity()
     comment = Comment.query.get_or_404(comment_id)
 
-    if str(comment.user_id) != str(user_id):
+    if str(comment.user_id) != str(user_id) and not es_admin(user_id):
         return jsonify({"error": "No puedes borrar este comentario."}), 403
 
     db.session.delete(comment)

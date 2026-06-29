@@ -19,7 +19,7 @@ function Avatar({ name, foto = null }) {
   )
 }
 
-export default function CommentList({ postId, comentarios = [], token, userId, onCommentsChange }) {
+export default function CommentList({ postId, comentarios = [], token, userId, isAdmin = false, onCommentsChange }) {
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState("")
   const [error, setError] = useState("")
@@ -27,7 +27,13 @@ export default function CommentList({ postId, comentarios = [], token, userId, o
   const isOwner = (comment) =>
     userId && String(comment.autora.id) === String(userId)
 
-  const handleDelete = async (commentId) => {
+  const handleDelete = async (commentId, moderation = false) => {
+    if (moderation) {
+      const confirmar = window.confirm(
+        "¿Eliminar este comentario por incumplir las normas de la comunidad?"
+      )
+      if (!confirmar) return
+    }
     setError("")
     try {
       const response = await fetch(`http://127.0.0.1:5000/api/comments/item/${commentId}`, {
@@ -138,29 +144,31 @@ export default function CommentList({ postId, comentarios = [], token, userId, o
                   <span className="font-semibold" style={{ color: PURPLE }}>{c.autora.nombre} </span>
                   {c.contenido}
                 </div>
-                {token && isOwner(c) && (
+                {(token && isOwner(c)) || (token && isAdmin && !isOwner(c)) ? (
                   <div className="mt-1 flex gap-3">
+                    {isOwner(c) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingId(c.id)
+                          setEditText(c.contenido)
+                          setError("")
+                        }}
+                        className="text-xs font-medium hover:opacity-80"
+                        style={{ color: PURPLE }}
+                      >
+                        Editar
+                      </button>
+                    )}
                     <button
                       type="button"
-                      onClick={() => {
-                        setEditingId(c.id)
-                        setEditText(c.contenido)
-                        setError("")
-                      }}
-                      className="text-xs font-medium hover:opacity-80"
-                      style={{ color: PURPLE }}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(c.id)}
+                      onClick={() => handleDelete(c.id, isAdmin && !isOwner(c))}
                       className="text-xs font-medium hover:opacity-80 text-red-400"
                     >
-                      Borrar
+                      {isAdmin && !isOwner(c) ? "Eliminar (moderación)" : "Borrar"}
                     </button>
                   </div>
-                )}
+                ) : null}
               </>
             )}
           </div>

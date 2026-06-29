@@ -79,7 +79,8 @@ def get_profile():
         "pais": user.pais,
         "ciudad": user.ciudad,
         "avatar": user.avatar,
-        "profesion": user.profesion
+        "profesion": user.profesion,
+        "rol": user.rol,
     }), 200
 
 

@@ -5,6 +5,7 @@ import cloudinary
 import cloudinary.uploader
 import os
 
+from app.auth_utils import es_admin
 from app.extensions import db
 from app.models.post import Post
 from app.models.user import User
@@ -101,7 +102,7 @@ def delete_post(post_id):
     user_id = get_jwt_identity()
     post = Post.query.get_or_404(post_id)
 
-    if str(post.user_id) != str(user_id):
+    if str(post.user_id) != str(user_id) and not es_admin(user_id):
         return jsonify({"error": "No puedes borrar este post."}), 403
 
     db.session.delete(post)

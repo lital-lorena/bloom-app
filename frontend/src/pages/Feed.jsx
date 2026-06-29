@@ -63,7 +63,7 @@ function Feed() {
   const [suggestion, setSuggestion] = useState("")
   const [suggestLoading, setSuggestLoading] = useState(false)
   const [postLoading, setPostLoading] = useState(false)
-  const { token, user, logout } = useUser()
+  const { token, user, logout, updateUser } = useUser()
   const navigate = useNavigate()
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState("")
@@ -112,6 +112,7 @@ function Feed() {
       if (response.ok) {
         const data = await response.json()
         setProfile(data)
+        if (data.rol) updateUser({ rol: data.rol })
       }
     }
     const fetchResumen = async () => {
@@ -195,12 +196,34 @@ function Feed() {
     }
   }
 
-  const handleDeletePost = async (postId) => {
-    const response = await fetch(`http://127.0.0.1:5000/api/posts/${postId}`, {
-      method: "DELETE",
-      headers: { "Authorization": `Bearer ${token}` }
-    })
-    if (response.ok) setPosts(posts.filter((post) => post.id !== postId))
+  const isAdmin = profile?.rol === "admin"
+
+  const handleDeletePost = async (postId, { moderation = false } = {}) => {
+    if (moderation) {
+      const confirmar = window.confirm(
+        "¿Eliminar este post por incumplir las normas de la comunidad?"
+      )
+      if (!confirmar) return
+    }
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/api/posts/${postId}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      })
+      if (response.ok) {
+        setPosts((prev) => prev.filter((post) => post.id !== postId))
+      } else {
+        const data = await response.json().catch(() => ({}))
+        const msg = data.error || "No se pudo eliminar el post."
+        window.alert(
+          profile?.rol === "admin"
+            ? `${msg} Reinicia Flask (python run.py) si acabas de actualizar el backend.`
+            : `${msg} Solo la cuenta admin (lorenalugosanchez3@gmail.com) puede moderar posts ajenos.`
+        )
+      }
+    } catch {
+      window.alert("No se pudo conectar con el servidor. Comprueba que Flask esté en marcha.")
+    }
   }
 
   const handleLike = async (postId, likedByMe) => {
@@ -342,6 +365,15 @@ function Feed() {
           <div className="flex items-center gap-6">
             <a href="/feed" className="text-sm font-semibold" style={{ color: PURPLE }}>Feed</a>
             <a href="/profile" className="text-sm font-medium hover:opacity-70" style={{ color: PLUM }}>Mi perfil</a>
+
+            {isAdmin && (
+              <span
+                className="rounded-full px-3 py-1 text-xs font-semibold"
+                style={{ backgroundColor: LAVENDER, color: PURPLE }}
+              >
+                Admin
+              </span>
+            )}
 
             {/* Notificaciones */}
             {notificaciones.length > 0 && (
@@ -549,6 +581,7 @@ function Feed() {
               return porTema && porPais && porCiudad
             }).map((post) => {
               const isOwner = user && String(post.autora.id) === String(user.id)
+              const canModerate = isAdmin && !isOwner
               const isEditing = editingId === post.id
               return (
                 <article id={`post-${post.id}`} key={post.id} className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm hover:shadow-md transition-shadow">
@@ -635,6 +668,7 @@ function Feed() {
                         comentarios={comentarios[post.id] || []}
                         token={token}
                         userId={user?.id}
+                        isAdmin={isAdmin}
                         onCommentsChange={handleCommentsChange}
                       />
                       {token && (
@@ -656,10 +690,10 @@ function Feed() {
                     </div>
                   )}
 
-                  {/* Botones editar/borrar */}
-                  {isOwner && (
+                  {/* Botones editar/borrar (autora) o moderación (admin) */}
+                  {(isOwner || canModerate) && (
                     <div className="flex items-center gap-2 border-t border-black/5 px-5 py-3">
-                      {isEditing ? (
+                      {isOwner && isEditing ? (
                         <>
                           <button type="button" onClick={handleEditSuggest} disabled={editSuggestLoading || !editText.trim()}
                             className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
@@ -677,7 +711,7 @@ function Feed() {
                             Cancelar
                           </button>
                         </>
-                      ) : (
+                      ) : isOwner ? (
                         <>
                           <button onClick={() => { setEditingId(post.id); setEditText(post.texto) }}
                             className="rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5"
@@ -690,6 +724,14 @@ function Feed() {
                             Borrar
                           </button>
                         </>
+                      ) : (
+                        <button
+                          onClick={() => handleDeletePost(post.id, { moderation: true })}
+                          className="rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5"
+                          style={{ color: "#dc2626" }}
+                        >
+                          Eliminar (moderación)
+                        </button>
                       )}
                     </div>
                   )}
