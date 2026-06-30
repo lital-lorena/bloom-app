@@ -20,6 +20,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     texto = db.Column(db.Text, nullable=False)
     url = db.Column(db.String(500), nullable=True)
+    temas = db.Column(db.String(300), nullable=True)  # Temas asignados por IA, separados por coma
     user_id = db.Column(
         db.Integer,
         db.ForeignKey("users.id", ondelete="CASCADE"),

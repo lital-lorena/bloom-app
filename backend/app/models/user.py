@@ -19,6 +19,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(120), nullable=False)
+    apellido = db.Column(db.String(120), nullable=True)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     # Valores esperados: 'usuaria' | 'admin'
@@ -27,6 +28,7 @@ class User(db.Model):
     mi_historia = db.Column(db.Text, nullable=True)
     pais = db.Column(db.String(100), nullable=True)
     ciudad = db.Column(db.String(100), nullable=True)
+    profesion = db.Column(db.String(150), nullable=True)
     fecha_registro = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
