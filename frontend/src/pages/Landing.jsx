@@ -16,9 +16,9 @@ export default function Landing() {
     return (
         <div className="min-h-screen bg-white font-[family-name:var(--font-body)]">
 
-            <nav className="fixed inset-x-4 top-4 z-50 flex items-center justify-between rounded-2xl border border-white/40 bg-white/85 px-5 py-3 shadow-lg backdrop-blur-sm md:inset-x-10 md:px-8 lg:inset-x-12">
+            <nav className="fixed inset-x-4 top-4 z-50 flex items-center justify-between rounded-2xl border border-white/40 bg-white/85 px-5 py-2 shadow-lg backdrop-blur-sm md:inset-x-10 md:px-8 lg:inset-x-12">
                 <a href="/" className="flex items-center">
-                    <BloomLogo className="h-9 w-auto md:h-10 lg:h-11" />
+                    <BloomLogo className="h-10 w-auto md:h-11" />
                 </a>
                 {token ? (
                     <UserMenu />
@@ -197,7 +197,7 @@ export default function Landing() {
             <footer className="bg-white px-12 py-12">
                 <div className="mb-8 grid grid-cols-2 gap-8 md:grid-cols-4">
                     <div>
-                        <BloomLogo className="mb-2 h-8 w-auto" />
+                        <BloomLogo className="mb-2 h-14 w-auto" />
                         <p className="text-sm text-bloom-gray">Una comunidad para mujeres que se reinventan.</p>
                     </div>
                     <div>
@@ -212,7 +212,7 @@ export default function Landing() {
                     <div>
                         <p className="mb-3 font-semibold text-bloom-dark">Nosotras</p>
                         <div className="flex flex-col gap-2 text-sm text-bloom-gray">
-                            <a href="#" className="hover:text-bloom-pink">Sobre Bloom</a>
+                            <a href="/sobre-bloom" className="hover:text-bloom-pink">Sobre Bloom</a>
                             <a href="#" className="hover:text-bloom-pink">Contacto</a>
                             <a href="#" className="hover:text-bloom-pink">Blog</a>
                         </div>

@@ -1,9 +1,13 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 import CommentList from '../components/CommentList'
 import UserMenu from '../components/UserMenu'
 import BloomLogo from '../components/BloomLogo'
+import ConfirmModal from '../components/ConfirmModal'
+import NotificationsModal, { NotificationBell } from '../components/NotificationsModal'
+import PostText from '../components/PostText'
 import socket from '../socket'
 
 import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
@@ -58,6 +62,138 @@ function SparkleIcon() {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
       <path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z" />
     </svg>
+  )
+}
+
+function LocationIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  )
+}
+
+function ChevronDownIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  )
+}
+
+// Solo UI: mismo comportamiento que un <select>, con estilo Bloom
+function BloomDropdown({ value, onChange, options }) {
+  const [open, setOpen] = useState(false)
+  const [menuRect, setMenuRect] = useState(null)
+  const containerRef = useRef(null)
+  const triggerRef = useRef(null)
+  const menuRef = useRef(null)
+
+  const updateMenuRect = () => {
+    if (!triggerRef.current) return
+
+    const rect = triggerRef.current.getBoundingClientRect()
+    const maxHeight = 240
+    const spaceBelow = window.innerHeight - rect.bottom - 8
+    const spaceAbove = rect.top - 8
+    const openUpward = spaceBelow < 120 && spaceAbove > spaceBelow
+
+    setMenuRect({
+      left: rect.left,
+      width: rect.width,
+      top: openUpward ? undefined : rect.bottom + 4,
+      bottom: openUpward ? window.innerHeight - rect.top + 4 : undefined,
+      maxHeight: openUpward ? Math.min(maxHeight, spaceAbove) : Math.min(maxHeight, Math.max(spaceBelow, 120)),
+    })
+  }
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        containerRef.current?.contains(event.target) ||
+        menuRef.current?.contains(event.target)
+      ) {
+        return
+      }
+      setOpen(false)
+    }
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+
+    if (open) {
+      updateMenuRect()
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('keydown', onKeyDown)
+      window.addEventListener('scroll', updateMenuRect, true)
+      window.addEventListener('resize', updateMenuRect)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('scroll', updateMenuRect, true)
+      window.removeEventListener('resize', updateMenuRect)
+    }
+  }, [open])
+
+  const selected = options.find((option) => option.value === value)
+
+  const menu = open && menuRect
+    ? createPortal(
+        <div
+          ref={menuRef}
+          role="listbox"
+          className="overflow-y-auto rounded-xl border border-black/5 bg-white py-1 shadow-lg"
+          style={{
+            position: 'fixed',
+            left: menuRect.left,
+            width: menuRect.width,
+            top: menuRect.top,
+            bottom: menuRect.bottom,
+            maxHeight: menuRect.maxHeight,
+            zIndex: 200,
+          }}
+        >
+          {options.map((option) => (
+            <button
+              key={option.value || '__empty__'}
+              type="button"
+              role="option"
+              aria-selected={value === option.value}
+              className="block w-full px-4 py-2.5 text-left text-sm font-medium text-bloom-dark transition-colors hover:bg-bloom-pink/10 hover:text-bloom-pink"
+              onClick={() => {
+                onChange(option.value)
+                setOpen(false)
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>,
+        document.body
+      )
+    : null
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className={`w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-2.5 pr-10 text-left text-sm font-medium text-bloom-dark transition-colors hover:border-bloom-pink/40 focus:border-bloom-pink focus:outline-none focus:ring-2 focus:ring-bloom-pink/20 ${open ? 'border-bloom-pink ring-2 ring-bloom-pink/20' : ''}`}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+      >
+        {selected?.label}
+      </button>
+      <span className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-bloom-pink transition-transform ${open ? 'rotate-180' : ''}`}>
+        <ChevronDownIcon />
+      </span>
+      {menu}
+    </div>
   )
 }
 
@@ -150,6 +286,8 @@ function Feed() {
   const [inspiracion, setInspiracion] = useState("")
   const [inspiracionLoading, setInspiracionLoading] = useState(false)
   const [inspiracionError, setInspiracionError] = useState(null)
+  const [pendingModerationPostId, setPendingModerationPostId] = useState(null)
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [comentariosAbiertos, setComentariosAbiertos] = useState({})
   const [comentarios, setComentarios] = useState({})
   const [nuevoComentario, setNuevoComentario] = useState({})
@@ -261,7 +399,7 @@ function Feed() {
 
     socket.on("nueva_notificacion", (data) => {
       console.log("🔔 Notificacion recibida:", data)
-      setNotificaciones(prev => [data, ...prev])
+      setNotificaciones(prev => [{ ...data, id: `${Date.now()}-${data.post_id}` }, ...prev])
 
       const postId = Number(data.post_id)
       if (postId) {
@@ -321,13 +459,7 @@ function Feed() {
 
   const isAdmin = profile?.rol === "admin"
 
-  const handleDeletePost = async (postId, { moderation = false } = {}) => {
-    if (moderation) {
-      const confirmar = window.confirm(
-        "¿Eliminar este post por incumplir las normas de la comunidad?"
-      )
-      if (!confirmar) return
-    }
+  const handleDeletePost = async (postId) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/api/posts/${postId}`, {
         method: "DELETE",
@@ -478,9 +610,9 @@ function Feed() {
 
       {/* ── NAVBAR ── */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/85 shadow-lg backdrop-blur-sm">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-2">
           <a href="/" className="flex items-center">
-            <BloomLogo className="h-8 w-auto" />
+            <BloomLogo className="h-10 w-auto" />
           </a>
           <div className="flex items-center gap-4">
             {token && isAdmin && (
@@ -490,23 +622,10 @@ function Feed() {
             )}
 
             {/* Notificaciones */}
-            {notificaciones.length > 0 && (
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    abrirPostDesdeNotificacion(notificaciones[0]?.post_id)
-                    setNotificaciones([])
-                  }}
-                  className="relative flex max-w-xs items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium hover:bg-black/5"
-                  style={{ color: PURPLE }}
-                  title={notificaciones[0]?.mensaje}
-                >
-                  🔔 {notificaciones.length}
-                  <span className="hidden truncate sm:inline">{notificaciones[0]?.mensaje}</span>
-                  <div className="absolute -right-1 -top-1 h-2 w-2 rounded-full" style={{ backgroundColor: PURPLE }}></div>
-                </button>
-              </div>
-            )}
+            <NotificationBell
+              count={notificaciones.length}
+              onClick={() => setNotificationsOpen(true)}
+            />
 
             <UserMenu />
           </div>
@@ -514,7 +633,7 @@ function Feed() {
       </header>
 
       {/* ── CONTENIDO PRINCIPAL ── */}
-      <main className="mx-auto flex max-w-6xl gap-6 px-5 pb-8 pt-20">
+      <main className="mx-auto flex max-w-6xl gap-6 px-5 pb-8 pt-16">
 
         {/* ── SIDEBAR IZQUIERDA ── */}
         <aside className="hidden w-72 flex-none lg:block">
@@ -554,32 +673,33 @@ function Feed() {
           </div>
 
           {/* Filtro por ubicación */}
-          <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 font-subtitle text-sm font-semibold" style={{ color: PLUM }}>Filtrar por ubicación</h3>
-            <div className="flex flex-col gap-3">
-              <select
-                value={filtroPais || ""}
-                onChange={(e) => { setFiltroPais(e.target.value || null); setFiltroCiudad(null) }}
-                className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none cursor-pointer"
-                style={{ color: PLUM, backgroundColor: "white" }}
-              >
-                <option value="">Todos los países</option>
-                {paisesDisponibles.map((pais) => (
-                  <option key={pais} value={pais}>{pais}</option>
-                ))}
-              </select>
+          <div className="mt-5 rounded-2xl border border-black/5 bg-white shadow-[0_16px_48px_-8px_rgba(255,95,168,0.15)]">
+            <div className="rounded-t-2xl border-b border-black/5 bg-gradient-to-r from-white to-bloom-pink/10 px-5 py-4">
+              <h3 className="font-subtitle flex items-center gap-2.5 text-sm font-semibold text-bloom-dark">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-bloom-pink/10 text-bloom-pink">
+                  <LocationIcon />
+                </span>
+                Filtrar por ubicación
+              </h3>
+            </div>
+            <div className="flex flex-col gap-3 p-5">
+              <BloomDropdown
+                value={filtroPais || ''}
+                onChange={(val) => { setFiltroPais(val || null); setFiltroCiudad(null) }}
+                options={[
+                  { value: '', label: 'Todos los países' },
+                  ...paisesDisponibles.map((pais) => ({ value: pais, label: pais })),
+                ]}
+              />
               {filtroPais && (
-                <select
-                  value={filtroCiudad || ""}
-                  onChange={(e) => setFiltroCiudad(e.target.value || null)}
-                  className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none cursor-pointer"
-                  style={{ color: PLUM, backgroundColor: "white" }}
-                >
-                  <option value="">Todas las ciudades</option>
-                  {ciudadesDisponibles.map((ciudad) => (
-                    <option key={ciudad} value={ciudad}>{ciudad}</option>
-                  ))}
-                </select>
+                <BloomDropdown
+                  value={filtroCiudad || ''}
+                  onChange={(val) => setFiltroCiudad(val || null)}
+                  options={[
+                    { value: '', label: 'Todas las ciudades' },
+                    ...ciudadesDisponibles.map((ciudad) => ({ value: ciudad, label: ciudad })),
+                  ]}
+                />
               )}
             </div>
           </div>
@@ -739,7 +859,7 @@ function Feed() {
                       </>
                     ) : (
                       <>
-                        <p className="whitespace-pre-wrap text-base leading-relaxed" style={{ color: PLUM }}>{post.texto}</p>
+                        <PostText text={post.texto} />
                         {post.temas && (
                           <div className="mt-3 flex flex-wrap gap-2">
                             {post.temas.split(",").map((tema) => (
@@ -841,7 +961,7 @@ function Feed() {
                         </>
                       ) : (
                         <button
-                          onClick={() => handleDeletePost(post.id, { moderation: true })}
+                          onClick={() => setPendingModerationPostId(post.id)}
                           className="rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5"
                           style={{ color: "#dc2626" }}
                         >
@@ -886,11 +1006,37 @@ function Feed() {
       <footer className="border-t border-black/5 bg-white">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-5 py-10 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-2">
-            <BloomLogo className="h-7 w-auto" />
+            <BloomLogo className="h-14 w-auto" />
           </div>
           <p className="text-center text-xs" style={{ color: GRAY }}>© 2026 Bloom. Hecho con amor para mujeres que florecen.</p>
         </div>
       </footer>
+
+      <ConfirmModal
+        open={pendingModerationPostId !== null}
+        title="Moderación de contenido"
+        message="¿Eliminar este post por incumplir las normas de la comunidad?"
+        confirmLabel="Eliminar"
+        cancelLabel="Cancelar"
+        onConfirm={() => {
+          const postId = pendingModerationPostId
+          setPendingModerationPostId(null)
+          handleDeletePost(postId)
+        }}
+        onCancel={() => setPendingModerationPostId(null)}
+      />
+
+      <NotificationsModal
+        open={notificationsOpen}
+        notifications={notificaciones}
+        onClose={() => setNotificationsOpen(false)}
+        onSelect={(notification) => {
+          abrirPostDesdeNotificacion(notification.post_id)
+          setNotificaciones((prev) => prev.filter((item) => item.id !== notification.id))
+          setNotificationsOpen(false)
+        }}
+        onClearAll={() => setNotificaciones([])}
+      />
     </div>
   )
 }

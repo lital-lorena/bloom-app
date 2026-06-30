@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 import BloomLogo from '../components/BloomLogo'
+import BackLink from '../components/BackLink'
 
 const REMEMBERED_EMAIL_KEY = 'remembered_email'
 
@@ -41,9 +42,11 @@ function Login() {
       <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-1/2 lg:px-16 xl:px-24">
         <div className="mx-auto w-full max-w-md">
 
+          <BackLink to="/" />
+
           {/* Logo */}
           <div className="mb-10">
-            <BloomLogo className="h-9 w-auto" />
+            <BloomLogo className="h-14 w-auto" />
           </div>
 
           {/* Título */}

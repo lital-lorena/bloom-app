@@ -4,6 +4,7 @@ import { useUser } from '../context/UserContext'
 import CommentList from '../components/CommentList'
 import BloomLogo from '../components/BloomLogo'
 import UserMenu from '../components/UserMenu'
+import PostText from '../components/PostText'
 
 import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
 
@@ -130,9 +131,9 @@ export default function PublicProfile() {
         <div className="min-h-screen font-[family-name:var(--font-body)]" style={{ backgroundColor: CREAM, color: PLUM }}>
 
             <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/85 shadow-lg backdrop-blur-sm">
-                <nav className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-5 py-3">
+                <nav className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-5 py-2">
                     <a href="/" className="flex items-center">
-                        <BloomLogo className="h-9 w-auto" />
+                        <BloomLogo className="h-10 w-auto" />
                     </a>
                     {token ? (
                         <UserMenu />
@@ -149,7 +150,7 @@ export default function PublicProfile() {
                 </nav>
             </header>
 
-            <main className="mx-auto max-w-2xl px-5 pb-8 pt-20">
+            <main className="mx-auto max-w-2xl px-5 pb-8 pt-16">
 
                 <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm mb-8">
                     <div
@@ -207,9 +208,7 @@ export default function PublicProfile() {
                                 <p className="text-xs mb-2" style={{ color: GRAY }}>
                                     {formatDate(post.fecha)}
                                 </p>
-                                <p className="whitespace-pre-wrap text-base leading-relaxed" style={{ color: PLUM }}>
-                                    {post.texto}
-                                </p>
+                                <PostText text={post.texto} />
                             </div>
 
                             {post.url && (

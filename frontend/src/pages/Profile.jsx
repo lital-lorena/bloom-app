@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import UserMenu from '../components/UserMenu'
 import BloomLogo from '../components/BloomLogo'
+import PostText from '../components/PostText'
 
 import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
 
@@ -115,15 +116,15 @@ export default function Profile() {
 
             {/* ── NAVBAR ── */}
             <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/85 shadow-lg backdrop-blur-sm">
-                <nav className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-5 py-3">
+                <nav className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-5 py-2">
                     <a href="/" className="flex items-center">
-                        <BloomLogo className="h-8 w-auto" />
+                        <BloomLogo className="h-10 w-auto" />
                     </a>
                     <UserMenu />
                 </nav>
             </header>
 
-            <main className="mx-auto max-w-4xl px-5 pb-8 pt-20">
+            <main className="mx-auto max-w-4xl px-5 pb-8 pt-16">
 
                 {/* ── TARJETA DE PERFIL ── */}
                 <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
@@ -414,9 +415,7 @@ export default function Profile() {
                                         </div>
                                     </div>
 
-                                    <p className="whitespace-pre-wrap text-base leading-relaxed" style={{ color: PLUM }}>
-                                        {post.texto}
-                                    </p>
+                                    <PostText text={post.texto} />
 
                                     {post.url && (
                                         <img
@@ -436,7 +435,7 @@ export default function Profile() {
             <footer className="mt-8 border-t border-black/5 bg-white">
                 <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-5 py-10 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex items-center gap-2">
-                        <BloomLogo className="h-7 w-auto" />
+                        <BloomLogo className="h-14 w-auto" />
                     </div>
                     <p className="text-center text-xs" style={{ color: GRAY }}>
                         © 2026 Bloom. Hecho con amor para mujeres que florecen.

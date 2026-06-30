@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { PURPLE, PLUM, GRAY, LAVENDER } from '../theme/bloomTheme'
+import ConfirmModal from './ConfirmModal'
 
 function Avatar({ name, foto = null }) {
   const letter = (name || "?").trim().charAt(0).toUpperCase()
@@ -22,17 +23,12 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState("")
   const [error, setError] = useState("")
+  const [pendingModerationCommentId, setPendingModerationCommentId] = useState(null)
 
   const isOwner = (comment) =>
     userId && String(comment.autora.id) === String(userId)
 
-  const handleDelete = async (commentId, moderation = false) => {
-    if (moderation) {
-      const confirmar = window.confirm(
-        "¿Eliminar este comentario por incumplir las normas de la comunidad?"
-      )
-      if (!confirmar) return
-    }
+  const executeDelete = async (commentId) => {
     setError("")
     try {
       const response = await fetch(`http://127.0.0.1:5000/api/comments/item/${commentId}`, {
@@ -49,6 +45,14 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
     } catch {
       setError("No se pudo conectar con el servidor. Reinicia Flask (python run.py) e inténtalo de nuevo.")
     }
+  }
+
+  const handleDelete = (commentId, moderation = false) => {
+    if (moderation) {
+      setPendingModerationCommentId(commentId)
+      return
+    }
+    executeDelete(commentId)
   }
 
   const handleSaveEdit = async (commentId) => {
@@ -173,6 +177,19 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
           </div>
         </div>
       ))}
+      <ConfirmModal
+        open={pendingModerationCommentId !== null}
+        title="Moderación de contenido"
+        message="¿Eliminar este comentario por incumplir las normas de la comunidad?"
+        confirmLabel="Eliminar"
+        cancelLabel="Cancelar"
+        onConfirm={() => {
+          const commentId = pendingModerationCommentId
+          setPendingModerationCommentId(null)
+          executeDelete(commentId)
+        }}
+        onCancel={() => setPendingModerationCommentId(null)}
+      />
     </>
   )
 }

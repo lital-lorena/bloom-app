@@ -1,6 +1,6 @@
 import logo from '../assets/logo.png'
 
-export default function BloomLogo({ className = 'h-9 w-auto' }) {
+export default function BloomLogo({ className = 'h-10 w-auto' }) {
   return (
     <img
       src={logo}
