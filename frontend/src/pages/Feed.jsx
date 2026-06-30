@@ -2,13 +2,11 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 import CommentList from '../components/CommentList'
+import UserMenu from '../components/UserMenu'
+import BloomLogo from '../components/BloomLogo'
 import socket from '../socket'
 
-const PURPLE = "#8C52FF"
-const CREAM = "#fdf6f0"
-const PLUM = "#3D2B1F"
-const GRAY = "#9CA3AF"
-const LAVENDER = "#F3EEFF"
+import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
 
 function Avatar({ name, size = "md", foto = null }) {
   const letter = (name || "?").trim().charAt(0).toUpperCase()
@@ -18,14 +16,31 @@ function Avatar({ name, size = "md", foto = null }) {
     lg: "h-16 w-16 text-2xl",
   }
   return foto ? (
-    <img src={foto} alt={name} className={`flex-none rounded-full object-cover ${sizes[size]}`} />
+    <div
+      className={`flex-none overflow-hidden rounded-full ${sizes[size]}`}
+      style={{ backgroundColor: LAVENDER }}
+    >
+      <img src={foto} alt={name} className="h-full w-full object-cover object-top" />
+    </div>
   ) : (
     <div
-      className={`flex flex-none items-center justify-center rounded-full font-serif font-semibold ${sizes[size]}`}
+      className={`flex flex-none items-center justify-center rounded-full font-title font-semibold ${sizes[size]}`}
       style={{ backgroundColor: LAVENDER, color: PURPLE }}
     >
       {letter}
     </div>
+  )
+}
+
+function PeachTag({ children, onClick, className = '' }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`cursor-pointer rounded-full bg-gradient-to-r from-bloom-pink via-bloom-rose to-bloom-coral px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-80 ${className}`}
+    >
+      {children}
+    </button>
   )
 }
 
@@ -56,6 +71,64 @@ function formatDate(value) {
   }
 }
 
+function quitarEmojiInicial(texto) {
+  return texto.replace(/^[\s\p{Emoji}\p{Emoji_Presentation}\p{Extended_Pictographic}]+/u, "").trim()
+}
+
+function InspiracionCard({ inspiracion, loading, error, onUsar, onOtra, className = "" }) {
+  const mensajeError = error === "rate_limit"
+    ? "Has agotado las ideas de hoy por ahora. Vuelve en unos minutos e inténtalo de nuevo."
+    : "No pudimos generar una idea ahora. Inténtalo de nuevo."
+
+  return (
+    <div className={`rounded-2xl border border-black/5 bg-white p-5 shadow-sm ${className}`}>
+      <h3 className="mb-3 font-subtitle text-sm font-semibold" style={{ color: PLUM }}>
+        💡 ¿Sin ideas hoy?
+      </h3>
+      {loading ? (
+        <p className="text-sm leading-relaxed" style={{ color: GRAY }}>Generando una idea para ti...</p>
+      ) : inspiracion ? (
+        <>
+          <p className="text-sm leading-relaxed font-medium" style={{ color: PLUM }}>{inspiracion}</p>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row xl:flex-col">
+            <button
+              type="button"
+              onClick={onUsar}
+              className="w-full rounded-full px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90"
+              style={{ backgroundColor: PURPLE }}
+            >
+              ✨ Usar esta idea
+            </button>
+            <button
+              type="button"
+              onClick={onOtra}
+              disabled={loading}
+              className="w-full rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-40"
+              style={{ borderColor: `${PURPLE}44`, color: PURPLE }}
+            >
+              → Otra idea
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <p className="text-sm leading-relaxed" style={{ color: GRAY }}>{mensajeError}</p>
+          {error !== "rate_limit" && (
+            <button
+              type="button"
+              onClick={onOtra}
+              className="mt-3 w-full rounded-full border px-4 py-2 text-sm font-medium hover:bg-black/5"
+              style={{ borderColor: `${PURPLE}44`, color: PURPLE }}
+            >
+              → Intentar de nuevo
+            </button>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
 function Feed() {
   const [posts, setPosts] = useState([])
   const [text, setText] = useState("")
@@ -63,7 +136,7 @@ function Feed() {
   const [suggestion, setSuggestion] = useState("")
   const [suggestLoading, setSuggestLoading] = useState(false)
   const [postLoading, setPostLoading] = useState(false)
-  const { token, user, logout, updateUser } = useUser()
+  const { token, user, updateUser } = useUser()
   const navigate = useNavigate()
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState("")
@@ -74,12 +147,16 @@ function Feed() {
   const [filtroPais, setFiltroPais] = useState(null)
   const [filtroCiudad, setFiltroCiudad] = useState(null)
   const [resumen, setResumen] = useState("")
-  const [pregunta, setPregunta] = useState("")
+  const [inspiracion, setInspiracion] = useState("")
+  const [inspiracionLoading, setInspiracionLoading] = useState(false)
+  const [inspiracionError, setInspiracionError] = useState(null)
   const [comentariosAbiertos, setComentariosAbiertos] = useState({})
   const [comentarios, setComentarios] = useState({})
   const [nuevoComentario, setNuevoComentario] = useState({})
   const [notificaciones, setNotificaciones] = useState([])
   const comentariosAbiertosRef = useRef({})
+  const crearPostRef = useRef(null)
+  const postTextareaRef = useRef(null)
 
   const paisesDisponibles = [...new Set(posts.map(p => p.autora.pais).filter(Boolean).map(p => p.trim()))]
   const ciudadesDisponibles = [...new Set(
@@ -98,6 +175,49 @@ function Feed() {
   useEffect(() => {
     return () => { if (postImagePreview) URL.revokeObjectURL(postImagePreview) }
   }, [postImagePreview])
+
+  const fetchInspiracion = async () => {
+    if (!token) return
+    setInspiracionLoading(true)
+    setInspiracionError(null)
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/ai/inspiracion", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (response.ok) {
+        const data = await response.json()
+        if (data.error === "rate_limit") {
+          setInspiracion("")
+          setInspiracionError("rate_limit")
+        } else if (data.pregunta) {
+          setInspiracion(data.pregunta)
+          setInspiracionError(null)
+        } else {
+          setInspiracion("")
+          setInspiracionError("unavailable")
+        }
+      }
+    } catch {
+      setInspiracion("")
+      setInspiracionError("unavailable")
+    } finally {
+      setInspiracionLoading(false)
+    }
+  }
+
+  const handleUsarInspiracion = () => {
+    if (!inspiracion) return
+    const textoLimpio = quitarEmojiInicial(inspiracion)
+    if (!textoLimpio) return
+    setText(textoLimpio.charAt(0).toUpperCase() + textoLimpio.slice(1))
+    setSuggestion("")
+    requestAnimationFrame(() => {
+      if (window.innerWidth < 1280) {
+        crearPostRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }
+      postTextareaRef.current?.focus()
+    })
+  }
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -120,13 +240,16 @@ function Feed() {
       if (response.ok) {
         const data = await response.json()
         setResumen(data.resumen)
-        setPregunta(data.pregunta)
       }
     }
     fetchPosts()
     fetchResumen()
     if (token) fetchProfile()
   }, [])
+
+  useEffect(() => {
+    if (token) fetchInspiracion()
+  }, [token])
 
   useEffect(() => {
     if (!token) return
@@ -309,8 +432,6 @@ function Feed() {
     }
   }
 
-  const handleLogout = () => { logout(); navigate('/login') }
-
   const handleSuggest = async () => {
     if (!text.trim()) return
     setSuggestLoading(true)
@@ -353,24 +474,17 @@ function Feed() {
     text.startsWith("Error") || text.startsWith("Tu publicación") || text.startsWith("El texto") || text.startsWith("No se pudo")
 
   return (
-    <div className="min-h-screen font-sans" style={{ backgroundColor: CREAM, color: PLUM }}>
+    <div className="min-h-screen font-[family-name:var(--font-body)]" style={{ backgroundColor: CREAM, color: PLUM }}>
 
       {/* ── NAVBAR ── */}
-      <header className="sticky top-0 z-10 border-b border-black/5 bg-white shadow-sm">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/85 shadow-lg backdrop-blur-sm">
         <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
-          <a href="/" className="flex items-center gap-2">
-            <img src="/src/assets/bloom_flor.png" alt="Bloom" className="h-9 w-9 object-contain" />
-            <span className="font-serif text-xl font-semibold" style={{ color: PLUM }}>Bloom</span>
+          <a href="/" className="flex items-center">
+            <BloomLogo className="h-8 w-auto" />
           </a>
-          <div className="flex items-center gap-6">
-            <a href="/feed" className="text-sm font-semibold" style={{ color: PURPLE }}>Feed</a>
-            <a href="/profile" className="text-sm font-medium hover:opacity-70" style={{ color: PLUM }}>Mi perfil</a>
-
-            {isAdmin && (
-              <span
-                className="rounded-full px-3 py-1 text-xs font-semibold"
-                style={{ backgroundColor: LAVENDER, color: PURPLE }}
-              >
+          <div className="flex items-center gap-4">
+            {token && isAdmin && (
+              <span className="inline-flex rounded-full bg-gradient-to-r from-bloom-pink via-bloom-rose to-bloom-coral px-3 py-1 text-xs font-semibold text-white">
                 Admin
               </span>
             )}
@@ -394,19 +508,13 @@ function Feed() {
               </div>
             )}
 
-            <button
-              onClick={handleLogout}
-              className="rounded-full border border-black/10 px-4 py-1.5 text-sm font-medium hover:bg-black/5"
-              style={{ color: PLUM }}
-            >
-              Cerrar sesión
-            </button>
+            <UserMenu />
           </div>
         </nav>
       </header>
 
       {/* ── CONTENIDO PRINCIPAL ── */}
-      <main className="mx-auto flex max-w-6xl gap-6 px-5 py-8">
+      <main className="mx-auto flex max-w-6xl gap-6 px-5 pb-8 pt-20">
 
         {/* ── SIDEBAR IZQUIERDA ── */}
         <aside className="hidden w-72 flex-none lg:block">
@@ -415,7 +523,7 @@ function Feed() {
           <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
             <div className="flex flex-col items-center">
               <Avatar name={profile?.nombre || user?.nombre} size="lg" foto={profile?.avatar || user?.avatar} />
-              <h2 className="mt-3 font-serif text-lg font-semibold" style={{ color: PLUM }}>
+              <h2 className="mt-3 font-title text-lg font-semibold" style={{ color: PLUM }}>
                 {profile?.nombre || user?.nombre || "Usuaria"}
               </h2>
               {(profile?.ciudad || user?.ciudad) && (
@@ -435,24 +543,19 @@ function Feed() {
 
           {/* Temas */}
           <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 text-sm font-semibold" style={{ color: PLUM }}>Temas para ti</h3>
+            <h3 className="mb-3 font-subtitle text-sm font-semibold" style={{ color: PLUM }}>Temas para ti</h3>
             <div className="flex flex-wrap gap-2">
               {["Cambio Profesional", "Nuevos Comienzos", "Habilidades Transferibles", "Confianza Profesional", "Aprendizaje Continuo", "Entrevistas Laborales", "Emprendimiento", "Logros y Avances"].map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => setFiltroTema(tag)}
-                  className="rounded-full px-3 py-1.5 text-xs font-medium hover:opacity-80 cursor-pointer"
-                  style={{ backgroundColor: LAVENDER, color: PURPLE }}
-                >
+                <PeachTag key={tag} onClick={() => setFiltroTema(tag)}>
                   {tag}
-                </button>
+                </PeachTag>
               ))}
             </div>
           </div>
 
           {/* Filtro por ubicación */}
           <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 text-sm font-semibold" style={{ color: PLUM }}>Filtrar por ubicación</h3>
+            <h3 className="mb-3 font-subtitle text-sm font-semibold" style={{ color: PLUM }}>Filtrar por ubicación</h3>
             <div className="flex flex-col gap-3">
               <select
                 value={filtroPais || ""}
@@ -487,16 +590,17 @@ function Feed() {
         <div className="min-w-0 flex-1">
 
           <div className="mb-6">
-            <h1 className="font-serif text-3xl font-semibold" style={{ color: PLUM }}>Comunidad</h1>
+            <h1 className="font-title text-3xl font-semibold" style={{ color: PLUM }}>Comunidad</h1>
             <p className="mt-1 text-sm" style={{ color: GRAY }}>Comparte tu historia. Alguien aquí ha pasado por lo mismo.</p>
           </div>
 
           {/* ── CREAR POST ── */}
-          <section className="mb-6 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
+          <section ref={crearPostRef} className="mb-6 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
             <form onSubmit={handleCreatePost}>
               <div className="flex gap-3">
                 <Avatar name={profile?.nombre || user?.nombre} foto={profile?.avatar || user?.avatar} />
                 <textarea
+                  ref={postTextareaRef}
                   value={text}
                   onChange={(e) => { const val = e.target.value; setText(val.charAt(0).toUpperCase() + val.slice(1)) }}
                   placeholder="¿Qué quieres compartir hoy?"
@@ -526,7 +630,7 @@ function Feed() {
 
               {postImagePreview && (
                 <div className="relative mt-4">
-                  <img src={postImagePreview} alt="Vista previa" className="h-32 w-32 rounded-xl object-cover border border-black/5" />
+                  <img src={postImagePreview} alt="Vista previa" className="block w-full h-auto rounded-xl border border-black/5" />
                   <button type="button" onClick={() => setPostImage(null)}
                     className="absolute -right-2 -top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white">
                     ✕
@@ -553,8 +657,19 @@ function Feed() {
             </form>
           </section>
 
+          {token && (
+            <InspiracionCard
+              className="mb-6 xl:hidden"
+              inspiracion={inspiracion}
+              loading={inspiracionLoading}
+              error={inspiracionError}
+              onUsar={handleUsarInspiracion}
+              onOtra={fetchInspiracion}
+            />
+          )}
+
           {/* ── POSTS ── */}
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4">
             {posts.length === 0 && (
               <p className="py-12 text-center text-sm" style={{ color: GRAY }}>
                 Aún no hay publicaciones. ¡Sé la primera en compartir!
@@ -585,11 +700,11 @@ function Feed() {
               const isEditing = editingId === post.id
               return (
                 <article id={`post-${post.id}`} key={post.id} className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-start gap-3 px-5 pt-5">
+                  <div className="flex items-start gap-3 px-5 pt-4 pb-3">
                     <Avatar name={post.autora.nombre} foto={post.autora.avatar} />
                     <div className="min-w-0 flex-1">
                       <button onClick={() => navigate(`/usuario/${post.autora.id}`)}
-                        className="font-serif text-base font-semibold hover:underline text-left capitalize"
+                        className="font-title text-sm font-semibold hover:underline text-left capitalize"
                         style={{ color: PURPLE }}>
                         {post.autora.nombre}
                       </button>
@@ -628,11 +743,9 @@ function Feed() {
                         {post.temas && (
                           <div className="mt-3 flex flex-wrap gap-2">
                             {post.temas.split(",").map((tema) => (
-                              <button key={tema.trim()} onClick={() => setFiltroTema(tema.trim())}
-                                className="rounded-full px-3 py-1 text-xs font-medium hover:opacity-80 cursor-pointer"
-                                style={{ backgroundColor: LAVENDER, color: PURPLE }}>
+                              <PeachTag key={tema.trim()} className="py-1" onClick={() => setFiltroTema(tema.trim())}>
                                 {tema.trim()}
-                              </button>
+                              </PeachTag>
                             ))}
                           </div>
                         )}
@@ -641,9 +754,11 @@ function Feed() {
                   </div>
 
                   {post.url && (
-                    <div className="px-5 pb-3">
-                      <img src={post.url} alt="Imagen del post" className="w-full rounded-xl object-contain" />
-                    </div>
+                    <img
+                      src={post.url}
+                      alt="Imagen del post"
+                      className="block w-full h-auto"
+                    />
                   )}
 
                   {/* Like y comentar */}
@@ -744,18 +859,26 @@ function Feed() {
         {/* ── SIDEBAR DERECHA ── */}
         <aside className="hidden w-72 flex-none xl:block">
           <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
-            <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: PLUM }}>
+            <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold font-subtitle" style={{ color: PLUM }}>
               <SparkleIcon /> Esta semana en Bloom
             </h3>
             {resumen ? (
-              <>
-                <p className="text-sm leading-relaxed" style={{ color: GRAY }}>{resumen}</p>
-                {pregunta && <p className="mt-4 text-sm font-medium" style={{ color: PURPLE }}>{pregunta}</p>}
-              </>
+              <p className="text-sm leading-relaxed" style={{ color: GRAY }}>{resumen}</p>
             ) : (
               <p className="text-sm leading-relaxed" style={{ color: GRAY }}>Cargando resumen de la comunidad...</p>
             )}
           </div>
+
+          {token && (
+            <InspiracionCard
+              className="mt-5"
+              inspiracion={inspiracion}
+              loading={inspiracionLoading}
+              error={inspiracionError}
+              onUsar={handleUsarInspiracion}
+              onOtra={fetchInspiracion}
+            />
+          )}
         </aside>
       </main>
 
@@ -763,8 +886,7 @@ function Feed() {
       <footer className="border-t border-black/5 bg-white">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-5 py-10 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-2">
-            <img src="/src/assets/bloom_flor.png" alt="Bloom" className="h-7 w-7 object-contain" />
-            <span className="font-serif text-lg font-semibold" style={{ color: PLUM }}>Bloom</span>
+            <BloomLogo className="h-7 w-auto" />
           </div>
           <p className="text-center text-xs" style={{ color: GRAY }}>© 2026 Bloom. Hecho con amor para mujeres que florecen.</p>
         </div>

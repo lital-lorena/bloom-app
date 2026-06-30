@@ -2,12 +2,10 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 import CommentList from '../components/CommentList'
+import BloomLogo from '../components/BloomLogo'
+import UserMenu from '../components/UserMenu'
 
-const PURPLE = "#8C52FF"
-const CREAM = "#fdf6f0"
-const PLUM = "#3D2B1F"
-const GRAY = "#9CA3AF"
-const LAVENDER = "#F3EEFF"
+import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
 
 function Avatar({ name, size = "md", foto = null }) {
     const letter = (name || "?").trim().charAt(0).toUpperCase()
@@ -16,10 +14,15 @@ function Avatar({ name, size = "md", foto = null }) {
         md: "h-11 w-11 text-lg",
     }
     return foto ? (
-        <img src={foto} alt={name} className={`flex-none rounded-full object-cover ${sizes[size]}`} />
+        <div
+            className={`flex-none overflow-hidden rounded-full ${sizes[size]}`}
+            style={{ backgroundColor: LAVENDER }}
+        >
+            <img src={foto} alt={name} className="h-full w-full object-cover object-top" />
+        </div>
     ) : (
         <div
-            className={`flex flex-none items-center justify-center rounded-full font-serif font-semibold ${sizes[size]}`}
+            className={`flex flex-none items-center justify-center rounded-full font-title font-semibold ${sizes[size]}`}
             style={{ backgroundColor: LAVENDER, color: PURPLE }}
         >
             {letter}
@@ -124,40 +127,44 @@ export default function PublicProfile() {
     }
 
     return (
-        <div className="min-h-screen font-sans" style={{ backgroundColor: CREAM, color: PLUM }}>
+        <div className="min-h-screen font-[family-name:var(--font-body)]" style={{ backgroundColor: CREAM, color: PLUM }}>
 
-            <header className="sticky top-0 z-10 border-b border-black/5 bg-white shadow-sm">
+            <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/85 shadow-lg backdrop-blur-sm">
                 <nav className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-5 py-3">
-                    <a href="/" className="flex items-center gap-1">
-                        <img src="/src/assets/bloom_flor.png" alt="Bloom" className="h-10 w-10 object-contain" />
-                        <span className="font-serif text-2xl font-semibold" style={{ color: PLUM }}>
-                            Bloom
-                        </span>
+                    <a href="/" className="flex items-center">
+                        <BloomLogo className="h-9 w-auto" />
                     </a>
-                    <button
-                        type="button"
-                        onClick={() => navigate("/feed")}
-                        className="rounded-full border border-black/10 px-4 py-1.5 text-sm font-medium hover:bg-black/5"
-                        style={{ color: PLUM }}
-                    >
-                        ← Volver al Feed
-                    </button>
+                    {token ? (
+                        <UserMenu />
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => navigate("/login")}
+                            className="rounded-full px-4 py-1.5 text-sm font-semibold text-white hover:opacity-90"
+                            style={{ backgroundColor: PURPLE }}
+                        >
+                            Entrar
+                        </button>
+                    )}
                 </nav>
             </header>
 
-            <main className="mx-auto max-w-2xl px-5 py-8">
+            <main className="mx-auto max-w-2xl px-5 pb-8 pt-20">
 
                 <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm mb-8">
                     <div
                         className="relative px-6 pb-8 pt-8 text-center"
                         style={{ background: `linear-gradient(180deg, ${PURPLE}22 0%, ${PURPLE}0D 50%, #ffffff 100%)` }}
                     >
-                        <div className="mx-auto mb-3 h-28 w-28 overflow-hidden rounded-full border-4 border-white shadow-md">
+                        <div
+                            className="mx-auto mb-3 h-28 w-28 overflow-hidden rounded-full border-4 border-white shadow-md"
+                            style={{ backgroundColor: LAVENDER }}
+                        >
                             {profile.avatar ? (
-                                <img src={profile.avatar} alt={profile.nombre} className="h-full w-full object-cover" />
+                                <img src={profile.avatar} alt={profile.nombre} className="h-full w-full object-cover object-top" />
                             ) : (
                                 <div
-                                    className="flex h-full w-full items-center justify-center font-serif text-4xl font-semibold"
+                                    className="flex h-full w-full items-center justify-center font-title text-4xl font-semibold"
                                     style={{ backgroundColor: CREAM, color: PURPLE }}
                                 >
                                     {letter}
@@ -165,7 +172,7 @@ export default function PublicProfile() {
                             )}
                         </div>
 
-                        <h1 className="font-serif text-2xl font-semibold" style={{ color: PLUM }}>
+                        <h1 className="font-title text-2xl font-semibold" style={{ color: PLUM }}>
                             {profile.nombre}
                         </h1>
 
@@ -183,7 +190,7 @@ export default function PublicProfile() {
                     </div>
                 </div>
 
-                <h2 className="mb-4 font-serif text-xl font-semibold" style={{ color: PLUM }}>
+                <h2 className="font-subtitle mb-4 text-xl font-semibold" style={{ color: PLUM }}>
                     Publicaciones
                 </h2>
 
@@ -207,7 +214,7 @@ export default function PublicProfile() {
 
                             {post.url && (
                                 <div className="px-5 pb-3">
-                                    <img src={post.url} alt="Imagen del post" className="w-full rounded-xl object-contain max-h-96" />
+                                    <img src={post.url} alt="Imagen del post" className="mt-3 block w-full h-auto rounded-xl" />
                                 </div>
                             )}
 

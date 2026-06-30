@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import BloomLogo from '../components/BloomLogo'
 
 function Register() {
   const [name, setName] = useState("")
@@ -38,7 +39,7 @@ function Register() {
   }
 
   const inputClass =
-    "w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-base text-[#3D2B1F] placeholder:text-[#9CA3AF] transition-colors focus:border-[#8C52FF] focus:outline-none focus:ring-2 focus:ring-[#8C52FF]/20"
+    "w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-base text-bloom-dark placeholder:text-bloom-gray transition-colors focus:border-bloom-pink focus:outline-none focus:ring-2 focus:ring-bloom-pink/20"
 
   return (
     <div className="flex min-h-screen">
@@ -48,22 +49,15 @@ function Register() {
         <div className="mx-auto w-full max-w-md">
 
           {/* Logo */}
-          <div className="mb-6 flex items-center gap-2">
-            <img
-              src="/src/assets/bloom_flor.png"
-              alt="Bloom"
-              className="h-9 w-9 object-contain"
-            />
-            <span className="font-serif text-xl font-semibold text-[#3D2B1F]">
-              Bloom
-            </span>
+          <div className="mb-6">
+            <BloomLogo className="h-9 w-auto" />
           </div>
 
           {/* Título */}
-          <h1 className="font-serif text-3xl font-bold text-[#3D2B1F] sm:text-4xl">
+          <h1 className="font-title text-3xl font-bold text-bloom-dark sm:text-4xl">
             Comienza tu nueva etapa
           </h1>
-          <p className="mt-2 text-base text-[#9CA3AF]">
+          <p className="mt-2 text-base text-bloom-gray">
             Crea tu cuenta y únete a una comunidad de mujeres que crecen juntas.
           </p>
 
@@ -73,7 +67,7 @@ function Register() {
             {/* Nombre + Apellido */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="nombre" className="mb-1.5 block text-sm font-medium text-[#3D2B1F]">
+                <label htmlFor="nombre" className="mb-1.5 block text-sm font-medium text-bloom-dark">
                   Nombre
                 </label>
                 <input
@@ -89,7 +83,7 @@ function Register() {
                 />
               </div>
               <div>
-                <label htmlFor="apellido" className="mb-1.5 block text-sm font-medium text-[#3D2B1F]">
+                <label htmlFor="apellido" className="mb-1.5 block text-sm font-medium text-bloom-dark">
                   Apellido
                 </label>
                 <input
@@ -108,7 +102,7 @@ function Register() {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-[#3D2B1F]">
+              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-bloom-dark">
                 Email
               </label>
               <input
@@ -126,7 +120,7 @@ function Register() {
             {/* Ciudad + País */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="ciudad" className="mb-1.5 block text-sm font-medium text-[#3D2B1F]">
+                <label htmlFor="ciudad" className="mb-1.5 block text-sm font-medium text-bloom-dark">
                   Ciudad
                 </label>
                 <input
@@ -142,7 +136,7 @@ function Register() {
                 />
               </div>
               <div>
-                <label htmlFor="pais" className="mb-1.5 block text-sm font-medium text-[#3D2B1F]">
+                <label htmlFor="pais" className="mb-1.5 block text-sm font-medium text-bloom-dark">
                   País
                 </label>
                 <input
@@ -161,7 +155,7 @@ function Register() {
 
             {/* Contraseña */}
             <div>
-              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-[#3D2B1F]">
+              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-bloom-dark">
                 Contraseña
               </label>
               <input
@@ -174,22 +168,22 @@ function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <p className="mt-1.5 text-xs text-[#9CA3AF]">Mínimo 8 caracteres.</p>
+              <p className="mt-1.5 text-xs text-bloom-gray">Mínimo 8 caracteres.</p>
             </div>
 
             {/* Términos */}
-            <label className="flex items-start gap-2 text-sm text-[#9CA3AF]">
+            <label className="flex items-start gap-2 text-sm text-bloom-gray">
               <input
                 type="checkbox"
-                className="mt-0.5 h-4 w-4 rounded border-[#E5E7EB] accent-[#8C52FF]"
+                className="mt-0.5 h-4 w-4 rounded border-[#E5E7EB] accent-bloom-pink"
               />
               <span>
                 Acepto los{' '}
-                <span className="text-[#8C52FF] hover:text-[#7440E8] cursor-default">
+                <span className="text-bloom-pink hover:text-bloom-rose cursor-default">
                   Términos
                 </span>{' '}
                 y la{' '}
-                <span className="text-[#8C52FF] hover:text-[#7440E8] cursor-default">
+                <span className="text-bloom-pink hover:text-bloom-rose cursor-default">
                   Política de privacidad
                 </span>{' '}
                 de Bloom.
@@ -207,15 +201,15 @@ function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-1 w-full rounded-full bg-[#8C52FF] px-6 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-[#7440E8] disabled:opacity-60 disabled:cursor-not-allowed"
+              className="mt-1 w-full rounded-full bg-bloom-pink px-6 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-bloom-rose disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? "Creando cuenta..." : "Crear mi cuenta"}
             </button>
 
             {/* Login */}
-            <p className="text-center text-sm text-[#3D2B1F]">
+            <p className="text-center text-sm text-bloom-dark">
               ¿Ya tienes cuenta?{' '}
-              <Link to="/login" className="font-medium text-[#8C52FF] hover:text-[#7440E8] transition-colors">
+              <Link to="/login" className="font-medium text-bloom-pink hover:text-bloom-rose transition-colors">
                 Inicia sesión →
               </Link>
             </p>
@@ -234,21 +228,21 @@ function Register() {
         />
 
         {/* Overlay suave para legibilidad */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#3D2B1F]/60 via-transparent to-[#8C52FF]/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-bloom-dark/60 via-transparent to-bloom-pink/10" />
 
         {/* Cita sobre la foto */}
         <div className="relative z-10 mt-auto mb-16 w-full p-10">
           <div className="rounded-2xl bg-white/85 p-6 shadow-lg backdrop-blur-sm">
-            <p className="font-serif text-base italic leading-relaxed text-[#3D2B1F]">
+            <p className="font-subtitle text-base italic leading-relaxed text-bloom-dark">
               "Me uní un domingo por la noche, sin estar segura. El lunes ya tenía tres mujeres ofreciéndome ayuda. Bloom es real."
             </p>
             <div className="mt-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#8C52FF] text-sm font-semibold text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bloom-pink text-sm font-semibold text-white">
                 L
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#3D2B1F]">Laura Gómez</p>
-                <p className="text-xs text-[#9CA3AF]">Volviendo al trabajo tras una pausa</p>
+                <p className="text-sm font-semibold text-bloom-dark">Laura Gómez</p>
+                <p className="text-xs text-bloom-gray">Volviendo al trabajo tras una pausa</p>
               </div>
             </div>
           </div>

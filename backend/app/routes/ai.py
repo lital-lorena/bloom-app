@@ -102,7 +102,7 @@ def resumen_semanal():
 
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
-            return jsonify({"resumen": "", "pregunta": ""}), 200
+            return jsonify({"resumen": ""}), 200
 
         hace_una_semana = datetime.now(timezone.utc) - timedelta(days=7)
         posts = Post.query.filter(Post.fecha_creacion >= hace_una_semana).all()
@@ -110,7 +110,6 @@ def resumen_semanal():
         if not posts:
             return jsonify({
                 "resumen": "Aún no hay publicaciones esta semana. ¡Sé la primera en compartir tu historia!",
-                "pregunta": ""
             }), 200
 
         textos = "\n".join([f"- {post.texto}" for post in posts])
@@ -140,32 +139,60 @@ def resumen_semanal():
         )
         resumen = completion.choices[0].message.content.strip()
 
-        completion2 = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "Eres la moderadora de Bloom, una red social de reinvencion profesional femenina.\n\n"
-                        f"RESUMEN: {resumen}\n\n"
-                        "TAREA: Genera una pregunta abierta para fomentar la conversación.\n"
-                        "- Una sola pregunta\n"
-                        "- Empieza con un emoji\n"
-                        "- Máximo 20 palabras\n"
-                    ),
-                },
-                {"role": "user", "content": resumen},
-            ],
-            max_tokens=100,
-            temperature=0.8,
-        )
-        pregunta = completion2.choices[0].message.content.strip()
-
-        return jsonify({"resumen": resumen, "pregunta": pregunta}), 200
+        return jsonify({"resumen": resumen}), 200
 
     except Exception as e:
-        print(f"⚠️ Groq no disponible: {e}")
-        return jsonify({"resumen": "", "pregunta": ""}), 200
+        print(f"Groq no disponible: {e}")
+        return jsonify({"resumen": ""}), 200
+
+
+INSPIRACION_PROMPT = (
+    "Eres la voz inspiradora de Bloom, una red social de reinvencion profesional femenina.\n\n"
+    "TAREA: Genera UNA sola pregunta abierta para invitar a una mujer a escribir un post.\n\n"
+    "TEMAS (elige uno al azar):\n"
+    "- Cambio profesional\n"
+    "- Nuevos comienzos\n"
+    "- Habilidades transferibles\n"
+    "- Confianza profesional\n"
+    "- Emprendimiento\n\n"
+    "REGLAS ESTRICTAS:\n"
+    "- Una sola pregunta\n"
+    "- Empieza con un emoji relevante\n"
+    "- Maximo 20 palabras\n"
+    "- Tono cercano, motivador y femenino\n"
+    "- NO uses comillas\n"
+    "- NO te presentes ni expliques nada\n"
+    "- Devuelve SOLO la pregunta, nada mas"
+)
+
+
+@ai_bp.route("/inspiracion", methods=["GET"])
+@jwt_required()
+def inspiracion():
+    try:
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            return jsonify({"pregunta": "", "error": "unavailable"}), 200
+
+        client = Groq(api_key=api_key)
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": INSPIRACION_PROMPT},
+                {"role": "user", "content": "Genera una pregunta inspiradora nueva y diferente."},
+            ],
+            max_tokens=80,
+            temperature=0.9,
+        )
+        pregunta = completion.choices[0].message.content.strip()
+        return jsonify({"pregunta": pregunta}), 200
+
+    except Exception as e:
+        print(f"Groq no disponible: {e}")
+        error_msg = str(e).lower()
+        if "429" in error_msg or "rate_limit" in error_msg:
+            return jsonify({"pregunta": "", "error": "rate_limit"}), 200
+        return jsonify({"pregunta": "", "error": "unavailable"}), 200
 
 
 def clasificar_post(texto):

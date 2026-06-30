@@ -1,17 +1,16 @@
 import { useState } from 'react'
 
-const PURPLE = "#8C52FF"
-const PLUM = "#3D2B1F"
-const GRAY = "#9CA3AF"
-const LAVENDER = "#F3EEFF"
+import { PURPLE, PLUM, GRAY, LAVENDER } from '../theme/bloomTheme'
 
 function Avatar({ name, foto = null }) {
   const letter = (name || "?").trim().charAt(0).toUpperCase()
   return foto ? (
-    <img src={foto} alt={name} className="h-9 w-9 flex-none rounded-full object-cover" />
+    <div className="h-9 w-9 flex-none overflow-hidden rounded-full" style={{ backgroundColor: LAVENDER }}>
+      <img src={foto} alt={name} className="h-full w-full object-cover object-top" />
+    </div>
   ) : (
     <div
-      className="flex h-9 w-9 flex-none items-center justify-center rounded-full font-serif text-sm font-semibold"
+      className="flex h-9 w-9 flex-none items-center justify-center rounded-full font-title text-sm font-semibold"
       style={{ backgroundColor: LAVENDER, color: PURPLE }}
     >
       {letter}
@@ -113,7 +112,7 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
                   value={editText}
                   onChange={(e) => setEditText(e.target.value)}
                   rows={2}
-                  className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-[#8C52FF]"
+                  className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-bloom-pink"
                   style={{ color: PLUM }}
                 />
                 {error && Number(editingId) === Number(c.id) && (
@@ -140,7 +139,7 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
               </div>
             ) : (
               <>
-                <div className="rounded-xl px-3 py-2 text-sm" style={{ backgroundColor: LAVENDER, color: PLUM }}>
+                <div className="rounded-xl bg-gradient-to-r from-white to-bloom-pink/30 px-3 py-2 text-sm" style={{ color: PLUM }}>
                   <span className="font-semibold" style={{ color: PURPLE }}>{c.autora.nombre} </span>
                   {c.contenido}
                 </div>

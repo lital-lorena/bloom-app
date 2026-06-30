@@ -1,15 +1,13 @@
 import { useUser } from '../context/UserContext'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import UserMenu from '../components/UserMenu'
+import BloomLogo from '../components/BloomLogo'
 
-const PURPLE = "#8C52FF"
-const CREAM = "#fdf6f0"
-const PLUM = "#3D2B1F"
-const GRAY = "#9CA3AF"
-const LAVENDER = "#F3EEFF"
+import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
 
 export default function Profile() {
-    const { token, logout } = useUser()
+    const { token, updateUser } = useUser()
     const navigate = useNavigate()
 
     const [name, setName] = useState("")
@@ -70,17 +68,21 @@ export default function Profile() {
             body: formData
         })
         if (response.ok) {
+            const data = await response.json()
+            if (data.user) {
+                updateUser({
+                    nombre: data.user.nombre,
+                    apellido: data.user.apellido,
+                    avatar: data.user.avatar,
+                })
+                if (data.user.avatar) setAvatar(data.user.avatar)
+            }
             setMessage("¡Perfil actualizado! ✅")
             setEditing(false)
         } else {
             setMessage("Error al actualizar ❌")
         }
         setLoading(false)
-    }
-
-    const handleLogout = () => {
-        logout()
-        navigate('/login')
     }
 
     const avatarPreview =
@@ -93,7 +95,7 @@ export default function Profile() {
     const letter = (name || "?").trim().charAt(0).toUpperCase()
 
     const inputClass =
-        "w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-base outline-none transition-colors focus:border-[#8C52FF] focus:ring-2 focus:ring-[#8C52FF]/20"
+        "w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-base outline-none transition-colors focus:border-bloom-pink focus:ring-2 focus:ring-bloom-pink/20"
 
     function formatDate(value) {
         try {
@@ -109,63 +111,73 @@ export default function Profile() {
     }
 
     return (
-        <div className="min-h-screen font-sans" style={{ backgroundColor: CREAM, color: PLUM }}>
+        <div className="min-h-screen font-[family-name:var(--font-body)]" style={{ backgroundColor: CREAM, color: PLUM }}>
 
             {/* ── NAVBAR ── */}
-            <header className="sticky top-0 z-10 border-b border-black/5 bg-white shadow-sm">
+            <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/85 shadow-lg backdrop-blur-sm">
                 <nav className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-5 py-3">
-                    <a href="/" className="flex items-center gap-2">
-                        <img src="/src/assets/bloom_flor.png" alt="Bloom" className="h-9 w-9 object-contain" />
-                        <span className="font-serif text-xl font-semibold" style={{ color: PLUM }}>
-                            Bloom
-                        </span>
+                    <a href="/" className="flex items-center">
+                        <BloomLogo className="h-8 w-auto" />
                     </a>
-                    <div className="flex items-center gap-6">
-                        <a href="/feed" className="text-sm font-medium hover:opacity-70" style={{ color: PLUM }}>
-                            Feed
-                        </a>
-                        <a href="/profile" className="text-sm font-semibold" style={{ color: PURPLE }}>
-                            Mi perfil
-                        </a>
-                        <button
-                            onClick={handleLogout}
-                            className="rounded-full border border-black/10 px-4 py-1.5 text-sm font-medium hover:bg-black/5"
-                            style={{ color: PLUM }}
-                        >
-                            Cerrar sesión
-                        </button>
-                    </div>
+                    <UserMenu />
                 </nav>
             </header>
 
-            <main className="mx-auto max-w-4xl px-5 py-8">
+            <main className="mx-auto max-w-4xl px-5 pb-8 pt-20">
 
                 {/* ── TARJETA DE PERFIL ── */}
                 <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
 
-                    {/* Banner con flores */}
+                    {/* Banner estilo "Lista para florecer" */}
                     <div
-                        className="relative h-40 overflow-hidden"
-                        style={{ background: `linear-gradient(135deg, ${LAVENDER} 0%, #E8DEFF 50%, ${LAVENDER} 100%)` }}
+                        className="relative flex h-44 items-center justify-center overflow-hidden"
+                        style={{
+                            backgroundColor: '#FFA58B',
+                            backgroundImage: `
+                                radial-gradient(ellipse 130% 110% at -5% -10%, #FF5FA8 0%, rgba(255, 95, 168, 0.72) 38%, transparent 72%),
+                                radial-gradient(ellipse 110% 95% at 105% 45%, #FFC2A8 0%, rgba(255, 194, 168, 0.88) 42%, transparent 70%),
+                                radial-gradient(ellipse 90% 80% at 35% 55%, #FF7E8A 0%, rgba(255, 126, 138, 0.45) 48%, transparent 75%),
+                                radial-gradient(ellipse 75% 65% at 65% 15%, rgba(255, 165, 139, 0.75) 0%, transparent 58%),
+                                radial-gradient(ellipse 85% 70% at 50% 100%, rgba(255, 194, 168, 0.55) 0%, transparent 62%)
+                            `,
+                        }}
                     >
-                        <img
-                            src="/src/assets/bloom_flor.png"
-                            alt=""
-                            className="absolute -right-10 -top-10 h-48 w-48 rotate-12 object-contain opacity-15"
+                        <svg
+                            className="pointer-events-none absolute inset-0 h-full w-full"
+                            viewBox="0 0 1200 400"
+                            preserveAspectRatio="xMidYMid slice"
                             aria-hidden="true"
-                        />
-                        <img
-                            src="/src/assets/bloom_flor.png"
-                            alt=""
-                            className="absolute -left-8 bottom-0 h-36 w-36 -rotate-12 object-contain opacity-10"
-                            aria-hidden="true"
-                        />
-                        <img
-                            src="/src/assets/bloom_flor.png"
-                            alt=""
-                            className="absolute right-1/3 -bottom-6 h-28 w-28 rotate-45 object-contain opacity-8"
-                            aria-hidden="true"
-                        />
+                        >
+                            <g style={{ filter: 'blur(0.5px)' }}>
+                                <path
+                                    d="M-80 90 C180 30, 380 150, 620 80 S1020 20, 1280 110"
+                                    stroke="white"
+                                    strokeWidth="52"
+                                    fill="none"
+                                    opacity="0.13"
+                                    strokeLinecap="round"
+                                />
+                                <path
+                                    d="M-60 260 C220 190, 420 310, 680 230 S1060 170, 1300 280"
+                                    stroke="white"
+                                    strokeWidth="40"
+                                    fill="none"
+                                    opacity="0.11"
+                                    strokeLinecap="round"
+                                />
+                                <path
+                                    d="M120 340 C340 280, 520 380, 760 300 S980 240, 1180 320"
+                                    stroke="white"
+                                    strokeWidth="28"
+                                    fill="none"
+                                    opacity="0.1"
+                                    strokeLinecap="round"
+                                />
+                            </g>
+                        </svg>
+                        <p className="relative z-10 font-title text-5xl tracking-tight text-white md:text-6xl">
+                            Bloom
+                        </p>
                     </div>
 
                     {/* Info del perfil */}
@@ -173,12 +185,15 @@ export default function Profile() {
                         <div className="relative -mt-14 flex items-end gap-5">
                             {/* Avatar */}
                             <div className="relative flex-none">
-                                <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-white shadow-lg">
+                                <div
+                                    className="h-28 w-28 overflow-hidden rounded-full border-4 border-white shadow-lg"
+                                    style={{ backgroundColor: LAVENDER }}
+                                >
                                     {avatarPreview ? (
-                                        <img src={avatarPreview} alt="avatar" className="h-full w-full object-cover" />
+                                        <img src={avatarPreview} alt="avatar" className="h-full w-full object-cover object-top" />
                                     ) : (
                                         <div
-                                            className="flex h-full w-full items-center justify-center font-serif text-4xl font-semibold"
+                                            className="flex h-full w-full items-center justify-center font-title text-4xl font-semibold"
                                             style={{ backgroundColor: CREAM, color: PURPLE }}
                                         >
                                             {letter}
@@ -204,7 +219,7 @@ export default function Profile() {
 
                             {/* Nombre + profesión */}
                             <div className="mb-2 min-w-0 flex-1">
-                                <h1 className="font-serif text-2xl font-bold capitalize" style={{ color: PLUM }}>
+                                <h1 className="font-title text-2xl font-bold capitalize" style={{ color: PLUM }}>
                                     {name} {lastName}
                                 </h1>
                                 {profesion && (
@@ -240,7 +255,7 @@ export default function Profile() {
                         {/* Estadísticas */}
                         <div className="mt-5 flex gap-8 border-t border-black/5 pt-5">
                             <div>
-                                <p className="font-serif text-xl font-bold" style={{ color: PLUM }}>{posts.length}</p>
+                                <p className="font-title text-xl font-bold" style={{ color: PLUM }}>{posts.length}</p>
                                 <p className="text-xs" style={{ color: GRAY }}>Publicaciones</p>
                             </div>
                         </div>
@@ -250,7 +265,7 @@ export default function Profile() {
                 {/* ── FORMULARIO DE EDICIÓN ── */}
                 {editing && (
                     <div className="mt-6 rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
-                        <h2 className="mb-5 font-serif text-xl font-semibold" style={{ color: PLUM }}>
+                        <h2 className="mb-5 font-subtitle text-xl font-semibold" style={{ color: PLUM }}>
                             Editar mi perfil
                         </h2>
                         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -353,7 +368,7 @@ export default function Profile() {
 
                 {/* ── PUBLICACIONES ── */}
                 <div className="mt-6">
-                    <h2 className="mb-4 font-serif text-xl font-semibold" style={{ color: PLUM }}>
+                    <h2 className="mb-4 font-subtitle text-xl font-semibold" style={{ color: PLUM }}>
                         Publicaciones recientes
                     </h2>
 
@@ -375,12 +390,15 @@ export default function Profile() {
                             {posts.map((post) => (
                                 <article key={post.id} className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
                                     <div className="flex items-center gap-3 mb-3">
-                                        <div className="h-10 w-10 flex-none overflow-hidden rounded-full">
+                                        <div
+                                            className="h-10 w-10 flex-none overflow-hidden rounded-full"
+                                            style={{ backgroundColor: LAVENDER }}
+                                        >
                                             {avatarPreview ? (
-                                                <img src={avatarPreview} alt={name} className="h-full w-full object-cover" />
+                                                <img src={avatarPreview} alt={name} className="h-full w-full object-cover object-top" />
                                             ) : (
                                                 <div
-                                                    className="flex h-full w-full items-center justify-center font-serif text-sm font-semibold"
+                                                    className="flex h-full w-full items-center justify-center font-title text-sm font-semibold"
                                                     style={{ backgroundColor: LAVENDER, color: PURPLE }}
                                                 >
                                                     {letter}
@@ -404,7 +422,7 @@ export default function Profile() {
                                         <img
                                             src={post.url}
                                             alt="Imagen del post"
-                                            className="mt-3 w-full rounded-xl object-contain"
+                                            className="mt-3 block w-full h-auto rounded-xl"
                                         />
                                     )}
                                 </article>
@@ -418,8 +436,7 @@ export default function Profile() {
             <footer className="mt-8 border-t border-black/5 bg-white">
                 <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-5 py-10 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex items-center gap-2">
-                        <img src="/src/assets/bloom_flor.png" alt="Bloom" className="h-7 w-7 object-contain" />
-                        <span className="font-serif text-lg font-semibold" style={{ color: PLUM }}>Bloom</span>
+                        <BloomLogo className="h-7 w-auto" />
                     </div>
                     <p className="text-center text-xs" style={{ color: GRAY }}>
                         © 2026 Bloom. Hecho con amor para mujeres que florecen.

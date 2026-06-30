@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
+import BloomLogo from '../components/BloomLogo'
 
 const REMEMBERED_EMAIL_KEY = 'remembered_email'
 
@@ -41,22 +42,15 @@ function Login() {
         <div className="mx-auto w-full max-w-md">
 
           {/* Logo */}
-          <div className="mb-10 flex items-center gap-2">
-            <img
-              src="/src/assets/bloom_flor.png"
-              alt="Bloom"
-              className="h-9 w-9 object-contain"
-            />
-            <span className="font-serif text-xl font-semibold text-[#3D2B1F]">
-              Bloom
-            </span>
+          <div className="mb-10">
+            <BloomLogo className="h-9 w-auto" />
           </div>
 
           {/* Título */}
-          <h1 className="font-serif text-3xl font-bold text-[#3D2B1F] sm:text-4xl">
+          <h1 className="font-title text-3xl font-bold text-bloom-dark sm:text-4xl">
             Bienvenida de nuevo
           </h1>
-          <p className="mt-2 text-base text-[#9CA3AF]">
+          <p className="mt-2 text-base text-bloom-gray">
             Inicia sesión para continuar tu camino en la comunidad Bloom.
           </p>
 
@@ -65,7 +59,7 @@ function Login() {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-[#3D2B1F]">
+              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-bloom-dark">
                 Email
               </label>
               <input
@@ -74,7 +68,7 @@ function Login() {
                 name="email"
                 autoComplete="email"
                 placeholder="tu@email.com"
-                className="w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-base text-[#3D2B1F] placeholder:text-[#9CA3AF] transition-colors focus:border-[#8C52FF] focus:outline-none focus:ring-2 focus:ring-[#8C52FF]/20"
+                className="w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-base text-bloom-dark placeholder:text-bloom-gray transition-colors focus:border-bloom-pink focus:outline-none focus:ring-2 focus:ring-bloom-pink/20"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -82,7 +76,7 @@ function Login() {
 
             {/* Contraseña */}
             <div>
-              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-[#3D2B1F]">
+              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-bloom-dark">
                 Contraseña
               </label>
               <div className="relative">
@@ -92,14 +86,14 @@ function Login() {
                   name="password"
                   autoComplete="current-password"
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 pr-11 text-base text-[#3D2B1F] placeholder:text-[#9CA3AF] transition-colors focus:border-[#8C52FF] focus:outline-none focus:ring-2 focus:ring-[#8C52FF]/20"
+                  className="w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 pr-11 text-base text-bloom-dark placeholder:text-bloom-gray transition-colors focus:border-bloom-pink focus:outline-none focus:ring-2 focus:ring-bloom-pink/20"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#8C52FF] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-bloom-gray hover:text-bloom-pink transition-colors"
                   aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 >
                   {showPassword ? (
@@ -119,14 +113,14 @@ function Login() {
 
             {/* Recordar + Olvidaste */}
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm text-[#9CA3AF]">
+              <label className="flex items-center gap-2 text-sm text-bloom-gray">
                 <input
                   type="checkbox"
-                  className="h-4 w-4 rounded border-[#E5E7EB] accent-[#8C52FF]"
+                  className="h-4 w-4 rounded border-[#E5E7EB] accent-bloom-pink"
                 />
                 Recordarme
               </label>
-              <span className="text-sm font-medium text-[#8C52FF] hover:text-[#7440E8] cursor-default">
+              <span className="text-sm font-medium text-bloom-pink hover:text-bloom-rose cursor-default">
                 ¿Olvidaste tu contraseña?
               </span>
             </div>
@@ -142,15 +136,15 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-1 w-full rounded-full bg-[#8C52FF] px-6 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-[#7440E8] disabled:opacity-60 disabled:cursor-not-allowed"
+              className="mt-1 w-full rounded-full bg-bloom-pink px-6 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-bloom-rose disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? "Entrando..." : "Entrar"}
             </button>
 
             {/* Registro */}
-            <p className="text-center text-sm text-[#3D2B1F]">
+            <p className="text-center text-sm text-bloom-dark">
               ¿No tienes cuenta?{' '}
-              <Link to="/register" className="font-medium text-[#8C52FF] hover:text-[#7440E8] transition-colors">
+              <Link to="/register" className="font-medium text-bloom-pink hover:text-bloom-rose transition-colors">
                 Crea tu cuenta →
               </Link>
             </p>
@@ -168,22 +162,22 @@ function Login() {
         />
 
         {/* Overlay suave */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#3D2B1F]/60 via-transparent to-[#8C52FF]/15" />
+        <div className="absolute inset-0 bg-gradient-to-t from-bloom-dark/60 via-transparent to-bloom-pink/15" />
 
 
         {/* Cita */}
         <div className="relative z-10 mt-auto mb-16 w-full p-10">
           <div className="rounded-2xl bg-white/85 p-6 shadow-lg backdrop-blur-sm">
-            <p className="font-serif text-base italic leading-relaxed text-[#3D2B1F]">
+            <p className="font-subtitle text-base italic leading-relaxed text-bloom-dark">
               "Cada vez que entro, encuentro a alguien cuya historia se parece a la mía. Eso lo cambia todo."
             </p>
             <div className="mt-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#8C52FF] text-sm font-semibold text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bloom-pink text-sm font-semibold text-white">
                 A
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#3D2B1F]">Ana Martínez</p>
-                <p className="text-xs text-[#9CA3AF]">A los 35 me atreví a empezar de cero</p>
+                <p className="text-sm font-semibold text-bloom-dark">Ana Martínez</p>
+                <p className="text-xs text-bloom-gray">A los 35 me atreví a empezar de cero</p>
               </div>
             </div>
           </div>

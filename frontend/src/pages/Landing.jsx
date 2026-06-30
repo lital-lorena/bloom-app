@@ -1,163 +1,232 @@
 ﻿import { useNavigate } from 'react-router-dom'
+import { useUser } from '../context/UserContext'
+import BloomLogo from '../components/BloomLogo'
+import BloomButton from '../components/BloomButton'
+import UserMenu from '../components/UserMenu'
+import NavAuthLinks from '../components/NavAuthLinks'
+import heroImage from '../assets/hero.png'
+import sandraPhoto from '../assets/testimonials/sandra.jpg'
+import saraPhoto from '../assets/testimonials/sara.jpg'
+import mariaPhoto from '../assets/testimonials/maria.jpg'
 
 export default function Landing() {
     const navigate = useNavigate()
+    const { token } = useUser()
 
     return (
-        <div className="min-h-screen bg-[#fdf6f0]">
+        <div className="min-h-screen bg-white font-[family-name:var(--font-body)]">
 
-            {/* NAVBAR */}
-            <nav className="flex justify-between items-center px-8 py-1 bg-white shadow-sm max-h-16">
-                <div className="flex items-center gap-1">
-                    <img src="/src/assets/bloom_flor.png" alt="Bloom" className="h-12 w-12 object-contain" />
-                    <span className="text-2xl font-bold text-[#2d1b4e]" style={{ fontFamily: 'Georgia, serif' }}>Bloom</span>
-                </div>
-                <div className="flex gap-6 text-[#2d1b4e] font-medium">
-                    <a href="/feed">Feed</a>
-                    <a href="/profile">Mi perfil</a>
-                    <a href="#">Sobre nosotras</a>
-                </div>
-                <button
-                    onClick={() => navigate('/login')}
-                    className="bg-[#7c3aed] text-white px-5 py-2 rounded-full font-semibold hover:bg-[#6d28d9]"
-                >
-                    Entrar
-                </button>
+            <nav className="fixed inset-x-4 top-4 z-50 flex items-center justify-between rounded-2xl border border-white/40 bg-white/85 px-5 py-3 shadow-lg backdrop-blur-sm md:inset-x-10 md:px-8 lg:inset-x-12">
+                <a href="/" className="flex items-center">
+                    <BloomLogo className="h-9 w-auto md:h-10 lg:h-11" />
+                </a>
+                {token ? (
+                    <UserMenu />
+                ) : (
+                    <BloomButton variant="nav" onClick={() => navigate('/login')}>
+                        Entrar
+                    </BloomButton>
+                )}
             </nav>
 
-            {/* HERO */}
-            <section className="flex flex-col md:flex-row items-center justify-between px-12 py-20 gap-10">
-                <div className="max-w-xl">
-                    <h1 className="text-5xl font-bold text-[#2d1b4e] leading-tight mb-6" style={{ fontFamily: 'Georgia, serif' }}>
-                        Existimos para que las mujeres florezcan en su nueva etapa profesional.
-                    </h1>
-                    <p className="text-gray-600 text-lg mb-8">
-                        Queremos que nuestra comunidad encuentre inspiración, conexiones reales y el coraje para reinventarse.
-                    </p>
-                    <button
-                        onClick={() => navigate('/register')}
-                        className="bg-[#7c3aed] text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-[#6d28d9]"
-                    >
-                        Unete a Bloom
-                    </button>
-                </div>
-                <div className="flex gap-4 relative">
-                    <div className="relative">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=400&fit=crop" alt="mujer profesional" className="rounded-2xl w-48 h-64 object-cover shadow-lg" />
-                        <span className="absolute bottom-4 left-2 bg-[#7c3aed] text-white text-xs px-3 py-1 rounded-full writing-mode-vertical">Cambio de carrera</span>
-                    </div>
-                    <div className="relative mt-8">
-                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=400&fit=crop" alt="mujer profesional" className="rounded-2xl w-48 h-64 object-cover shadow-lg" />
-                        <span className="absolute bottom-4 left-2 bg-[#7c3aed] text-white text-xs px-3 py-1 rounded-full">Tech</span>
-                    </div>
-                    <div className="relative">
-                        <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=300&h=400&fit=crop" alt="mujer profesional" className="rounded-2xl w-48 h-64 object-cover shadow-lg" />
-                        <span className="absolute bottom-4 left-2 bg-[#7c3aed] text-white text-xs px-3 py-1 rounded-full">Emprendedora</span>
+            <section className="relative w-full">
+                <div className="relative min-h-[32rem] w-full overflow-hidden md:min-h-[36rem] lg:min-h-[40rem]">
+                    <img
+                        src={heroImage}
+                        alt="Mujeres profesionales en comunidad"
+                        className="absolute inset-0 h-full w-full object-cover object-center"
+                    />
+
+                    <div
+                        className="absolute inset-0 pointer-events-none"
+                        aria-hidden="true"
+                        style={{
+                            background: `
+                                radial-gradient(ellipse 85% 75% at 100% 0%, rgba(255, 90, 157, 0.88) 0%, rgba(255, 116, 135, 0.55) 35%, transparent 72%),
+                                radial-gradient(ellipse 90% 80% at 0% 100%, rgba(255, 90, 157, 0.92) 0%, rgba(255, 138, 104, 0.6) 38%, transparent 75%)
+                            `,
+                        }}
+                    />
+
+                    <div className="relative z-10 flex min-h-[32rem] flex-col justify-end p-8 md:min-h-[36rem] md:p-12 lg:min-h-[40rem] lg:p-14">
+                        <h1 className="font-title text-6xl tracking-tight text-white sm:text-7xl md:text-8xl lg:text-[7rem] lg:leading-none">
+                            Bloom
+                        </h1>
+                        <p className="font-subtitle mt-3 max-w-md text-base font-medium text-white/95 sm:text-lg md:text-xl">
+                            Todo lo que necesitas para florecer
+                        </p>
+                        {token ? (
+                            <BloomButton variant="hero" className="mt-6" onClick={() => navigate('/feed')}>
+                                Ir al Feed
+                            </BloomButton>
+                        ) : (
+                            <BloomButton variant="hero" className="mt-6" showDot onClick={() => navigate('/register')}>
+                                Unete
+                            </BloomButton>
+                        )}
                     </div>
                 </div>
             </section>
 
-            {/* FEATURES */}
-            <section className="bg-white py-20 px-12">
-                <h2 className="text-3xl font-bold text-center text-[#2d1b4e] mb-4" style={{ fontFamily: 'Georgia, serif' }}>
-                    Todo lo que necesitas para florecer
+            <section className="bg-white px-12 py-20">
+                <h2 className="font-title mb-4 text-center text-3xl text-bloom-dark">
+                    ¿Qué encontrarás en Bloom?
                 </h2>
-                <p className="text-center text-gray-500 mb-12">Una plataforma pensada para acompañarte en cada paso de tu reinvención profesional.</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <p className="mb-12 text-center text-bloom-gray">
+                    Una plataforma pensada para acompañarte en cada paso de tu reinvención profesional.
+                </p>
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                     {[
-                        { title: "Comparte tu historia", desc: "Publica tus logros, dudas y aprendizajes con una comunidad que te entiende." },
-                        { title: "Conecta con mujeres", desc: "Encuentra tu comunidad de apoyo y crece junto a quienes también se reinventan." },
-                        { title: "Reinventate", desc: "Inspi­rate en historias reales de transformación y da el salto que mereces." }
+                        { title: 'Comparte tu historia', desc: 'Publica tus logros, dudas y aprendizajes con una comunidad que te entiende.' },
+                        { title: 'Conecta con mujeres', desc: 'Encuentra tu comunidad de apoyo y crece junto a quienes también se reinventan.' },
+                        { title: 'Reinventate', desc: 'Inspirate en historias reales de transformación y da el salto que mereces.' },
                     ].map((f, i) => (
-                        <div key={i} className="bg-[#fdf6f0] rounded-2xl p-8 text-center shadow-sm">
-                            <span className="text-4xl mb-4 block">{f.icon}</span>
-                            <h3 className="text-xl font-bold text-[#2d1b4e] mb-3">{f.title}</h3>
-                            <p className="text-gray-500">{f.desc}</p>
+                        <div key={i} className="rounded-2xl border-2 border-bloom-pink bg-transparent p-8 text-center">
+                            <h3 className="font-subtitle mb-3 text-xl text-bloom-dark">{f.title}</h3>
+                            <p className="text-bloom-gray">{f.desc}</p>
                         </div>
                     ))}
                 </div>
             </section>
 
-            {/* TESTIMONIALS */}
-            <section className="py-20 px-12 bg-[#fdf6f0]">
-                <h2 className="text-3xl font-bold text-center text-[#2d1b4e] mb-4" style={{ fontFamily: 'Georgia, serif' }}>
+            <section
+                className="px-12 py-20"
+                style={{
+                    background: 'linear-gradient(to bottom, #FFFFFF 0%, #FFF5F2 45%, #FFD4CC 100%)',
+                }}
+            >
+                <h2 className="font-title mb-4 text-center text-3xl text-bloom-dark">
                     Historias que inspiran
                 </h2>
-                <p className="text-center text-gray-500 mb-12">"Mujeres como tú que ya dieron el salto. Léelas, inspírate, únete."</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <p className="mb-12 text-center text-bloom-gray">
+                    Mujeres como tú que ya dieron el salto. Léelas, inspírate, únete.
+                </p>
+                <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3">
                     {[
-                        { quote: "Bloom me dio el empuje que necesitaba para dar el salto a tech.", name: "Sandra", age: "35 Años Chile" },
-                        { quote: "Encontré mi comunidad y mi nuevo camino profesional.", name: "Sara", age: "34 años León" }
+                        { quote: 'Bloom me dio el empuje que necesitaba para dar el salto a tech.', name: 'Sandra', age: '35 años · Chile', photo: sandraPhoto },
+                        { quote: 'Encontré mi comunidad y mi nuevo camino profesional.', name: 'Sara', age: '34 años · León', photo: saraPhoto },
+                        { quote: 'Aquí nadie juzga tu pausa. Solo te ayudan a volver con más fuerza.', name: 'María', age: '42 años · Madrid', photo: mariaPhoto },
                     ].map((t, i) => (
-                        <div key={i} className="bg-white rounded-2xl p-8 shadow-sm">
-                            <p className="text-[#2d1b4e] text-lg italic mb-6">"{t.quote}"</p>
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center text-purple-700 font-bold">
-                                    {t.name[0]}
-                                </div>
-                                <div>
-                                    <p className="font-bold text-[#2d1b4e]">{t.name}</p>
-                                    <p className="text-gray-400 text-sm">{t.age}</p>
-                                </div>
+                        <div
+                            key={i}
+                            className="flex flex-col items-center rounded-2xl bg-white/90 p-8 text-center shadow-[0_8px_32px_-4px_rgba(255,95,168,0.15)] backdrop-blur-sm"
+                        >
+                            <div className="mb-5 h-16 w-16 overflow-hidden rounded-full ring-2 ring-bloom-peach/50">
+                                <img
+                                    src={t.photo}
+                                    alt={t.name}
+                                    className="h-full w-full object-cover object-top"
+                                />
+                            </div>
+                            <p className="font-subtitle mb-6 flex-1 text-base font-normal italic leading-relaxed text-bloom-dark md:text-lg">
+                                &ldquo;{t.quote}&rdquo;
+                            </p>
+                            <div>
+                                <p className="font-normal text-bloom-dark">{t.name}</p>
+                                <p className="mt-1 text-sm text-bloom-gray">{t.age}</p>
                             </div>
                         </div>
                     ))}
                 </div>
             </section>
 
-            {/* CTA */}
-            <section className="bg-[#f3e8ff] py-20 px-12 text-center">
-                <h2 className="text-4xl font-bold text-[#2d1b4e] mb-4" style={{ fontFamily: 'Georgia, serif' }}>
-                    ¿Lista para florecer?
-                </h2>
-                <p className="text-gray-600 mb-8">Únete a miles de mujeres que ya están reinventando su carrera.</p>
-                <button
-                    onClick={() => navigate('/register')}
-                    className="bg-[#7c3aed] text-white px-10 py-4 rounded-full font-semibold text-lg hover:bg-[#6d28d9]"
+            <section className="px-6 py-12 md:px-12 md:py-16">
+                <div
+                    className="relative overflow-hidden rounded-[2.5rem] px-8 py-24 text-center md:rounded-[3.5rem] md:px-16 md:py-28"
+                    style={{
+                        backgroundColor: '#FFA58B',
+                        backgroundImage: `
+                            radial-gradient(ellipse 130% 110% at -5% -10%, #FF5FA8 0%, rgba(255, 95, 168, 0.72) 38%, transparent 72%),
+                            radial-gradient(ellipse 110% 95% at 105% 45%, #FFC2A8 0%, rgba(255, 194, 168, 0.88) 42%, transparent 70%),
+                            radial-gradient(ellipse 90% 80% at 35% 55%, #FF7E8A 0%, rgba(255, 126, 138, 0.45) 48%, transparent 75%),
+                            radial-gradient(ellipse 75% 65% at 65% 15%, rgba(255, 165, 139, 0.75) 0%, transparent 58%),
+                            radial-gradient(ellipse 85% 70% at 50% 100%, rgba(255, 194, 168, 0.55) 0%, transparent 62%)
+                        `,
+                        boxShadow: '0 24px 64px -12px rgba(255, 95, 168, 0.18)',
+                    }}
                 >
-                    Empieza ahora
-                </button>
+                    {/* Formas orgánicas decorativas */}
+                    <svg
+                        className="pointer-events-none absolute inset-0 h-full w-full"
+                        viewBox="0 0 1200 400"
+                        preserveAspectRatio="xMidYMid slice"
+                        aria-hidden="true"
+                    >
+                        <g style={{ filter: 'blur(0.5px)' }}>
+                            <path
+                                d="M-80 90 C180 30, 380 150, 620 80 S1020 20, 1280 110"
+                                stroke="white"
+                                strokeWidth="52"
+                                fill="none"
+                                opacity="0.13"
+                                strokeLinecap="round"
+                            />
+                            <path
+                                d="M-60 260 C220 190, 420 310, 680 230 S1060 170, 1300 280"
+                                stroke="white"
+                                strokeWidth="40"
+                                fill="none"
+                                opacity="0.11"
+                                strokeLinecap="round"
+                            />
+                            <path
+                                d="M120 340 C340 280, 520 380, 760 300 S980 240, 1180 320"
+                                stroke="white"
+                                strokeWidth="28"
+                                fill="none"
+                                opacity="0.1"
+                                strokeLinecap="round"
+                            />
+                        </g>
+                    </svg>
+
+                    <div className="relative z-10 mx-auto max-w-2xl">
+                        <h2 className="font-title mb-5 text-4xl font-bold tracking-tight text-white md:text-5xl">
+                            ¿Lista para florecer?
+                        </h2>
+                        <p className="mb-10 text-base font-light leading-relaxed text-white md:text-lg">
+                            Únete a miles de mujeres que ya están reinventando su carrera.
+                        </p>
+                        <BloomButton variant="hero" showDot className="mx-auto text-base" onClick={() => navigate('/register')}>
+                            Empieza ahora
+                        </BloomButton>
+                    </div>
+                </div>
             </section>
 
-            {/* FOOTER */}
             <footer className="bg-white px-12 py-12">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                <div className="mb-8 grid grid-cols-2 gap-8 md:grid-cols-4">
                     <div>
-                        <div className="flex items-center gap-1 mb-2">
-                            <img src="/src/assets/bloom_flor.png" alt="Bloom" className="h-8 w-8 object-contain" />
-                            <p className="text-xl font-bold text-[#2d1b4e]">Bloom</p>
-                        </div>
-                        <p className="text-gray-500 text-sm">Una comunidad para mujeres que se reinventan.</p>
-                        <div className="flex gap-3 mt-4 text-gray-400">
-                            <img src="/src/assets/bloom_flor.png" alt="Bloom" className="h-16 w-16 object-contain mx-auto mb-4" />
+                        <BloomLogo className="mb-2 h-8 w-auto" />
+                        <p className="text-sm text-bloom-gray">Una comunidad para mujeres que se reinventan.</p>
+                    </div>
+                    <div>
+                        <p className="mb-3 font-semibold text-bloom-dark">Plataforma</p>
+                        <div className="flex flex-col gap-2 text-sm text-bloom-gray">
+                            {token && (
+                                <NavAuthLinks className="flex-col items-start gap-2 [&_a]:text-sm [&_a]:text-bloom-gray [&_a]:hover:text-bloom-pink" />
+                            )}
+                            <a href="/register" className="hover:text-bloom-pink">Únete a Bloom</a>
                         </div>
                     </div>
                     <div>
-                        <p className="font-bold text-[#2d1b4e] mb-3">Plataforma</p>
-                        <div className="flex flex-col gap-2 text-gray-500 text-sm">
-                            <a href="/feed">Feed</a>
-                            <a href="/profile">Mi perfil</a>
-                            <a href="/register">Únete a Bloom</a>
+                        <p className="mb-3 font-semibold text-bloom-dark">Nosotras</p>
+                        <div className="flex flex-col gap-2 text-sm text-bloom-gray">
+                            <a href="#" className="hover:text-bloom-pink">Sobre Bloom</a>
+                            <a href="#" className="hover:text-bloom-pink">Contacto</a>
+                            <a href="#" className="hover:text-bloom-pink">Blog</a>
                         </div>
                     </div>
                     <div>
-                        <p className="font-bold text-[#2d1b4e] mb-3">Nosotras</p>
-                        <div className="flex flex-col gap-2 text-gray-500 text-sm">
-                            <a href="#">Sobre Bloom</a>
-                            <a href="#">Contacto</a>
-                            <a href="#">Blog</a>
-                        </div>
-                    </div>
-                    <div>
-                        <p className="font-bold text-[#2d1b4e] mb-3">Legal</p>
-                        <div className="flex flex-col gap-2 text-gray-500 text-sm">
-                            <a href="#">Política de privacidad</a>
-                            <a href="#">Términos de uso</a>
-                            <a href="#">Cookies</a>
+                        <p className="mb-3 font-semibold text-bloom-dark">Legal</p>
+                        <div className="flex flex-col gap-2 text-sm text-bloom-gray">
+                            <a href="#" className="hover:text-bloom-pink">Política de privacidad</a>
+                            <a href="#" className="hover:text-bloom-pink">Términos de uso</a>
+                            <a href="#" className="hover:text-bloom-pink">Cookies</a>
                         </div>
                     </div>
                 </div>
-                <p className="text-center text-gray-400 text-sm border-t pt-6">
+                <p className="border-t pt-6 text-center text-sm text-bloom-gray">
                     © 2025 Bloom. Hecho con amor para mujeres que florecen.
                 </p>
             </footer>

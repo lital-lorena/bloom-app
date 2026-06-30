@@ -43,10 +43,12 @@ def _serializar_usuaria(usuaria):
     return {
         "id": usuaria.id,
         "nombre": usuaria.nombre,
+        "apellido": usuaria.apellido,
         "email": usuaria.email,
         "rol": usuaria.rol,
         "pais": usuaria.pais,
         "ciudad": usuaria.ciudad,
+        "avatar": usuaria.avatar,
     }
 
 
