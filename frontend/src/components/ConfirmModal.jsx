@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react'
+import { useEffect } from 'react'
 import BloomButton from './BloomButton'
 
 export default function ConfirmModal({

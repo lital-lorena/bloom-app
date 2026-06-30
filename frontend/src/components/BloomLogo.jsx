@@ -1,4 +1,4 @@
-﻿import logo from '../assets/logo.png'
+import logo from '../assets/logo.png'
 
 export default function BloomLogo({ className = 'h-10 w-auto' }) {
   return (

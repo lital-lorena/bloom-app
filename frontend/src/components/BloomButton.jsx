@@ -1,4 +1,4 @@
-﻿const variants = {
+const variants = {
   primary:
     'inline-flex items-center justify-center gap-2 rounded-full bg-bloom-pink px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-bloom-rose md:px-8 md:py-3.5 md:text-base',
   secondary:

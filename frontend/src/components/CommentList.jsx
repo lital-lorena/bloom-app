@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 
 import { PURPLE, PLUM, GRAY, LAVENDER } from '../theme/bloomTheme'
 import ConfirmModal from './ConfirmModal'

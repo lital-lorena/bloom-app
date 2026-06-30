@@ -1,4 +1,4 @@
-﻿import { useUser } from '../context/UserContext'
+import { useUser } from '../context/UserContext'
 
 function linkClasses(isActive, light) {
   const base = 'text-sm font-medium transition-colors duration-200'

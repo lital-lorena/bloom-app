@@ -1,4 +1,4 @@
-﻿// Tokens de marca Bloom â€” usar en estilos inline cuando haga falta
+// Tokens de marca Bloom â€” usar en estilos inline cuando haga falta
 export const colors = {
   pink: '#FF5A9D',
   rose: '#FF7487',

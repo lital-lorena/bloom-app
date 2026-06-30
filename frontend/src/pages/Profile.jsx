@@ -1,4 +1,4 @@
-﻿import { useUser } from '../context/UserContext'
+import { useUser } from '../context/UserContext'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import UserMenu from '../components/UserMenu'
