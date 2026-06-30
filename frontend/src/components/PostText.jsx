@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+﻿import { useState, useRef, useEffect } from 'react'
 
 export default function PostText({ text, className = '' }) {
   const [expanded, setExpanded] = useState(false)
@@ -34,7 +34,7 @@ export default function PostText({ text, className = '' }) {
           onClick={() => setExpanded(true)}
           className="mt-1 text-sm font-semibold text-bloom-pink transition-colors hover:text-bloom-rose"
         >
-          Seguir leyendo ↓
+          Seguir leyendo â†“
         </button>
       )}
       {expanded && isTruncated && (
@@ -43,9 +43,10 @@ export default function PostText({ text, className = '' }) {
           onClick={() => setExpanded(false)}
           className="mt-2 text-sm font-semibold text-bloom-pink transition-colors hover:text-bloom-rose"
         >
-          Ver menos ↑
+          Ver menos â†‘
         </button>
       )}
     </div>
   )
 }
+

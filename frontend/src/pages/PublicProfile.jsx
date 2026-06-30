@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 import CommentList from '../components/CommentList'
@@ -179,7 +179,7 @@ export default function PublicProfile() {
 
                         {(profile.ciudad || profile.pais) && (
                             <p className="mt-1 text-sm" style={{ color: PURPLE }}>
-                                📍 {profile.ciudad || profile.pais}
+                                ðŸ“ {profile.ciudad || profile.pais}
                             </p>
                         )}
 
@@ -198,7 +198,7 @@ export default function PublicProfile() {
                 <div className="flex flex-col gap-5">
                     {profile.posts.length === 0 && (
                         <p className="py-8 text-center text-sm" style={{ color: GRAY }}>
-                            Esta usuaria aún no tiene publicaciones.
+                            Esta usuaria aÃºn no tiene publicaciones.
                         </p>
                     )}
 
@@ -224,7 +224,7 @@ export default function PublicProfile() {
                                     className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5 transition-colors"
                                     style={{ color: GRAY }}
                                 >
-                                    💬 {post.comments_count ?? comentarios[post.id]?.length ?? 0}
+                                    ðŸ’¬ {post.comments_count ?? comentarios[post.id]?.length ?? 0}
                                 </button>
                             </div>
 
@@ -262,7 +262,7 @@ export default function PublicProfile() {
                                     ) : (
                                         <p className="text-center text-sm py-2" style={{ color: GRAY }}>
                                             <button type="button" onClick={() => navigate("/login")} className="font-medium hover:underline" style={{ color: PURPLE }}>
-                                                Inicia sesión
+                                                Inicia sesiÃ³n
                                             </button>
                                             {" "}para comentar.
                                         </p>
@@ -276,3 +276,4 @@ export default function PublicProfile() {
         </div>
     )
 }
+

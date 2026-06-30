@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+ï»¿import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 import BloomLogo from '../components/BloomLogo'
 import BloomButton from '../components/BloomButton'
@@ -70,16 +70,16 @@ export default function Landing() {
 
             <section className="bg-white px-12 py-20">
                 <h2 className="font-title mb-4 text-center text-3xl text-bloom-dark">
-                    ¿Qué encontrarás en Bloom?
+                    Â¿QuÃ© encontrarÃ¡s en Bloom?
                 </h2>
                 <p className="mb-12 text-center text-bloom-gray">
-                    Una plataforma pensada para acompañarte en cada paso de tu reinvención profesional.
+                    Una plataforma pensada para acompaÃ±arte en cada paso de tu reinvenciÃ³n profesional.
                 </p>
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                     {[
                         { title: 'Comparte tu historia', desc: 'Publica tus logros, dudas y aprendizajes con una comunidad que te entiende.' },
-                        { title: 'Conecta con mujeres', desc: 'Encuentra tu comunidad de apoyo y crece junto a quienes también se reinventan.' },
-                        { title: 'Reinventate', desc: 'Inspirate en historias reales de transformación y da el salto que mereces.' },
+                        { title: 'Conecta con mujeres', desc: 'Encuentra tu comunidad de apoyo y crece junto a quienes tambiÃ©n se reinventan.' },
+                        { title: 'Reinventate', desc: 'Inspirate en historias reales de transformaciÃ³n y da el salto que mereces.' },
                     ].map((f, i) => (
                         <div key={i} className="rounded-2xl border-2 border-bloom-pink bg-transparent p-8 text-center">
                             <h3 className="font-subtitle mb-3 text-xl text-bloom-dark">{f.title}</h3>
@@ -99,13 +99,13 @@ export default function Landing() {
                     Historias que inspiran
                 </h2>
                 <p className="mb-12 text-center text-bloom-gray">
-                    Mujeres como tú que ya dieron el salto. Léelas, inspírate, únete.
+                    Mujeres como tÃº que ya dieron el salto. LÃ©elas, inspÃ­rate, Ãºnete.
                 </p>
                 <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3">
                     {[
-                        { quote: 'Bloom me dio el empuje que necesitaba para dar el salto a tech.', name: 'Sandra', age: '35 años · Chile', photo: sandraPhoto },
-                        { quote: 'Encontré mi comunidad y mi nuevo camino profesional.', name: 'Sara', age: '34 años · León', photo: saraPhoto },
-                        { quote: 'Aquí nadie juzga tu pausa. Solo te ayudan a volver con más fuerza.', name: 'María', age: '42 años · Madrid', photo: mariaPhoto },
+                        { quote: 'Bloom me dio el empuje que necesitaba para dar el salto a tech.', name: 'Sandra', age: '35 aÃ±os Â· Chile', photo: sandraPhoto },
+                        { quote: 'EncontrÃ© mi comunidad y mi nuevo camino profesional.', name: 'Sara', age: '34 aÃ±os Â· LeÃ³n', photo: saraPhoto },
+                        { quote: 'AquÃ­ nadie juzga tu pausa. Solo te ayudan a volver con mÃ¡s fuerza.', name: 'MarÃ­a', age: '42 aÃ±os Â· Madrid', photo: mariaPhoto },
                     ].map((t, i) => (
                         <div
                             key={i}
@@ -145,7 +145,7 @@ export default function Landing() {
                         boxShadow: '0 24px 64px -12px rgba(255, 95, 168, 0.18)',
                     }}
                 >
-                    {/* Formas orgánicas decorativas */}
+                    {/* Formas orgÃ¡nicas decorativas */}
                     <svg
                         className="pointer-events-none absolute inset-0 h-full w-full"
                         viewBox="0 0 1200 400"
@@ -182,10 +182,10 @@ export default function Landing() {
 
                     <div className="relative z-10 mx-auto max-w-2xl">
                         <h2 className="font-title mb-5 text-4xl font-bold tracking-tight text-white md:text-5xl">
-                            ¿Lista para florecer?
+                            Â¿Lista para florecer?
                         </h2>
                         <p className="mb-10 text-base font-light leading-relaxed text-white md:text-lg">
-                            Únete a miles de mujeres que ya están reinventando su carrera.
+                            Ãšnete a miles de mujeres que ya estÃ¡n reinventando su carrera.
                         </p>
                         <BloomButton variant="hero" showDot className="mx-auto text-base" onClick={() => navigate('/register')}>
                             Empieza ahora
@@ -206,7 +206,7 @@ export default function Landing() {
                             {token && (
                                 <NavAuthLinks className="flex-col items-start gap-2 [&_a]:text-sm [&_a]:text-bloom-gray [&_a]:hover:text-bloom-pink" />
                             )}
-                            <a href="/register" className="hover:text-bloom-pink">Únete a Bloom</a>
+                            <a href="/register" className="hover:text-bloom-pink">Ãšnete a Bloom</a>
                         </div>
                     </div>
                     <div>
@@ -220,17 +220,18 @@ export default function Landing() {
                     <div>
                         <p className="mb-3 font-semibold text-bloom-dark">Legal</p>
                         <div className="flex flex-col gap-2 text-sm text-bloom-gray">
-                            <a href="#" className="hover:text-bloom-pink">Política de privacidad</a>
-                            <a href="#" className="hover:text-bloom-pink">Términos de uso</a>
+                            <a href="#" className="hover:text-bloom-pink">PolÃ­tica de privacidad</a>
+                            <a href="#" className="hover:text-bloom-pink">TÃ©rminos de uso</a>
                             <a href="#" className="hover:text-bloom-pink">Cookies</a>
                         </div>
                     </div>
                 </div>
                 <p className="border-t pt-6 text-center text-sm text-bloom-gray">
-                    © 2025 Bloom. Hecho con amor para mujeres que florecen.
+                    Â© 2025 Bloom. Hecho con amor para mujeres que florecen.
                 </p>
             </footer>
 
         </div>
     )
 }
+

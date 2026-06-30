@@ -1,4 +1,4 @@
-// Tokens de marca Bloom — usar en estilos inline cuando haga falta
+﻿// Tokens de marca Bloom â€” usar en estilos inline cuando haga falta
 export const colors = {
   pink: '#FF5A9D',
   rose: '#FF7487',
@@ -12,9 +12,10 @@ export const colors = {
   white: '#FFFFFF',
 }
 
-// Compatibilidad con código existente
+// Compatibilidad con cÃ³digo existente
 export const PURPLE = colors.pink
 export const PLUM = colors.dark
 export const GRAY = colors.gray
 export const CREAM = colors.cream
 export const LAVENDER = colors.peach
+

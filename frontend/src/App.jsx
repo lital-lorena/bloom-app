@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+﻿import { Routes, Route } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Feed from './pages/Feed'
@@ -27,3 +27,4 @@ function App() {
 }
 
 export default App
+

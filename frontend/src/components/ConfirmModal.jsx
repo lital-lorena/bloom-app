@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
+﻿import { useEffect } from 'react'
 import BloomButton from './BloomButton'
 
 export default function ConfirmModal({
   open,
-  title = 'Confirmar acción',
+  title = 'Confirmar acciÃ³n',
   message,
   confirmLabel = 'Eliminar',
   cancelLabel = 'Cancelar',
@@ -58,3 +58,4 @@ export default function ConfirmModal({
     </div>
   )
 }
+

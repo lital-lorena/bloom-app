@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 
 const variants = {
   default:
@@ -35,3 +35,4 @@ export default function BackLink({ to = '/', label = 'Volver', variant = 'defaul
     </button>
   )
 }
+

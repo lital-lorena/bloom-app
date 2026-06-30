@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+﻿import { useState, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
@@ -213,13 +213,13 @@ function quitarEmojiInicial(texto) {
 
 function InspiracionCard({ inspiracion, loading, error, onUsar, onOtra, className = "" }) {
   const mensajeError = error === "rate_limit"
-    ? "Has agotado las ideas de hoy por ahora. Vuelve en unos minutos e inténtalo de nuevo."
-    : "No pudimos generar una idea ahora. Inténtalo de nuevo."
+    ? "Has agotado las ideas de hoy por ahora. Vuelve en unos minutos e intÃ©ntalo de nuevo."
+    : "No pudimos generar una idea ahora. IntÃ©ntalo de nuevo."
 
   return (
     <div className={`rounded-2xl border border-black/5 bg-white p-5 shadow-sm ${className}`}>
       <h3 className="mb-3 font-subtitle text-sm font-semibold" style={{ color: PLUM }}>
-        💡 ¿Sin ideas hoy?
+        ðŸ’¡ Â¿Sin ideas hoy?
       </h3>
       {loading ? (
         <p className="text-sm leading-relaxed" style={{ color: GRAY }}>Generando una idea para ti...</p>
@@ -233,7 +233,7 @@ function InspiracionCard({ inspiracion, loading, error, onUsar, onOtra, classNam
               className="w-full rounded-full px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90"
               style={{ backgroundColor: PURPLE }}
             >
-              ✨ Usar esta idea
+              âœ¨ Usar esta idea
             </button>
             <button
               type="button"
@@ -242,7 +242,7 @@ function InspiracionCard({ inspiracion, loading, error, onUsar, onOtra, classNam
               className="w-full rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-40"
               style={{ borderColor: `${PURPLE}44`, color: PURPLE }}
             >
-              → Otra idea
+              â†’ Otra idea
             </button>
           </div>
         </>
@@ -256,7 +256,7 @@ function InspiracionCard({ inspiracion, loading, error, onUsar, onOtra, classNam
               className="mt-3 w-full rounded-full border px-4 py-2 text-sm font-medium hover:bg-black/5"
               style={{ borderColor: `${PURPLE}44`, color: PURPLE }}
             >
-              → Intentar de nuevo
+              â†’ Intentar de nuevo
             </button>
           )}
         </>
@@ -393,12 +393,12 @@ function Feed() {
     if (!token) return
 
     socket.on("connect", () => {
-      console.log("✅ Socket listo, enviando token...")
+      console.log("âœ… Socket listo, enviando token...")
       socket.emit("conectar_usuaria", { token })
     })
 
     socket.on("nueva_notificacion", (data) => {
-      console.log("🔔 Notificacion recibida:", data)
+      console.log("ðŸ”” Notificacion recibida:", data)
       setNotificaciones(prev => [{ ...data, id: `${Date.now()}-${data.post_id}` }, ...prev])
 
       const postId = Number(data.post_id)
@@ -413,7 +413,7 @@ function Feed() {
         }
       }
     })
-    socket.connect()  // ⬅️ connect() va AL FINAL, después de registrar los listeners
+    socket.connect()  // â¬…ï¸ connect() va AL FINAL, despuÃ©s de registrar los listeners
 
     return () => {
       socket.off("connect")
@@ -477,7 +477,7 @@ function Feed() {
         )
       }
     } catch {
-      window.alert("No se pudo conectar con el servidor. Comprueba que Flask esté en marcha.")
+      window.alert("No se pudo conectar con el servidor. Comprueba que Flask estÃ© en marcha.")
     }
   }
 
@@ -577,7 +577,7 @@ function Feed() {
       const data = await response.json()
       setSuggestion(response.ok ? data.sugerencia : (data.error || "No se pudo generar una sugerencia."))
     } catch {
-      setSuggestion("Error de conexión. Inténtalo de nuevo.")
+      setSuggestion("Error de conexiÃ³n. IntÃ©ntalo de nuevo.")
     } finally {
       setSuggestLoading(false)
     }
@@ -596,19 +596,19 @@ function Feed() {
       const data = await response.json()
       setEditSuggestion(response.ok ? data.sugerencia : (data.error || "No se pudo generar una sugerencia."))
     } catch {
-      setEditSuggestion("Error de conexión. Inténtalo de nuevo.")
+      setEditSuggestion("Error de conexiÃ³n. IntÃ©ntalo de nuevo.")
     } finally {
       setEditSuggestLoading(false)
     }
   }
 
   const isError = (text) =>
-    text.startsWith("Error") || text.startsWith("Tu publicación") || text.startsWith("El texto") || text.startsWith("No se pudo")
+    text.startsWith("Error") || text.startsWith("Tu publicaciÃ³n") || text.startsWith("El texto") || text.startsWith("No se pudo")
 
   return (
     <div className="min-h-screen font-[family-name:var(--font-body)]" style={{ backgroundColor: CREAM, color: PLUM }}>
 
-      {/* ── NAVBAR ── */}
+      {/* â”€â”€ NAVBAR â”€â”€ */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/85 shadow-lg backdrop-blur-sm">
         <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-2">
           <a href="/" className="flex items-center">
@@ -632,10 +632,10 @@ function Feed() {
         </nav>
       </header>
 
-      {/* ── CONTENIDO PRINCIPAL ── */}
+      {/* â”€â”€ CONTENIDO PRINCIPAL â”€â”€ */}
       <main className="mx-auto flex max-w-6xl gap-6 px-5 pb-8 pt-16">
 
-        {/* ── SIDEBAR IZQUIERDA ── */}
+        {/* â”€â”€ SIDEBAR IZQUIERDA â”€â”€ */}
         <aside className="hidden w-72 flex-none lg:block">
 
           {/* Tarjeta de perfil */}
@@ -672,14 +672,14 @@ function Feed() {
             </div>
           </div>
 
-          {/* Filtro por ubicación */}
+          {/* Filtro por ubicaciÃ³n */}
           <div className="mt-5 rounded-2xl border border-black/5 bg-white shadow-[0_16px_48px_-8px_rgba(255,95,168,0.15)]">
             <div className="rounded-t-2xl border-b border-black/5 bg-gradient-to-r from-white to-bloom-pink/10 px-5 py-4">
               <h3 className="font-subtitle flex items-center gap-2.5 text-sm font-semibold text-bloom-dark">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-bloom-pink/10 text-bloom-pink">
                   <LocationIcon />
                 </span>
-                Filtrar por ubicación
+                Filtrar por ubicaciÃ³n
               </h3>
             </div>
             <div className="flex flex-col gap-3 p-5">
@@ -687,7 +687,7 @@ function Feed() {
                 value={filtroPais || ''}
                 onChange={(val) => { setFiltroPais(val || null); setFiltroCiudad(null) }}
                 options={[
-                  { value: '', label: 'Todos los países' },
+                  { value: '', label: 'Todos los paÃ­ses' },
                   ...paisesDisponibles.map((pais) => ({ value: pais, label: pais })),
                 ]}
               />
@@ -706,15 +706,15 @@ function Feed() {
 
         </aside>
 
-        {/* ── COLUMNA CENTRAL ── */}
+        {/* â”€â”€ COLUMNA CENTRAL â”€â”€ */}
         <div className="min-w-0 flex-1">
 
           <div className="mb-6">
             <h1 className="font-title text-3xl font-semibold" style={{ color: PLUM }}>Comunidad</h1>
-            <p className="mt-1 text-sm" style={{ color: GRAY }}>Comparte tu historia. Alguien aquí ha pasado por lo mismo.</p>
+            <p className="mt-1 text-sm" style={{ color: GRAY }}>Comparte tu historia. Alguien aquÃ­ ha pasado por lo mismo.</p>
           </div>
 
-          {/* ── CREAR POST ── */}
+          {/* â”€â”€ CREAR POST â”€â”€ */}
           <section ref={crearPostRef} className="mb-6 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
             <form onSubmit={handleCreatePost}>
               <div className="flex gap-3">
@@ -723,7 +723,7 @@ function Feed() {
                   ref={postTextareaRef}
                   value={text}
                   onChange={(e) => { const val = e.target.value; setText(val.charAt(0).toUpperCase() + val.slice(1)) }}
-                  placeholder="¿Qué quieres compartir hoy?"
+                  placeholder="Â¿QuÃ© quieres compartir hoy?"
                   rows={3}
                   className="min-h-[72px] w-full resize-none rounded-xl bg-transparent text-base leading-relaxed outline-none placeholder:text-[#9CA3AF]"
                   style={{ color: PLUM }}
@@ -753,14 +753,14 @@ function Feed() {
                   <img src={postImagePreview} alt="Vista previa" className="block w-full h-auto rounded-xl border border-black/5" />
                   <button type="button" onClick={() => setPostImage(null)}
                     className="absolute -right-2 -top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white">
-                    ✕
+                    âœ•
                   </button>
                 </div>
               )}
 
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-black/10 px-4 py-2 text-sm font-medium hover:bg-black/5" style={{ color: PLUM }}>
-                  <CameraIcon /> Añadir foto
+                  <CameraIcon /> AÃ±adir foto
                   <input type="file" accept="image/*" className="hidden" onChange={(e) => setPostImage(e.target.files[0] || null)} />
                 </label>
                 <button type="button" onClick={handleSuggest} disabled={suggestLoading || !text.trim()}
@@ -788,11 +788,11 @@ function Feed() {
             />
           )}
 
-          {/* ── POSTS ── */}
+          {/* â”€â”€ POSTS â”€â”€ */}
           <div className="flex flex-col gap-4">
             {posts.length === 0 && (
               <p className="py-12 text-center text-sm" style={{ color: GRAY }}>
-                Aún no hay publicaciones. ¡Sé la primera en compartir!
+                AÃºn no hay publicaciones. Â¡SÃ© la primera en compartir!
               </p>
             )}
 
@@ -804,7 +804,7 @@ function Feed() {
                 <button onClick={() => setFiltroTema(null)}
                   className="ml-auto rounded-full bg-black/5 px-3 py-1 text-xs font-medium hover:bg-black/10"
                   style={{ color: PLUM }}>
-                  ✕ Quitar filtro
+                  âœ• Quitar filtro
                 </button>
               </div>
             )}
@@ -829,7 +829,7 @@ function Feed() {
                         {post.autora.nombre}
                       </button>
                       <p className="text-xs" style={{ color: GRAY }}>
-                        {post.autora.profesion && <>{post.autora.profesion} · </>}
+                        {post.autora.profesion && <>{post.autora.profesion} Â· </>}
                         {formatDate(post.fecha)}
                       </p>
                     </div>
@@ -886,12 +886,12 @@ function Feed() {
                     <button onClick={() => token && handleLike(post.id, post.liked_by_me)}
                       className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5 transition-colors"
                       style={{ color: post.liked_by_me ? PURPLE : GRAY }}>
-                      {post.liked_by_me ? "💜" : "🤍"} {post.likes_count || 0}
+                      {post.liked_by_me ? "ðŸ’œ" : "ðŸ¤"} {post.likes_count || 0}
                     </button>
                     <button onClick={() => toggleComentarios(post.id)}
                       className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5 transition-colors"
                       style={{ color: GRAY }}>
-                      💬 {post.comments_count ?? comentarios[post.id]?.length ?? 0}
+                      ðŸ’¬ {post.comments_count ?? comentarios[post.id]?.length ?? 0}
                     </button>
                   </div>
 
@@ -925,7 +925,7 @@ function Feed() {
                     </div>
                   )}
 
-                  {/* Botones editar/borrar (autora) o moderación (admin) */}
+                  {/* Botones editar/borrar (autora) o moderaciÃ³n (admin) */}
                   {(isOwner || canModerate) && (
                     <div className="flex items-center gap-2 border-t border-black/5 px-5 py-3">
                       {isOwner && isEditing ? (
@@ -965,7 +965,7 @@ function Feed() {
                           className="rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5"
                           style={{ color: "#dc2626" }}
                         >
-                          Eliminar (moderación)
+                          Eliminar (moderaciÃ³n)
                         </button>
                       )}
                     </div>
@@ -976,7 +976,7 @@ function Feed() {
           </div>
         </div>
 
-        {/* ── SIDEBAR DERECHA ── */}
+        {/* â”€â”€ SIDEBAR DERECHA â”€â”€ */}
         <aside className="hidden w-72 flex-none xl:block">
           <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
             <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold font-subtitle" style={{ color: PLUM }}>
@@ -1002,20 +1002,20 @@ function Feed() {
         </aside>
       </main>
 
-      {/* ── FOOTER ── */}
+      {/* â”€â”€ FOOTER â”€â”€ */}
       <footer className="border-t border-black/5 bg-white">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-5 py-10 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-2">
             <BloomLogo className="h-14 w-auto" />
           </div>
-          <p className="text-center text-xs" style={{ color: GRAY }}>© 2026 Bloom. Hecho con amor para mujeres que florecen.</p>
+          <p className="text-center text-xs" style={{ color: GRAY }}>Â© 2026 Bloom. Hecho con amor para mujeres que florecen.</p>
         </div>
       </footer>
 
       <ConfirmModal
         open={pendingModerationPostId !== null}
-        title="Moderación de contenido"
-        message="¿Eliminar este post por incumplir las normas de la comunidad?"
+        title="ModeraciÃ³n de contenido"
+        message="Â¿Eliminar este post por incumplir las normas de la comunidad?"
         confirmLabel="Eliminar"
         cancelLabel="Cancelar"
         onConfirm={() => {
@@ -1042,3 +1042,4 @@ function Feed() {
 }
 
 export default Feed
+

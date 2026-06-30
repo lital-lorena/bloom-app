@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+﻿import { useEffect } from 'react'
 import BloomButton from './BloomButton'
 
 function BellIcon() {
@@ -107,7 +107,7 @@ export default function NotificationsModal({
                   >
                     <p className="text-sm leading-relaxed text-bloom-dark">{notification.mensaje}</p>
                     <span className="mt-1 inline-block text-xs font-medium text-bloom-pink">
-                      Ver comentarios →
+                      Ver comentarios â†’
                     </span>
                   </button>
                 </li>
@@ -119,7 +119,7 @@ export default function NotificationsModal({
         <div className="flex flex-col-reverse gap-3 border-t border-black/5 px-6 py-4 sm:flex-row sm:justify-end">
           {notifications.length > 0 && (
             <BloomButton variant="secondary" onClick={onClearAll}>
-              Marcar todas como leídas
+              Marcar todas como leÃ­das
             </BloomButton>
           )}
           <BloomButton variant="primary" onClick={onClose}>
@@ -130,3 +130,4 @@ export default function NotificationsModal({
     </div>
   )
 }
+

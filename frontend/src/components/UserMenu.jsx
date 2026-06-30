@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+﻿import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 
@@ -74,7 +74,7 @@ export default function UserMenu() {
         className="flex h-10 w-10 flex-none items-center justify-center overflow-hidden rounded-full bg-bloom-pink ring-2 ring-bloom-pink/25 transition-opacity hover:opacity-90"
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label="Menú de usuario"
+        aria-label="MenÃº de usuario"
       >
         {showPhoto ? (
           <img
@@ -119,10 +119,11 @@ export default function UserMenu() {
           </button>
           <div className="my-1 border-t border-black/10" role="separator" />
           <button type="button" role="menuitem" className={itemClass} onClick={handleLogout}>
-            Cerrar sesión
+            Cerrar sesiÃ³n
           </button>
         </div>
       )}
     </div>
   )
 }
+
