@@ -31,7 +31,7 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
   const executeDelete = async (commentId) => {
     setError("")
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/comments/item/${commentId}`, {
+      const response = await fetch(`import.meta.env.VITE_API_URL/api/comments/item/${commentId}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       })
@@ -63,7 +63,7 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
 
     setError("")
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/comments/item/${commentId}`, {
+      const response = await fetch(`import.meta.env.VITE_API_URL/api/comments/item/${commentId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -32,7 +32,7 @@ export default function UserMenu() {
 
     let cancelled = false
 
-    fetch('http://127.0.0.1:5000/api/users/me', {
+    fetch('import.meta.env.VITE_API_URL/api/users/me', {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => (res.ok ? res.json() : null))

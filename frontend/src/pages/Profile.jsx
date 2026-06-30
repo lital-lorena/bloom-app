@@ -25,7 +25,7 @@ export default function Profile() {
 
     useEffect(() => {
         const fetchProfile = async () => {
-            const response = await fetch("http://127.0.0.1:5000/api/users/me", {
+            const response = await fetch("import.meta.env.VITE_API_URL/api/users/me", {
                 headers: { "Authorization": `Bearer ${token}` }
             })
             const data = await response.json()
@@ -39,7 +39,7 @@ export default function Profile() {
 
             // Cargar posts de la usuaria
             if (data.id) {
-                const postsRes = await fetch(`http://127.0.0.1:5000/api/users/${data.id}`)
+                const postsRes = await fetch(`import.meta.env.VITE_API_URL/api/users/${data.id}`)
                 if (postsRes.ok) {
                     const postsData = await postsRes.json()
                     setPosts(postsData.posts || [])
@@ -63,7 +63,7 @@ export default function Profile() {
         if (avatar && typeof avatar !== "string") {
             formData.append("avatar", avatar)
         }
-        const response = await fetch("http://127.0.0.1:5000/api/users/me", {
+        const response = await fetch("import.meta.env.VITE_API_URL/api/users/me", {
             method: "PUT",
             headers: { "Authorization": `Bearer ${token}` },
             body: formData

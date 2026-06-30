@@ -59,7 +59,7 @@ export default function PublicProfile() {
     useEffect(() => {
         const fetchProfile = async () => {
             setLoading(true)
-            const response = await fetch(`http://127.0.0.1:5000/api/users/${id}`)
+            const response = await fetch(`import.meta.env.VITE_API_URL/api/users/${id}`)
             const data = await response.json()
             setProfile(data)
             setLoading(false)
@@ -68,7 +68,7 @@ export default function PublicProfile() {
     }, [id])
 
     const fetchComentarios = async (postId) => {
-        const response = await fetch(`http://127.0.0.1:5000/api/comments/${postId}`)
+        const response = await fetch(`import.meta.env.VITE_API_URL/api/comments/${postId}`)
         if (response.ok) {
             const data = await response.json()
             setComentarios(prev => ({ ...prev, [postId]: data }))
@@ -91,7 +91,7 @@ export default function PublicProfile() {
         const texto = nuevoComentario[postId] || ""
         if (!texto.trim() || !token) return
 
-        const response = await fetch(`http://127.0.0.1:5000/api/comments/${postId}`, {
+        const response = await fetch(`import.meta.env.VITE_API_URL/api/comments/${postId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
