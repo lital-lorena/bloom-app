@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import BloomLogo from '../components/BloomLogo'
 import BackLink from '../components/BackLink'
+import registerBg from '../assets/bloom_register_bg.jpg'
 
 function Register() {
   const [name, setName] = useState("")
@@ -34,7 +35,7 @@ function Register() {
     if (response.ok) {
       navigate("/login")
     } else {
-      setError(data.error || "No se pudo crear la cuenta. IntÃ©ntalo de nuevo.")
+      setError(data.error || "No se pudo crear la cuenta. Inténtalo de nuevo.")
     }
     setLoading(false)
   }
@@ -45,7 +46,7 @@ function Register() {
   return (
     <div className="flex min-h-screen">
 
-      {/* â”€â”€ COLUMNA IZQUIERDA: FORMULARIO â”€â”€ */}
+      {/* ── COLUMNA IZQUIERDA: FORMULARIO ── */}
       <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-1/2 lg:px-16 xl:px-24">
         <div className="mx-auto w-full max-w-md">
 
@@ -56,12 +57,12 @@ function Register() {
             <BloomLogo className="h-14 w-auto" />
           </div>
 
-          {/* TÃ­tulo */}
+          {/* Título */}
           <h1 className="font-title text-3xl font-bold text-bloom-dark sm:text-4xl">
             Comienza tu nueva etapa
           </h1>
           <p className="mt-2 text-base text-bloom-gray">
-            Crea tu cuenta y Ãºnete a una comunidad de mujeres que crecen juntas.
+            Crea tu cuenta y únete a una comunidad de mujeres que crecen juntas.
           </p>
 
           {/* Formulario */}
@@ -120,7 +121,7 @@ function Register() {
               />
             </div>
 
-            {/* Ciudad + PaÃ­s */}
+            {/* Ciudad + País */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="ciudad" className="mb-1.5 block text-sm font-medium text-bloom-dark">
@@ -140,7 +141,7 @@ function Register() {
               </div>
               <div>
                 <label htmlFor="pais" className="mb-1.5 block text-sm font-medium text-bloom-dark">
-                  PaÃ­s
+                  País
                 </label>
                 <input
                   id="pais"
@@ -148,7 +149,7 @@ function Register() {
                   autoCapitalize="words"
                   name="pais"
                   autoComplete="country-name"
-                  placeholder="Ej. EspaÃ±a"
+                  placeholder="Ej. España"
                   className={inputClass}
                   value={pais}
                   onChange={(e) => setPais(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))}
@@ -156,25 +157,25 @@ function Register() {
               </div>
             </div>
 
-            {/* ContraseÃ±a */}
+            {/* Contraseña */}
             <div>
               <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-bloom-dark">
-                ContraseÃ±a
+                Contraseña
               </label>
               <input
                 id="password"
                 type="password"
                 name="password"
                 autoComplete="new-password"
-                placeholder="Crea una contraseÃ±a"
+                placeholder="Crea una contraseña"
                 className={inputClass}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <p className="mt-1.5 text-xs text-bloom-gray">MÃ­nimo 8 caracteres.</p>
+              <p className="mt-1.5 text-xs text-bloom-gray">Mínimo 8 caracteres.</p>
             </div>
 
-            {/* TÃ©rminos */}
+            {/* Términos */}
             <label className="flex items-start gap-2 text-sm text-bloom-gray">
               <input
                 type="checkbox"
@@ -183,11 +184,11 @@ function Register() {
               <span>
                 Acepto los{' '}
                 <span className="text-bloom-pink hover:text-bloom-rose cursor-default">
-                  TÃ©rminos
+                  Términos
                 </span>{' '}
                 y la{' '}
                 <span className="text-bloom-pink hover:text-bloom-rose cursor-default">
-                  PolÃ­tica de privacidad
+                  Política de privacidad
                 </span>{' '}
                 de Bloom.
               </span>
@@ -200,7 +201,7 @@ function Register() {
               </p>
             )}
 
-            {/* BotÃ³n */}
+            {/* Botón */}
             <button
               type="submit"
               disabled={loading}
@@ -211,21 +212,21 @@ function Register() {
 
             {/* Login */}
             <p className="text-center text-sm text-bloom-dark">
-              Â¿Ya tienes cuenta?{' '}
+              ¿Ya tienes cuenta?{' '}
               <Link to="/login" className="font-medium text-bloom-pink hover:text-bloom-rose transition-colors">
-                Inicia sesiÃ³n â†’
+                Inicia sesión →
               </Link>
             </p>
           </form>
         </div>
       </div>
 
-      {/* â”€â”€ COLUMNA DERECHA: FOTO + CITA â”€â”€ */}
+      {/* ── COLUMNA DERECHA: FOTO + CITA ── */}
       <div className="relative hidden overflow-hidden lg:flex lg:w-1/2">
 
         {/* Foto de fondo */}
         <img
-          src="/src/assets/bloom_register_bg.jpg"
+          src={registerBg}
           alt="Mujeres profesionales"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -237,14 +238,14 @@ function Register() {
         <div className="relative z-10 mt-auto mb-16 w-full p-10">
           <div className="rounded-2xl bg-white/85 p-6 shadow-lg backdrop-blur-sm">
             <p className="font-subtitle text-base italic leading-relaxed text-bloom-dark">
-              "Me unÃ­ un domingo por la noche, sin estar segura. El lunes ya tenÃ­a tres mujeres ofreciÃ©ndome ayuda. Bloom es real."
+              "Me uní un domingo por la noche, sin estar segura. El lunes ya tenía tres mujeres ofreciéndome ayuda. Bloom es real."
             </p>
             <div className="mt-4 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bloom-pink text-sm font-semibold text-white">
                 L
               </div>
               <div>
-                <p className="text-sm font-semibold text-bloom-dark">Laura GÃ³mez</p>
+                <p className="text-sm font-semibold text-bloom-dark">Laura Gómez</p>
                 <p className="text-xs text-bloom-gray">Volviendo al trabajo tras una pausa</p>
               </div>
             </div>

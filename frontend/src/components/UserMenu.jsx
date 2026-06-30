@@ -74,7 +74,7 @@ export default function UserMenu() {
         className="flex h-10 w-10 flex-none items-center justify-center overflow-hidden rounded-full bg-bloom-pink ring-2 ring-bloom-pink/25 transition-opacity hover:opacity-90"
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label="MenÃº de usuario"
+        aria-label="Menú de usuario"
       >
         {showPhoto ? (
           <img
@@ -119,7 +119,7 @@ export default function UserMenu() {
           </button>
           <div className="my-1 border-t border-black/10" role="separator" />
           <button type="button" role="menuitem" className={itemClass} onClick={handleLogout}>
-            Cerrar sesiÃ³n
+            Cerrar sesión
           </button>
         </div>
       )}

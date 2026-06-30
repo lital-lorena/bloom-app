@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 import BloomLogo from '../components/BloomLogo'
 import BackLink from '../components/BackLink'
+import loginBg from '../assets/bloom_login_bg.jpg'
 
 const REMEMBERED_EMAIL_KEY = 'remembered_email'
 
@@ -30,7 +31,7 @@ function Login() {
       login(data.user, data.access_token)
       navigate("/feed")
     } else {
-      setError(data.error || "Email o contraseÃ±a incorrectos")
+      setError(data.error || "Email o contraseña incorrectos")
     }
     setLoading(false)
   }
@@ -38,7 +39,7 @@ function Login() {
   return (
     <div className="flex min-h-screen">
 
-      {/* â”€â”€ COLUMNA IZQUIERDA: FORMULARIO â”€â”€ */}
+      {/* ── COLUMNA IZQUIERDA: FORMULARIO ── */}
       <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-1/2 lg:px-16 xl:px-24">
         <div className="mx-auto w-full max-w-md">
 
@@ -49,12 +50,12 @@ function Login() {
             <BloomLogo className="h-14 w-auto" />
           </div>
 
-          {/* TÃ­tulo */}
+          {/* Título */}
           <h1 className="font-title text-3xl font-bold text-bloom-dark sm:text-4xl">
             Bienvenida de nuevo
           </h1>
           <p className="mt-2 text-base text-bloom-gray">
-            Inicia sesiÃ³n para continuar tu camino en la comunidad Bloom.
+            Inicia sesión para continuar tu camino en la comunidad Bloom.
           </p>
 
           {/* Formulario */}
@@ -77,10 +78,10 @@ function Login() {
               />
             </div>
 
-            {/* ContraseÃ±a */}
+            {/* Contraseña */}
             <div>
               <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-bloom-dark">
-                ContraseÃ±a
+                Contraseña
               </label>
               <div className="relative">
                 <input
@@ -88,7 +89,7 @@ function Login() {
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   autoComplete="current-password"
-                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                  placeholder="••••••••"
                   className="w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 pr-11 text-base text-bloom-dark placeholder:text-bloom-gray transition-colors focus:border-bloom-pink focus:outline-none focus:ring-2 focus:ring-bloom-pink/20"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -97,7 +98,7 @@ function Login() {
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-bloom-gray hover:text-bloom-pink transition-colors"
-                  aria-label={showPassword ? 'Ocultar contraseÃ±a' : 'Mostrar contraseÃ±a'}
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 >
                   {showPassword ? (
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className="h-5 w-5">
@@ -124,7 +125,7 @@ function Login() {
                 Recordarme
               </label>
               <span className="text-sm font-medium text-bloom-pink hover:text-bloom-rose cursor-default">
-                Â¿Olvidaste tu contraseÃ±a?
+                ¿Olvidaste tu contraseña?
               </span>
             </div>
 
@@ -135,7 +136,7 @@ function Login() {
               </p>
             )}
 
-            {/* BotÃ³n */}
+            {/* Botón */}
             <button
               type="submit"
               disabled={loading}
@@ -146,20 +147,20 @@ function Login() {
 
             {/* Registro */}
             <p className="text-center text-sm text-bloom-dark">
-              Â¿No tienes cuenta?{' '}
+              ¿No tienes cuenta?{' '}
               <Link to="/register" className="font-medium text-bloom-pink hover:text-bloom-rose transition-colors">
-                Crea tu cuenta â†’
+                Crea tu cuenta →
               </Link>
             </p>
           </form>
         </div>
       </div>
-      {/* â”€â”€ COLUMNA DERECHA: FOTO + FLORES + CITA â”€â”€ */}
+      {/* ── COLUMNA DERECHA: FOTO + FLORES + CITA ── */}
       <div className="relative hidden overflow-hidden lg:flex lg:w-1/2">
 
         {/* Foto de fondo */}
         <img
-          src="/src/assets/bloom_login_bg.jpg"
+          src={loginBg}
           alt="Mujeres profesionales"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -172,15 +173,15 @@ function Login() {
         <div className="relative z-10 mt-auto mb-16 w-full p-10">
           <div className="rounded-2xl bg-white/85 p-6 shadow-lg backdrop-blur-sm">
             <p className="font-subtitle text-base italic leading-relaxed text-bloom-dark">
-              "Cada vez que entro, encuentro a alguien cuya historia se parece a la mÃ­a. Eso lo cambia todo."
+              "Cada vez que entro, encuentro a alguien cuya historia se parece a la mía. Eso lo cambia todo."
             </p>
             <div className="mt-4 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bloom-pink text-sm font-semibold text-white">
                 A
               </div>
               <div>
-                <p className="text-sm font-semibold text-bloom-dark">Ana MartÃ­nez</p>
-                <p className="text-xs text-bloom-gray">A los 35 me atrevÃ­ a empezar de cero</p>
+                <p className="text-sm font-semibold text-bloom-dark">Ana Martínez</p>
+                <p className="text-xs text-bloom-gray">A los 35 me atreví a empezar de cero</p>
               </div>
             </div>
           </div>

@@ -78,10 +78,10 @@ export default function Profile() {
                 })
                 if (data.user.avatar) setAvatar(data.user.avatar)
             }
-            setMessage("Â¡Perfil actualizado! âœ…")
+            setMessage("¡Perfil actualizado! ✅")
             setEditing(false)
         } else {
-            setMessage("Error al actualizar âŒ")
+            setMessage("Error al actualizar ❌")
         }
         setLoading(false)
     }
@@ -114,7 +114,7 @@ export default function Profile() {
     return (
         <div className="min-h-screen font-[family-name:var(--font-body)]" style={{ backgroundColor: CREAM, color: PLUM }}>
 
-            {/* â”€â”€ NAVBAR â”€â”€ */}
+            {/* ── NAVBAR ── */}
             <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/85 shadow-lg backdrop-blur-sm">
                 <nav className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-5 py-2">
                     <a href="/" className="flex items-center">
@@ -126,7 +126,7 @@ export default function Profile() {
 
             <main className="mx-auto max-w-4xl px-5 pb-8 pt-16">
 
-                {/* â”€â”€ TARJETA DE PERFIL â”€â”€ */}
+                {/* ── TARJETA DE PERFIL ── */}
                 <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
 
                     {/* Banner estilo "Lista para florecer" */}
@@ -218,7 +218,7 @@ export default function Profile() {
                                 />
                             </div>
 
-                            {/* Nombre + profesiÃ³n */}
+                            {/* Nombre + profesión */}
                             <div className="mb-2 min-w-0 flex-1">
                                 <h1 className="font-title text-2xl font-bold capitalize" style={{ color: PLUM }}>
                                     {name} {lastName}
@@ -228,7 +228,7 @@ export default function Profile() {
                                 )}
                             </div>
 
-                            {/* BotÃ³n editar */}
+                            {/* Botón editar */}
                             <button
                                 onClick={() => setEditing(!editing)}
                                 className="mb-2 flex-none rounded-full border px-5 py-2 text-sm font-medium transition-colors hover:bg-black/5"
@@ -245,15 +245,15 @@ export default function Profile() {
                             </p>
                         )}
 
-                        {/* UbicaciÃ³n */}
+                        {/* Ubicación */}
                         {(city || country) && (
                             <p className="mt-3 flex items-center gap-1.5 text-sm" style={{ color: GRAY }}>
-                                <span>ðŸ“</span>
+                                <span>📍</span>
                                 {city}{city && country ? ", " : ""}{country}
                             </p>
                         )}
 
-                        {/* EstadÃ­sticas */}
+                        {/* Estadísticas */}
                         <div className="mt-5 flex gap-8 border-t border-black/5 pt-5">
                             <div>
                                 <p className="font-title text-xl font-bold" style={{ color: PLUM }}>{posts.length}</p>
@@ -263,7 +263,7 @@ export default function Profile() {
                     </div>
                 </div>
 
-                {/* â”€â”€ FORMULARIO DE EDICIÃ“N â”€â”€ */}
+                {/* ── FORMULARIO DE EDICIÓN ── */}
                 {editing && (
                     <div className="mt-6 rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
                         <h2 className="mb-5 font-subtitle text-xl font-semibold" style={{ color: PLUM }}>
@@ -298,7 +298,7 @@ export default function Profile() {
 
                             <div>
                                 <label htmlFor="profesion" className="mb-1.5 block text-sm font-medium" style={{ color: PLUM }}>
-                                    ProfesiÃ³n
+                                    Profesión
                                 </label>
                                 <input
                                     id="profesion"
@@ -306,7 +306,7 @@ export default function Profile() {
                                     value={profesion}
                                     onChange={(e) => setProfesion(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))}
                                     className={inputClass}
-                                    placeholder="Ej. Desarrolladora web, DiseÃ±adora UX..."
+                                    placeholder="Ej. Desarrolladora web, Diseñadora UX..."
                                 />
                             </div>
 
@@ -320,7 +320,7 @@ export default function Profile() {
                                     onChange={(e) => setStory(e.target.value)}
                                     className={`${inputClass} resize-none`}
                                     rows={4}
-                                    placeholder="CuÃ©ntanos tu historia de reinvenciÃ³n..."
+                                    placeholder="Cuéntanos tu historia de reinvención..."
                                 />
                             </div>
 
@@ -339,7 +339,7 @@ export default function Profile() {
                                 </div>
                                 <div>
                                     <label htmlFor="country" className="mb-1.5 block text-sm font-medium" style={{ color: PLUM }}>
-                                        PaÃ­s
+                                        País
                                     </label>
                                     <input
                                         id="country"
@@ -367,7 +367,7 @@ export default function Profile() {
                     </div>
                 )}
 
-                {/* â”€â”€ PUBLICACIONES â”€â”€ */}
+                {/* ── PUBLICACIONES ── */}
                 <div className="mt-6">
                     <h2 className="mb-4 font-subtitle text-xl font-semibold" style={{ color: PLUM }}>
                         Publicaciones recientes
@@ -376,7 +376,7 @@ export default function Profile() {
                     {posts.length === 0 ? (
                         <div className="rounded-2xl border border-black/5 bg-white py-12 text-center shadow-sm">
                             <p className="text-sm" style={{ color: GRAY }}>
-                                AÃºn no has compartido nada. Â¡AnÃ­mate a publicar en el Feed!
+                                Aún no has compartido nada. ¡Anímate a publicar en el Feed!
                             </p>
                             <button
                                 onClick={() => navigate('/feed')}
@@ -409,7 +409,7 @@ export default function Profile() {
                                         <div>
                                             <p className="text-sm font-semibold" style={{ color: PLUM }}>{name}</p>
                                             <p className="text-xs" style={{ color: GRAY }}>
-                                                {profesion && <>{profesion} Â· </>}
+                                                {profesion && <>{profesion} · </>}
                                                 {formatDate(post.fecha)}
                                             </p>
                                         </div>
@@ -431,14 +431,14 @@ export default function Profile() {
                 </div>
             </main>
 
-            {/* â”€â”€ FOOTER â”€â”€ */}
+            {/* ── FOOTER ── */}
             <footer className="mt-8 border-t border-black/5 bg-white">
                 <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-5 py-10 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex items-center gap-2">
                         <BloomLogo className="h-14 w-auto" />
                     </div>
                     <p className="text-center text-xs" style={{ color: GRAY }}>
-                        Â© 2026 Bloom. Hecho con amor para mujeres que florecen.
+                        © 2026 Bloom. Hecho con amor para mujeres que florecen.
                     </p>
                 </div>
             </footer>

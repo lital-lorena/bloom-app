@@ -179,7 +179,7 @@ export default function PublicProfile() {
 
                         {(profile.ciudad || profile.pais) && (
                             <p className="mt-1 text-sm" style={{ color: PURPLE }}>
-                                ðŸ“ {profile.ciudad || profile.pais}
+                                📍 {profile.ciudad || profile.pais}
                             </p>
                         )}
 
@@ -198,7 +198,7 @@ export default function PublicProfile() {
                 <div className="flex flex-col gap-5">
                     {profile.posts.length === 0 && (
                         <p className="py-8 text-center text-sm" style={{ color: GRAY }}>
-                            Esta usuaria aÃºn no tiene publicaciones.
+                            Esta usuaria aún no tiene publicaciones.
                         </p>
                     )}
 
@@ -224,7 +224,7 @@ export default function PublicProfile() {
                                     className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium hover:bg-black/5 transition-colors"
                                     style={{ color: GRAY }}
                                 >
-                                    ðŸ’¬ {post.comments_count ?? comentarios[post.id]?.length ?? 0}
+                                    💬 {post.comments_count ?? comentarios[post.id]?.length ?? 0}
                                 </button>
                             </div>
 
@@ -262,7 +262,7 @@ export default function PublicProfile() {
                                     ) : (
                                         <p className="text-center text-sm py-2" style={{ color: GRAY }}>
                                             <button type="button" onClick={() => navigate("/login")} className="font-medium hover:underline" style={{ color: PURPLE }}>
-                                                Inicia sesiÃ³n
+                                                Inicia sesión
                                             </button>
                                             {" "}para comentar.
                                         </p>

@@ -34,7 +34,7 @@ export default function PostText({ text, className = '' }) {
           onClick={() => setExpanded(true)}
           className="mt-1 text-sm font-semibold text-bloom-pink transition-colors hover:text-bloom-rose"
         >
-          Seguir leyendo â†“
+          Seguir leyendo ↓
         </button>
       )}
       {expanded && isTruncated && (
@@ -43,7 +43,7 @@ export default function PostText({ text, className = '' }) {
           onClick={() => setExpanded(false)}
           className="mt-2 text-sm font-semibold text-bloom-pink transition-colors hover:text-bloom-rose"
         >
-          Ver menos â†‘
+          Ver menos ↑
         </button>
       )}
     </div>

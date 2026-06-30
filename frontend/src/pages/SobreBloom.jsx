@@ -13,15 +13,15 @@ const valores = [
   },
   {
     title: 'Autenticidad',
-    desc: 'Espacio seguro para compartir dudas, miedos y logros tal y como son, sin filtros de perfecciÃ³n profesional.',
+    desc: 'Espacio seguro para compartir dudas, miedos y logros tal y como son, sin filtros de perfección profesional.',
   },
   {
     title: 'Crecimiento con calma',
-    desc: 'Como una flor, la reinvenciÃ³n tiene su propio ritmo. No hay prisa, hay proceso.',
+    desc: 'Como una flor, la reinvención tiene su propio ritmo. No hay prisa, hay proceso.',
   },
   {
     title: 'Diversidad de caminos',
-    desc: 'No hay un Ãºnico camino vÃ¡lido hacia la reinvenciÃ³n. Cada historia, edad y sector de origen suma valor a la comunidad.',
+    desc: 'No hay un único camino válido hacia la reinvención. Cada historia, edad y sector de origen suma valor a la comunidad.',
   },
   {
     title: 'Habilidades que viajan contigo',
@@ -82,7 +82,7 @@ export default function SobreBloom() {
           <div className="relative z-10 flex min-h-[18rem] flex-col justify-end px-6 pb-10 pt-8 md:min-h-[22rem] md:px-12 md:pb-14">
             <BackLink to="/" label="Volver al inicio" variant="hero" />
             <h1 className="font-title text-4xl tracking-tight text-white sm:text-5xl md:text-6xl">
-              Por quÃ© naciÃ³ Bloom
+              Por qué nació Bloom
             </h1>
             <p className="font-subtitle mt-3 max-w-2xl text-base text-white/95 md:text-lg">
               Un espacio para que ninguna mujer reinvente su carrera en soledad.
@@ -95,16 +95,16 @@ export default function SobreBloom() {
       <section className="px-6 py-16 md:px-12 md:py-20">
         <div className="mx-auto max-w-3xl">
           <p className="text-base leading-relaxed text-bloom-dark md:text-lg">
-            Bloom naciÃ³ de una idea sencilla: la reinvenciÃ³n profesional no deberÃ­a vivirse en soledad.
+            Bloom nació de una idea sencilla: la reinvención profesional no debería vivirse en soledad.
             Cambiar de carrera, volver al mercado laboral tras una pausa, o atreverse a empezar de cero en
-            otro sector son procesos llenos de dudas, miedo al sÃ­ndrome del impostor y la sensaciÃ³n de no
-            saber por dÃ³nde empezar. Bloom es el espacio que a muchas mujeres les hubiera gustado tener en
+            otro sector son procesos llenos de dudas, miedo al síndrome del impostor y la sensación de no
+            saber por dónde empezar. Bloom es el espacio que a muchas mujeres les hubiera gustado tener en
             ese momento.
           </p>
         </div>
       </section>
 
-      {/* MisiÃ³n */}
+      {/* Misión */}
       <section
         className="px-6 py-16 md:px-12 md:py-20"
         style={{
@@ -113,12 +113,12 @@ export default function SobreBloom() {
       >
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="font-title mb-6 text-3xl text-bloom-dark md:text-4xl">
-            Nuestra misiÃ³n
+            Nuestra misión
           </h2>
           <p className="font-subtitle text-lg leading-relaxed text-bloom-dark md:text-xl">
-            Crear una comunidad digital donde las mujeres en transiciÃ³n profesional puedan compartir sus
-            historias, encontrarse en las de otras, y descubrir que las habilidades que ya tienen â€” aunque
-            vengan de un camino distinto â€” tienen un lugar en su nueva etapa.
+            Crear una comunidad digital donde las mujeres en transición profesional puedan compartir sus
+            historias, encontrarse en las de otras, y descubrir que las habilidades que ya tienen — aunque
+            vengan de un camino distinto — tienen un lugar en su nueva etapa.
           </p>
         </div>
       </section>
@@ -130,7 +130,7 @@ export default function SobreBloom() {
             Nuestros valores
           </h2>
           <p className="mb-12 text-center text-bloom-gray">
-            Los principios que guÃ­an cada conversaciÃ³n, cada historia y cada paso en la comunidad.
+            Los principios que guían cada conversación, cada historia y cada paso en la comunidad.
           </p>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {valores.map((valor, i) => (
@@ -165,10 +165,10 @@ export default function SobreBloom() {
           </svg>
           <div className="relative z-10 mx-auto max-w-xl">
             <h2 className="font-title mb-4 text-3xl text-white md:text-4xl">
-              Â¿Te reconoces en esta historia?
+              ¿Te reconoces en esta historia?
             </h2>
             <p className="mb-8 text-base font-light leading-relaxed text-white/95">
-              Ãšnete a una comunidad que entiende tu camino y te acompaÃ±a en cada paso.
+              Únete a una comunidad que entiende tu camino y te acompaña en cada paso.
             </p>
             {token ? (
               <BloomButton variant="hero" className="mx-auto" onClick={() => navigate('/feed')}>
@@ -185,7 +185,7 @@ export default function SobreBloom() {
 
       <footer className="border-t border-black/5 px-6 py-8 text-center md:px-12">
         <BloomLogo className="mx-auto mb-3 h-14 w-auto" />
-        <p className="text-sm text-bloom-gray">Â© 2025 Bloom. Hecho con amor para mujeres que florecen.</p>
+        <p className="text-sm text-bloom-gray">© 2025 Bloom. Hecho con amor para mujeres que florecen.</p>
       </footer>
     </div>
   )

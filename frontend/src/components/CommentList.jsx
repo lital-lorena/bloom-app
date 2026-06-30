@@ -43,7 +43,7 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
         setError(data.error || "No se pudo borrar el comentario.")
       }
     } catch {
-      setError("No se pudo conectar con el servidor. Reinicia Flask (python run.py) e intÃ©ntalo de nuevo.")
+      setError("No se pudo conectar con el servidor. Reinicia Flask (python run.py) e inténtalo de nuevo.")
     }
   }
 
@@ -57,7 +57,7 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
 
   const handleSaveEdit = async (commentId) => {
     if (!editText.trim()) {
-      setError("El comentario no puede estar vacÃ­o.")
+      setError("El comentario no puede estar vacío.")
       return
     }
 
@@ -84,19 +84,19 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
       } else {
         const msg =
           response.status === 404 || response.status === 405
-            ? "El servidor no tiene la ruta de ediciÃ³n activa. Reinicia Flask (python run.py)."
+            ? "El servidor no tiene la ruta de edición activa. Reinicia Flask (python run.py)."
             : data.error || data.msg || "No se pudo guardar el comentario."
         setError(msg)
       }
     } catch {
-      setError("No se pudo conectar con el servidor. Reinicia Flask (python run.py) e intÃ©ntalo de nuevo.")
+      setError("No se pudo conectar con el servidor. Reinicia Flask (python run.py) e inténtalo de nuevo.")
     }
   }
 
   if (comentarios.length === 0) {
     return (
       <p className="py-2 text-center text-sm" style={{ color: GRAY }}>
-        AÃºn no hay comentarios.
+        Aún no hay comentarios.
       </p>
     )
   }
@@ -168,7 +168,7 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
                       onClick={() => handleDelete(c.id, isAdmin && !isOwner(c))}
                       className="text-xs font-medium hover:opacity-80 text-red-400"
                     >
-                      {isAdmin && !isOwner(c) ? "Eliminar (moderaciÃ³n)" : "Borrar"}
+                      {isAdmin && !isOwner(c) ? "Eliminar (moderación)" : "Borrar"}
                     </button>
                   </div>
                 ) : null}
@@ -179,8 +179,8 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
       ))}
       <ConfirmModal
         open={pendingModerationCommentId !== null}
-        title="ModeraciÃ³n de contenido"
-        message="Â¿Eliminar este comentario por incumplir las normas de la comunidad?"
+        title="Moderación de contenido"
+        message="¿Eliminar este comentario por incumplir las normas de la comunidad?"
         confirmLabel="Eliminar"
         cancelLabel="Cancelar"
         onConfirm={() => {

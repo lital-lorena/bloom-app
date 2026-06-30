@@ -3,7 +3,7 @@ import BloomButton from './BloomButton'
 
 export default function ConfirmModal({
   open,
-  title = 'Confirmar acciÃ³n',
+  title = 'Confirmar acción',
   message,
   confirmLabel = 'Eliminar',
   cancelLabel = 'Cancelar',
