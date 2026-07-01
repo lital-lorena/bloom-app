@@ -4,6 +4,7 @@ import { PURPLE, PLUM, GRAY } from '../theme/bloomTheme'
 import ConfirmModal from './ConfirmModal'
 import Avatar from './Avatar'
 import { API_URL } from '../config/api'
+import { formatRelativeTime, getCommentDate } from '../utils/formatRelativeTime'
 
 export default function CommentList({ postId, comentarios = [], token, userId, isAdmin = false, onCommentsChange }) {
   const [editingId, setEditingId] = useState(null)
@@ -130,8 +131,13 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
             ) : (
               <>
                 <div className="rounded-xl bg-gradient-to-r from-white to-bloom-pink/30 px-3 py-2 text-sm" style={{ color: PLUM }}>
-                  <span className="font-semibold" style={{ color: PURPLE }}>{c.autora.nombre} </span>
-                  {c.contenido}
+                  <span className="font-semibold" style={{ color: PURPLE }}>{c.autora.nombre}</span>
+                  {getCommentDate(c) && (
+                    <span className="ml-2 text-xs font-normal" style={{ color: GRAY }}>
+                      {formatRelativeTime(getCommentDate(c))}
+                    </span>
+                  )}
+                  <span className="ml-1">{c.contenido}</span>
                 </div>
                 {(token && isOwner(c)) || (token && isAdmin && !isOwner(c)) ? (
                   <div className="mt-1 flex gap-3">
