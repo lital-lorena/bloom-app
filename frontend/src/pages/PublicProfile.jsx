@@ -5,6 +5,7 @@ import CommentList from '../components/CommentList'
 import BloomLogo from '../components/BloomLogo'
 import UserMenu from '../components/UserMenu'
 import PostText from '../components/PostText'
+import { API_URL } from '../config/api'
 
 import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
 
@@ -59,7 +60,7 @@ export default function PublicProfile() {
     useEffect(() => {
         const fetchProfile = async () => {
             setLoading(true)
-            const response = await fetch(`import.meta.env.VITE_API_URL/api/users/${id}`)
+            const response = await fetch(`${API_URL}/api/users/${id}`)
             const data = await response.json()
             setProfile(data)
             setLoading(false)
@@ -68,7 +69,7 @@ export default function PublicProfile() {
     }, [id])
 
     const fetchComentarios = async (postId) => {
-        const response = await fetch(`import.meta.env.VITE_API_URL/api/comments/${postId}`)
+        const response = await fetch(`${API_URL}/api/comments/${postId}`)
         if (response.ok) {
             const data = await response.json()
             setComentarios(prev => ({ ...prev, [postId]: data }))
@@ -91,7 +92,7 @@ export default function PublicProfile() {
         const texto = nuevoComentario[postId] || ""
         if (!texto.trim() || !token) return
 
-        const response = await fetch(`import.meta.env.VITE_API_URL/api/comments/${postId}`, {
+        const response = await fetch(`${API_URL}/api/comments/${postId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

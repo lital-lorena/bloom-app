@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { PURPLE, PLUM, GRAY, LAVENDER } from '../theme/bloomTheme'
 import ConfirmModal from './ConfirmModal'
+import { API_URL } from '../config/api'
 
 function Avatar({ name, foto = null }) {
   const letter = (name || "?").trim().charAt(0).toUpperCase()
@@ -31,7 +32,7 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
   const executeDelete = async (commentId) => {
     setError("")
     try {
-      const response = await fetch(`import.meta.env.VITE_API_URL/api/comments/item/${commentId}`, {
+      const response = await fetch(`${API_URL}/api/comments/item/${commentId}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       })
@@ -63,7 +64,7 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
 
     setError("")
     try {
-      const response = await fetch(`import.meta.env.VITE_API_URL/api/comments/item/${commentId}`, {
+      const response = await fetch(`${API_URL}/api/comments/item/${commentId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

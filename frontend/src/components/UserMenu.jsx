@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
+import { API_URL } from '../config/api'
 
 const itemClass =
   'block w-full px-4 py-2.5 text-left text-sm font-medium text-bloom-dark transition-colors hover:bg-bloom-pink/10 hover:text-bloom-pink'
@@ -32,7 +33,7 @@ export default function UserMenu() {
 
     let cancelled = false
 
-    fetch('import.meta.env.VITE_API_URL/api/users/me', {
+    fetch(`${API_URL}/api/users/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => (res.ok ? res.json() : null))

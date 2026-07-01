@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 import BloomLogo from '../components/BloomLogo'
 import BackLink from '../components/BackLink'
+import { API_URL } from '../config/api'
 import loginBg from '../assets/bloom_login_bg.jpg'
 
 const REMEMBERED_EMAIL_KEY = 'remembered_email'
@@ -20,7 +21,7 @@ function Login() {
     e.preventDefault()
     setLoading(true)
     setError("")
-    const response = await fetch("import.meta.env.VITE_API_URL/api/auth/login", {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })

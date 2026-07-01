@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import BloomLogo from '../components/BloomLogo'
 import BackLink from '../components/BackLink'
+import { API_URL } from '../config/api'
 import registerBg from '../assets/bloom_register_bg.jpg'
 
 function Register() {
@@ -19,25 +20,30 @@ function Register() {
     e.preventDefault()
     setLoading(true)
     setError("")
-    const response = await fetch("import.meta.env.VITE_API_URL/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nombre: name,
-        apellido: lastName,
-        email,
-        ciudad,
-        pais,
-        password
+    try {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: name,
+          apellido: lastName,
+          email,
+          ciudad,
+          pais,
+          password
+        })
       })
-    })
-    const data = await response.json()
-    if (response.ok) {
-      navigate("/login")
-    } else {
-      setError(data.error || "No se pudo crear la cuenta. Inténtalo de nuevo.")
+      const data = await response.json().catch(() => ({}))
+      if (response.ok) {
+        navigate("/login")
+      } else {
+        setError(data.error || "No se pudo crear la cuenta. Inténtalo de nuevo.")
+      }
+    } catch {
+      setError("No se pudo conectar con el servidor. Inténtalo de nuevo.")
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const inputClass =

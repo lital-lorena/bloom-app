@@ -9,6 +9,7 @@ import ConfirmModal from '../components/ConfirmModal'
 import NotificationsModal, { NotificationBell } from '../components/NotificationsModal'
 import PostText from '../components/PostText'
 import socket from '../socket'
+import { API_URL } from '../config/api'
 
 import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
 
@@ -319,7 +320,7 @@ function Feed() {
     setInspiracionLoading(true)
     setInspiracionError(null)
     try {
-      const response = await fetch("import.meta.env.VITE_API_URL/api/ai/inspiracion", {
+      const response = await fetch(`${API_URL}/api/ai/inspiracion`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (response.ok) {
@@ -359,12 +360,12 @@ function Feed() {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await fetch("import.meta.env.VITE_API_URL/api/posts")
+      const response = await fetch(`${API_URL}/api/posts`)
       const data = await response.json()
       setPosts(data)
     }
     const fetchProfile = async () => {
-      const response = await fetch("import.meta.env.VITE_API_URL/api/users/me", {
+      const response = await fetch(`${API_URL}/api/users/me`, {
         headers: { "Authorization": `Bearer ${token}` }
       })
       if (response.ok) {
@@ -374,7 +375,7 @@ function Feed() {
       }
     }
     const fetchResumen = async () => {
-      const response = await fetch("import.meta.env.VITE_API_URL/api/ai/resumen")
+      const response = await fetch(`${API_URL}/api/ai/resumen`)
       if (response.ok) {
         const data = await response.json()
         setResumen(data.resumen)
@@ -432,13 +433,13 @@ function Feed() {
         const formData = new FormData()
         formData.append("texto", text)
         formData.append("image", postImage)
-        response = await fetch("import.meta.env.VITE_API_URL/api/posts", {
+        response = await fetch(`${API_URL}/api/posts`, {
           method: "POST",
           headers: { "Authorization": `Bearer ${token}` },
           body: formData
         })
       } else {
-        response = await fetch("import.meta.env.VITE_API_URL/api/posts", {
+        response = await fetch(`${API_URL}/api/posts`, {
           method: "POST",
           headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
           body: JSON.stringify({ texto: text })
@@ -448,7 +449,7 @@ function Feed() {
         setText("")
         setPostImage(null)
         setSuggestion("")
-        const updatedResponse = await fetch("import.meta.env.VITE_API_URL/api/posts")
+        const updatedResponse = await fetch(`${API_URL}/api/posts`)
         const updatedPosts = await updatedResponse.json()
         setPosts(updatedPosts)
       }
@@ -461,7 +462,7 @@ function Feed() {
 
   const handleDeletePost = async (postId) => {
     try {
-      const response = await fetch(`import.meta.env.VITE_API_URL/api/posts/${postId}`, {
+      const response = await fetch(`${API_URL}/api/posts/${postId}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       })
@@ -483,7 +484,7 @@ function Feed() {
 
   const handleLike = async (postId, likedByMe) => {
     const method = likedByMe ? "DELETE" : "POST"
-    const response = await fetch(`import.meta.env.VITE_API_URL/api/likes/${postId}`, {
+    const response = await fetch(`${API_URL}/api/likes/${postId}`, {
       method,
       headers: { "Authorization": `Bearer ${token}` }
     })
@@ -496,7 +497,7 @@ function Feed() {
   }
 
   const fetchComentarios = async (postId) => {
-    const response = await fetch(`import.meta.env.VITE_API_URL/api/comments/${postId}`)
+    const response = await fetch(`${API_URL}/api/comments/${postId}`)
     if (response.ok) {
       const data = await response.json()
       setComentarios(prev => ({ ...prev, [postId]: data }))
@@ -522,7 +523,7 @@ function Feed() {
   const handleComentario = async (postId) => {
     const texto = nuevoComentario[postId] || ""
     if (!texto.trim()) return
-    const response = await fetch(`import.meta.env.VITE_API_URL/api/comments/${postId}`, {
+    const response = await fetch(`${API_URL}/api/comments/${postId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify({ contenido: texto })
@@ -552,7 +553,7 @@ function Feed() {
   }
 
   const handleEditPost = async (postId) => {
-    const response = await fetch(`import.meta.env.VITE_API_URL/api/posts/${postId}`, {
+    const response = await fetch(`${API_URL}/api/posts/${postId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify({ texto: editText })
@@ -569,7 +570,7 @@ function Feed() {
     setSuggestLoading(true)
     setSuggestion("")
     try {
-      const response = await fetch("import.meta.env.VITE_API_URL/api/ai/suggest", {
+      const response = await fetch(`${API_URL}/api/ai/suggest`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ texto: text })
@@ -588,7 +589,7 @@ function Feed() {
     setEditSuggestLoading(true)
     setEditSuggestion("")
     try {
-      const response = await fetch("import.meta.env.VITE_API_URL/api/ai/suggest", {
+      const response = await fetch(`${API_URL}/api/ai/suggest`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ texto: editText })

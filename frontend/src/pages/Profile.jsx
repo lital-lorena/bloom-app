@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import UserMenu from '../components/UserMenu'
 import BloomLogo from '../components/BloomLogo'
 import PostText from '../components/PostText'
+import { API_URL } from '../config/api'
 
 import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
 
@@ -25,7 +26,7 @@ export default function Profile() {
 
     useEffect(() => {
         const fetchProfile = async () => {
-            const response = await fetch("import.meta.env.VITE_API_URL/api/users/me", {
+            const response = await fetch(`${API_URL}/api/users/me`, {
                 headers: { "Authorization": `Bearer ${token}` }
             })
             const data = await response.json()
@@ -39,7 +40,7 @@ export default function Profile() {
 
             // Cargar posts de la usuaria
             if (data.id) {
-                const postsRes = await fetch(`import.meta.env.VITE_API_URL/api/users/${data.id}`)
+                const postsRes = await fetch(`${API_URL}/api/users/${data.id}`)
                 if (postsRes.ok) {
                     const postsData = await postsRes.json()
                     setPosts(postsData.posts || [])
@@ -63,7 +64,7 @@ export default function Profile() {
         if (avatar && typeof avatar !== "string") {
             formData.append("avatar", avatar)
         }
-        const response = await fetch("import.meta.env.VITE_API_URL/api/users/me", {
+        const response = await fetch(`${API_URL}/api/users/me`, {
             method: "PUT",
             headers: { "Authorization": `Bearer ${token}` },
             body: formData
