@@ -8,35 +8,12 @@ import BloomLogo from '../components/BloomLogo'
 import ConfirmModal from '../components/ConfirmModal'
 import NotificationsModal, { NotificationBell } from '../components/NotificationsModal'
 import PostText from '../components/PostText'
+import Avatar from '../components/Avatar'
 import socket from '../socket'
 import { API_URL } from '../config/api'
 import { IMAGE_ACCEPT, validateImageFile } from '../utils/validateImage'
 
-import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
-
-function Avatar({ name, size = "md", foto = null }) {
-  const letter = (name || "?").trim().charAt(0).toUpperCase()
-  const sizes = {
-    sm: "h-9 w-9 text-sm",
-    md: "h-11 w-11 text-lg",
-    lg: "h-16 w-16 text-2xl",
-  }
-  return foto ? (
-    <div
-      className={`flex-none overflow-hidden rounded-full ${sizes[size]}`}
-      style={{ backgroundColor: LAVENDER }}
-    >
-      <img src={foto} alt={name} className="h-full w-full object-cover object-top" />
-    </div>
-  ) : (
-    <div
-      className={`flex flex-none items-center justify-center rounded-full font-title font-semibold ${sizes[size]}`}
-      style={{ backgroundColor: LAVENDER, color: PURPLE }}
-    >
-      {letter}
-    </div>
-  )
-}
+import { PURPLE, PLUM, GRAY, CREAM } from '../theme/bloomTheme'
 
 function PeachTag({ children, onClick, className = '' }) {
   return (

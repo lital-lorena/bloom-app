@@ -3,34 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 import CommentList from '../components/CommentList'
 import BloomLogo from '../components/BloomLogo'
+import BackLink from '../components/BackLink'
 import UserMenu from '../components/UserMenu'
 import PostText from '../components/PostText'
+import Avatar from '../components/Avatar'
 import { API_URL } from '../config/api'
 
-import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
-
-function Avatar({ name, size = "md", foto = null }) {
-    const letter = (name || "?").trim().charAt(0).toUpperCase()
-    const sizes = {
-        sm: "h-9 w-9 text-sm",
-        md: "h-11 w-11 text-lg",
-    }
-    return foto ? (
-        <div
-            className={`flex-none overflow-hidden rounded-full ${sizes[size]}`}
-            style={{ backgroundColor: LAVENDER }}
-        >
-            <img src={foto} alt={name} className="h-full w-full object-cover object-top" />
-        </div>
-    ) : (
-        <div
-            className={`flex flex-none items-center justify-center rounded-full font-title font-semibold ${sizes[size]}`}
-            style={{ backgroundColor: LAVENDER, color: PURPLE }}
-        >
-            {letter}
-        </div>
-    )
-}
+import { PURPLE, PLUM, GRAY, CREAM } from '../theme/bloomTheme'
 
 function formatDate(value) {
     try {
@@ -118,8 +97,6 @@ export default function PublicProfile() {
         } : prev)
     }
 
-    const letter = (profile?.nombre || "?").trim().charAt(0).toUpperCase()
-
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: CREAM }}>
@@ -153,26 +130,19 @@ export default function PublicProfile() {
 
             <main className="mx-auto max-w-2xl px-5 pb-8 pt-16">
 
+                <BackLink to="/feed" label="Volver" />
+
                 <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm mb-8">
                     <div
                         className="relative px-6 pb-8 pt-8 text-center"
                         style={{ background: `linear-gradient(180deg, ${PURPLE}22 0%, ${PURPLE}0D 50%, #ffffff 100%)` }}
                     >
-                        <div
-                            className="mx-auto mb-3 h-28 w-28 overflow-hidden rounded-full border-4 border-white shadow-md"
-                            style={{ backgroundColor: LAVENDER }}
-                        >
-                            {profile.avatar ? (
-                                <img src={profile.avatar} alt={profile.nombre} className="h-full w-full object-cover object-top" />
-                            ) : (
-                                <div
-                                    className="flex h-full w-full items-center justify-center font-title text-4xl font-semibold"
-                                    style={{ backgroundColor: CREAM, color: PURPLE }}
-                                >
-                                    {letter}
-                                </div>
-                            )}
-                        </div>
+                        <Avatar
+                            name={profile.nombre}
+                            size="xl"
+                            foto={profile.avatar}
+                            className="mx-auto mb-3 border-4 border-white shadow-md"
+                        />
 
                         <h1 className="font-title text-2xl font-semibold" style={{ color: PLUM }}>
                             {profile.nombre}

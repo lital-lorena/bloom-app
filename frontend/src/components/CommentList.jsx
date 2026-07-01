@@ -1,24 +1,9 @@
 import { useState } from 'react'
 
-import { PURPLE, PLUM, GRAY, LAVENDER } from '../theme/bloomTheme'
+import { PURPLE, PLUM, GRAY } from '../theme/bloomTheme'
 import ConfirmModal from './ConfirmModal'
+import Avatar from './Avatar'
 import { API_URL } from '../config/api'
-
-function Avatar({ name, foto = null }) {
-  const letter = (name || "?").trim().charAt(0).toUpperCase()
-  return foto ? (
-    <div className="h-9 w-9 flex-none overflow-hidden rounded-full" style={{ backgroundColor: LAVENDER }}>
-      <img src={foto} alt={name} className="h-full w-full object-cover object-top" />
-    </div>
-  ) : (
-    <div
-      className="flex h-9 w-9 flex-none items-center justify-center rounded-full font-title text-sm font-semibold"
-      style={{ backgroundColor: LAVENDER, color: PURPLE }}
-    >
-      {letter}
-    </div>
-  )
-}
 
 export default function CommentList({ postId, comentarios = [], token, userId, isAdmin = false, onCommentsChange }) {
   const [editingId, setEditingId] = useState(null)

@@ -5,10 +5,11 @@ import UserMenu from '../components/UserMenu'
 import BloomLogo from '../components/BloomLogo'
 import BackLink from '../components/BackLink'
 import PostText from '../components/PostText'
+import Avatar from '../components/Avatar'
 import { API_URL } from '../config/api'
 import { IMAGE_ACCEPT, validateImageFile } from '../utils/validateImage'
 
-import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
+import { PURPLE, PLUM, GRAY, CREAM } from '../theme/bloomTheme'
 
 export default function Profile() {
     const { token, updateUser } = useUser()
@@ -124,7 +125,7 @@ export default function Profile() {
                 ? URL.createObjectURL(avatar)
                 : null
 
-    const letter = (name || "?").trim().charAt(0).toUpperCase()
+    const displayName = [name, lastName].filter(Boolean).join(' ').trim() || name
 
     const inputClass =
         "w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-base outline-none transition-colors focus:border-bloom-pink focus:ring-2 focus:ring-bloom-pink/20"
@@ -219,21 +220,12 @@ export default function Profile() {
                         <div className="relative -mt-14 flex items-end gap-5">
                             {/* Avatar */}
                             <div className="relative flex-none">
-                                <div
-                                    className="h-28 w-28 overflow-hidden rounded-full border-4 border-white shadow-lg"
-                                    style={{ backgroundColor: LAVENDER }}
-                                >
-                                    {avatarPreview ? (
-                                        <img src={avatarPreview} alt="avatar" className="h-full w-full object-cover object-top" />
-                                    ) : (
-                                        <div
-                                            className="flex h-full w-full items-center justify-center font-title text-4xl font-semibold"
-                                            style={{ backgroundColor: CREAM, color: PURPLE }}
-                                        >
-                                            {letter}
-                                        </div>
-                                    )}
-                                </div>
+                                <Avatar
+                                    name={displayName}
+                                    size="xl"
+                                    foto={avatarPreview}
+                                    className="border-4 border-white shadow-lg"
+                                />
                                 <label
                                     htmlFor="avatar-upload"
                                     className="absolute bottom-1 right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-white text-sm font-bold text-white shadow-md hover:opacity-90"
@@ -429,21 +421,7 @@ export default function Profile() {
                             {posts.map((post) => (
                                 <article key={post.id} className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
                                     <div className="flex items-center gap-3 mb-3">
-                                        <div
-                                            className="h-10 w-10 flex-none overflow-hidden rounded-full"
-                                            style={{ backgroundColor: LAVENDER }}
-                                        >
-                                            {avatarPreview ? (
-                                                <img src={avatarPreview} alt={name} className="h-full w-full object-cover object-top" />
-                                            ) : (
-                                                <div
-                                                    className="flex h-full w-full items-center justify-center font-title text-sm font-semibold"
-                                                    style={{ backgroundColor: LAVENDER, color: PURPLE }}
-                                                >
-                                                    {letter}
-                                                </div>
-                                            )}
-                                        </div>
+                                        <Avatar name={displayName} size="base" foto={avatarPreview} />
                                         <div>
                                             <p className="text-sm font-semibold" style={{ color: PLUM }}>{name}</p>
                                             <p className="text-xs" style={{ color: GRAY }}>

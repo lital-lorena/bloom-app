@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
 import { API_URL } from '../config/api'
+import { nameToAvatarStyle } from '../utils/avatarColor'
 
 const itemClass =
   'block w-full px-4 py-2.5 text-left text-sm font-medium text-bloom-dark transition-colors hover:bg-bloom-pink/10 hover:text-bloom-pink'
@@ -58,6 +59,7 @@ export default function UserMenu() {
 
   const name = user?.nombre || 'Usuaria'
   const letter = name.trim().charAt(0).toUpperCase()
+  const avatarStyle = nameToAvatarStyle(name)
   const avatar = user?.avatar
   const showPhoto = Boolean(avatar) && !imgError
 
@@ -72,7 +74,8 @@ export default function UserMenu() {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-10 w-10 flex-none items-center justify-center overflow-hidden rounded-full bg-bloom-pink ring-2 ring-bloom-pink/25 transition-opacity hover:opacity-90"
+        className="flex h-10 w-10 flex-none items-center justify-center overflow-hidden rounded-full ring-2 ring-bloom-pink/25 transition-opacity hover:opacity-90"
+        style={showPhoto ? undefined : avatarStyle}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Menú de usuario"
@@ -85,7 +88,7 @@ export default function UserMenu() {
             onError={() => setImgError(true)}
           />
         ) : (
-          <span className="flex h-full w-full items-center justify-center font-title text-sm font-semibold text-white">
+          <span className="flex h-full w-full items-center justify-center font-title text-sm font-semibold">
             {letter}
           </span>
         )}
