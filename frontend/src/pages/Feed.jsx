@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+﻿import { useState, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
@@ -10,6 +10,7 @@ import NotificationsModal, { NotificationBell } from '../components/Notification
 import PostText from '../components/PostText'
 import socket from '../socket'
 import { API_URL } from '../config/api'
+import { IMAGE_ACCEPT, validateImageFile } from '../utils/validateImage'
 
 import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
 
@@ -270,6 +271,7 @@ function Feed() {
   const [posts, setPosts] = useState([])
   const [text, setText] = useState("")
   const [postImage, setPostImage] = useState(null)
+  const [postImageError, setPostImageError] = useState("")
   const [suggestion, setSuggestion] = useState("")
   const [suggestLoading, setSuggestLoading] = useState(false)
   const [postLoading, setPostLoading] = useState(false)
@@ -423,9 +425,34 @@ function Feed() {
     }
   }, [token])
 
+  const handlePostImageChange = (e) => {
+    const input = e.target
+    const files = input.files
+    if (!files || files.length === 0) return
+
+    const result = validateImageFile(files[0], files.length)
+    if (!result.ok) {
+      setPostImageError(result.error)
+      input.value = ""
+      return
+    }
+
+    setPostImageError("")
+    setPostImage(result.file)
+  }
+
   const handleCreatePost = async (e) => {
     e.preventDefault()
     if (!text.trim() && !postImage) return
+
+    if (postImage) {
+      const result = validateImageFile(postImage)
+      if (!result.ok) {
+        setPostImageError(result.error)
+        return
+      }
+    }
+
     setPostLoading(true)
     try {
       let response
@@ -448,6 +475,7 @@ function Feed() {
       if (response.ok) {
         setText("")
         setPostImage(null)
+        setPostImageError("")
         setSuggestion("")
         const updatedResponse = await fetch(`${API_URL}/api/posts`)
         const updatedPosts = await updatedResponse.json()
@@ -752,17 +780,23 @@ function Feed() {
               {postImagePreview && (
                 <div className="relative mt-4">
                   <img src={postImagePreview} alt="Vista previa" className="block w-full h-auto rounded-xl border border-black/5" />
-                  <button type="button" onClick={() => setPostImage(null)}
+                  <button type="button" onClick={() => { setPostImage(null); setPostImageError("") }}
                     className="absolute -right-2 -top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white">
                     ✕
                   </button>
                 </div>
               )}
 
+              {postImageError && (
+                <p className="mt-3 text-sm text-red-600" role="alert">
+                  {postImageError}
+                </p>
+              )}
+
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-black/10 px-4 py-2 text-sm font-medium hover:bg-black/5" style={{ color: PLUM }}>
                   <CameraIcon /> Añadir foto
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => setPostImage(e.target.files[0] || null)} />
+                  <input type="file" accept={IMAGE_ACCEPT} className="hidden" onChange={handlePostImageChange} />
                 </label>
                 <button type="button" onClick={handleSuggest} disabled={suggestLoading || !text.trim()}
                   className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"

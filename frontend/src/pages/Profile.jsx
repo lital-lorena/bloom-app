@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import UserMenu from '../components/UserMenu'
 import BloomLogo from '../components/BloomLogo'
+import BackLink from '../components/BackLink'
 import PostText from '../components/PostText'
 import { API_URL } from '../config/api'
+import { IMAGE_ACCEPT, validateImageFile } from '../utils/validateImage'
 
 import { PURPLE, PLUM, GRAY, CREAM, LAVENDER } from '../theme/bloomTheme'
 
@@ -19,6 +21,7 @@ export default function Profile() {
     const [country, setCountry] = useState("")
     const [city, setCity] = useState("")
     const [avatar, setAvatar] = useState(null)
+    const [avatarError, setAvatarError] = useState("")
     const [message, setMessage] = useState("")
     const [loading, setLoading] = useState(false)
     const [editing, setEditing] = useState(false)
@@ -50,10 +53,37 @@ export default function Profile() {
         fetchProfile()
     }, [])
 
+    const handleAvatarChange = (e) => {
+        const input = e.target
+        const files = input.files
+        if (!files || files.length === 0) return
+
+        const result = validateImageFile(files[0], files.length)
+        if (!result.ok) {
+            setAvatarError(result.error)
+            input.value = ""
+            return
+        }
+
+        setAvatarError("")
+        setAvatar(result.file)
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
         setMessage("")
+        setAvatarError("")
+
+        if (avatar && typeof avatar !== "string") {
+            const result = validateImageFile(avatar)
+            if (!result.ok) {
+                setAvatarError(result.error)
+                setLoading(false)
+                return
+            }
+        }
+
         const formData = new FormData()
         formData.append("nombre", name)
         formData.append("apellido", lastName)
@@ -126,6 +156,8 @@ export default function Profile() {
             </header>
 
             <main className="mx-auto max-w-4xl px-5 pb-8 pt-16">
+
+                <BackLink to="/feed" label="Volver" />
 
                 {/* ── TARJETA DE PERFIL ── */}
                 <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
@@ -213,10 +245,15 @@ export default function Profile() {
                                 <input
                                     id="avatar-upload"
                                     type="file"
-                                    accept="image/*"
+                                    accept={IMAGE_ACCEPT}
                                     className="hidden"
-                                    onChange={(e) => setAvatar(e.target.files[0])}
+                                    onChange={handleAvatarChange}
                                 />
+                                {avatarError && (
+                                    <p className="mt-2 max-w-[7rem] text-xs text-red-600" role="alert">
+                                        {avatarError}
+                                    </p>
+                                )}
                             </div>
 
                             {/* Nombre + profesión */}
