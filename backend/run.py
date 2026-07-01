@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 """
 Punto de entrada de la API Bloom.
 Ejecutar desde backend/: python run.py
