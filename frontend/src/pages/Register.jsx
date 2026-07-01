@@ -20,26 +20,36 @@ function Register() {
     e.preventDefault()
     setLoading(true)
     setError("")
+
+    const url = `${API_URL}/api/auth/register`
+    const body = {
+      nombre: name,
+      apellido: lastName,
+      email,
+      ciudad,
+      pais,
+      password,
+    }
+
+    console.log('[Register] API_URL:', API_URL)
+    console.log('[Register] POST URL:', url)
+    console.log('[Register] VITE_API_URL (raw):', import.meta.env.VITE_API_URL)
+
     try {
-      const response = await fetch(`${API_URL}/api/auth/register`, {
+      const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: name,
-          apellido: lastName,
-          email,
-          ciudad,
-          pais,
-          password
-        })
+        body: JSON.stringify(body),
       })
+      console.log('[Register] response status:', response.status)
       const data = await response.json().catch(() => ({}))
       if (response.ok) {
         navigate("/login")
       } else {
         setError(data.error || "No se pudo crear la cuenta. Inténtalo de nuevo.")
       }
-    } catch {
+    } catch (err) {
+      console.error('[Register] fetch error:', err)
       setError("No se pudo conectar con el servidor. Inténtalo de nuevo.")
     } finally {
       setLoading(false)

@@ -44,7 +44,16 @@ def create_app():
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 
     jwt.init_app(flask_app)
-    CORS(flask_app)
+    CORS(
+        flask_app,
+        resources={
+            r"/api/*": {
+                "origins": "*",
+                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+                "allow_headers": ["Content-Type", "Authorization"],
+            }
+        },
+    )
     socketio.init_app(flask_app, cors_allowed_origins="*")
 
     if database_url:
