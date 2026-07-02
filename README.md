@@ -272,9 +272,9 @@ Las rutas protegidas requieren el header `Authorization: Bearer <token>`.
 | Servicio | URL |
 |----------|-----|
 | **Frontend (Vercel)** | [https://bloom-app-pied-eight.vercel.app](https://bloom-app-pied-eight.vercel.app) |
-| **Backend API (Render)** | URL configurada en la variable `VITE_API_URL` del dashboard de Vercel |
+| **Backend API (Render)** | [https://bloom-app-70t5.onrender.com](https://bloom-app-70t5.onrender.com) |
 
-> **Nota:** El backend en Render (plan gratuito) puede tardar unos segundos en despertar tras inactividad. Comprueba su estado con `GET /api/health`.
+> **Nota:** El backend en Render (plan gratuito) puede tardar unos segundos en despertar tras inactividad. Comprueba su estado en [https://bloom-app-70t5.onrender.com/api/health](https://bloom-app-70t5.onrender.com/api/health).
 
 ---
 
