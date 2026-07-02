@@ -64,7 +64,7 @@ def _generar_token(usuaria):
 def register():
     """
     Registro de nueva usuaria.
-    Body JSON: nombre, email, password, pais, ciudad.
+    Body JSON: nombre, apellido (opcional), email, password, pais, ciudad.
     """
     datos = _json_body()
     error, codigo = _validar_campos_requeridos(datos, CAMPOS_REGISTRO)
@@ -72,6 +72,12 @@ def register():
         return jsonify({"error": error}), codigo
 
     nombre = datos["nombre"].strip()
+    apellido_raw = datos.get("apellido")
+    apellido = (
+        apellido_raw.strip()
+        if isinstance(apellido_raw, str) and apellido_raw.strip()
+        else None
+    )
     email = datos["email"].strip().lower()
     password = datos["password"]
     pais = datos["pais"].strip()
@@ -83,6 +89,7 @@ def register():
 
     usuaria = User(
         nombre=nombre,
+        apellido=apellido,
         email=email,
         password_hash=generate_password_hash(password),
         pais=pais,
