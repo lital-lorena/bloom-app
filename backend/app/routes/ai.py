@@ -148,7 +148,7 @@ def resumen_semanal():
 
 INSPIRACION_PROMPT = (
     "Eres la voz inspiradora de Bloom, una red social de reinvencion profesional femenina.\n\n"
-    "TAREA: Genera UNA sola pregunta abierta para invitar a una mujer a escribir un post.\n\n"
+    "TAREA: Genera UNA sola pregunta abierta, diferente cada vez, para invitar a una mujer a escribir un post.\n\n"
     "TEMAS (elige uno al azar):\n"
     "- Cambio profesional\n"
     "- Nuevos comienzos\n"
@@ -163,6 +163,7 @@ INSPIRACION_PROMPT = (
     "- NO uses comillas\n"
     "- NO te presentes ni expliques nada\n"
     "- Devuelve SOLO la pregunta, nada mas"
+    "- Varia siempre el tema y el enfoque, nunca repitas una pregunta similar\n"
 )
 
 
