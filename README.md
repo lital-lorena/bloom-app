@@ -1,364 +1,291 @@
-#  Bloom
+# Bloom
 
-> A community platform for women reinventing their careers.
+[![Demo](https://img.shields.io/badge/demo-en_vivo-FF5A9D?style=for-the-badge)](https://bloom-app-pied-eight.vercel.app)
+[![Frontend](https://img.shields.io/badge/frontend-React_19-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
+[![Backend](https://img.shields.io/badge/backend-Flask_3-000000?style=flat-square&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Database](https://img.shields.io/badge/database-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Deploy](https://img.shields.io/badge/deploy-Vercel_+_Render-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com/)
 
-## ¿Qué es Bloom?
+> Plataforma comunitaria para mujeres que se reinventan profesionalmente.
 
-Bloom es una plataforma tipo feed donde mujeres que se reinventan 
+**Demo en producción:** [https://bloom-app-pied-eight.vercel.app](https://bloom-app-pied-eight.vercel.app)
 
-profesionalmente comparten posts, se apoyan con comentarios y likes, 
+---
 
-y encuentran recursos útiles votados por la comunidad.
+## Descripción
 
-## ¿Para quién?
+Bloom es una red social tipo feed donde mujeres en proceso de cambio de carrera comparten historias, se apoyan con comentarios y likes, y encuentran inspiración en una comunidad segura.
 
-Mujeres en proceso de cambio de carrera, sin límite de sector.
+La aplicación está construida como un proyecto **full stack** desacoplado: un frontend en React consume una API REST en Flask, con autenticación JWT, persistencia en PostgreSQL, imágenes en Cloudinary, funciones de IA con Groq y notificaciones en tiempo real mediante WebSockets.
 
-## ¿Qué puede hacer una usuaria?
-
-- Registrarse y hacer login
-- Ver y editar su perfil con foto
-- Crear posts con texto, foto y link
-- Ver el feed de todas las usuarias
-- Dar likes y comentar posts
-- Filtrar por país, ciudad o temática
-- Recibir notificaciones en tiempo real
-
-## ¿Qué puede hacer el admin?
-
-- Moderar y eliminar contenido inapropiado
-- Gestionar usuarias
+---
 
 ## Stack tecnológico
 
 | Capa | Tecnología |
-
-|---|---|
-
-| Backend | Python + Flask + SQLAlchemy |
-
-| Autenticación | JWT |
-
-| Frontend | React + Context API |
-
+|------|------------|
+| Frontend | React 19 · Vite · Tailwind CSS · React Router · Context API |
+| Backend | Python · Flask · SQLAlchemy · Flask-JWT-Extended |
+| Base de datos | PostgreSQL |
+| Autenticación | JWT (roles: `usuaria` · `admin`) |
 | Imágenes | Cloudinary |
+| Inteligencia artificial | Groq (Llama 3.3) |
+| Tiempo real | Flask-SocketIO · Socket.IO Client |
+| Deploy | Vercel (frontend) · Render (backend + PostgreSQL) |
 
-| Tiempo real | WebSockets |
+---
 
-| Deploy | Render + Vercel |
+## Funcionalidades principales
+
+### Para usuarias
+
+- Registro e inicio de sesión con JWT
+- Perfil personal con foto, historia, profesión, país y ciudad
+- Feed de publicaciones con texto e imágenes
+- Likes y comentarios (crear, editar y borrar)
+- Filtros por país, ciudad y temática
+- Perfil público de otras usuarias
+- Sugerencias de IA para mejorar publicaciones
+- Preguntas inspiradoras y resumen semanal generados por IA
+- Notificaciones en tiempo real al recibir comentarios
+
+### Para administradoras
+
+- Moderación de posts y comentarios ajenos
+- Badge visual de rol admin en el feed
+
+---
+
+## Arquitectura del proyecto
+
+```
+bloom-app/
+├── backend/                    # API Flask
+│   ├── app/
+│   │   ├── __init__.py         # Factory de la aplicación
+│   │   ├── extensions.py       # db, jwt, socketio
+│   │   ├── auth_utils.py       # Utilidades de autorización
+│   │   ├── sockets.py          # Eventos WebSocket
+│   │   ├── models/             # Modelos SQLAlchemy
+│   │   └── routes/             # Blueprints (auth, posts, users, likes, comments, ai)
+│   ├── run.py                  # Punto de entrada del servidor
+│   ├── create_tables.py        # Creación de tablas en PostgreSQL
+│   ├── create_admin.py         # Script para crear/promover admin
+│   ├── requirements.txt
+│   └── .env.example
+│
+├── frontend/                   # SPA React
+│   ├── src/
+│   │   ├── pages/              # Landing, Login, Register, Feed, Profile...
+│   │   ├── components/         # Avatar, CommentList, UserMenu...
+│   │   ├── context/            # UserContext (estado global)
+│   │   ├── config/             # URL del API
+│   │   ├── utils/              # Helpers (validación, fechas)
+│   │   ├── theme/              # Colores del design system
+│   │   ├── App.jsx             # Rutas
+│   │   └── main.jsx            # Punto de entrada
+│   ├── vercel.json             # Rewrites SPA
+│   └── package.json
+│
+└── docs/                       # Documentación de producto y diseño
+```
+
+### Flujo de datos
+
+```
+React (Vercel)  ──HTTP/JSON──►  Flask API (Render)  ──►  PostgreSQL
+       │                              │
+       │                              ├──► Cloudinary (imágenes)
+       │                              └──► Groq (IA)
+       └── WebSocket ◄────────────────► Flask-SocketIO (notificaciones)
+```
+
+---
+
+## Cómo correrlo en local
+
+### Requisitos previos
+
+- Python 3.11+
+- Node.js 18+
+- PostgreSQL (local o remoto)
+- Cuentas en Cloudinary y Groq (opcional, para imágenes e IA)
+
+### 1. Backend
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/lital-lorena/bloom-app.git
+cd bloom-app/backend
+
+# Crear entorno virtual e instalar dependencias
+python -m venv venv
+venv\Scripts\activate        # Windows
+# source venv/bin/activate   # macOS / Linux
+pip install -r requirements.txt
+
+# Configurar variables de entorno
+copy .env.example .env       # Windows
+# cp .env.example .env       # macOS / Linux
+# Edita .env con tus valores
+
+# Crear tablas en la base de datos
+python create_tables.py
+
+# Arrancar el servidor
+python run.py
+```
+
+El backend quedará disponible en **http://127.0.0.1:5000**.
+
+Comprueba que responde:
+
+```bash
+curl http://127.0.0.1:5000/api/health
+```
+
+### 2. Frontend
+
+En otra terminal:
+
+```bash
+cd bloom-app/frontend
+
+# Instalar dependencias
+npm install
+
+# Configurar URL del backend (opcional si usas el valor por defecto)
+# Crea frontend/.env con:
+# VITE_API_URL=http://127.0.0.1:5000
+
+# Arrancar en modo desarrollo
+npm run dev
+```
+
+Abre la URL que muestra Vite (normalmente **http://localhost:5173**).
+
+---
+
+## Variables de entorno
+
+### Backend (`backend/.env`)
+
+| Variable | Descripción |
+|----------|-------------|
+| `DATABASE_URL` | Cadena de conexión PostgreSQL |
+| `SECRET_KEY` | Clave secreta de Flask |
+| `JWT_SECRET_KEY` | Clave para firmar tokens JWT |
+| `JWT_ACCESS_TOKEN_EXPIRES` | Expiración del token en segundos (opcional) |
+| `CLOUDINARY_CLOUD_NAME` | Nombre del cloud en Cloudinary |
+| `CLOUDINARY_API_KEY` | API key de Cloudinary |
+| `CLOUDINARY_API_SECRET` | API secret de Cloudinary |
+| `GROQ_API_KEY` | API key de Groq para funciones de IA |
+| `FLASK_ENV` | Entorno Flask (opcional) |
+
+Variables opcionales para `create_admin.py`:
+
+| Variable | Descripción |
+|----------|-------------|
+| `ADMIN_EMAIL` | Email de la cuenta administradora |
+| `ADMIN_PASSWORD` | Contraseña de la cuenta admin |
+| `ADMIN_NOMBRE` | Nombre de la administradora |
+
+### Frontend (`frontend/.env`)
+
+| Variable | Descripción |
+|----------|-------------|
+| `VITE_API_URL` | URL base del backend (sin barra final) |
+
+---
+
+## Endpoints principales de la API
+
+Base URL local: `http://127.0.0.1:5000`
+
+Las rutas protegidas requieren el header `Authorization: Bearer <token>`.
+
+### Salud
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/health` | No | Comprueba que la API está activa |
+
+### Autenticación
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `POST` | `/api/auth/register` | No | Registro de nueva usuaria |
+| `POST` | `/api/auth/login` | No | Inicio de sesión |
+
+### Posts
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/posts` | Opcional | Lista el feed con likes y comentarios |
+| `POST` | `/api/posts` | Sí | Crea un post (JSON o FormData con imagen) |
+| `PUT` | `/api/posts/:id` | Sí | Edita un post propio |
+| `DELETE` | `/api/posts/:id` | Sí | Elimina un post (autora o admin) |
+
+### Usuarias
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/users/me` | Sí | Perfil de la usuaria logueada |
+| `PUT` | `/api/users/me` | Sí | Actualiza perfil y avatar |
+| `GET` | `/api/users/:id` | No | Perfil público y posts de una usuaria |
+
+### Likes
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `POST` | `/api/likes/:postId` | Sí | Da like a un post |
+| `DELETE` | `/api/likes/:postId` | Sí | Quita el like |
+
+### Comentarios
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/comments/:postId` | No | Lista comentarios de un post |
+| `POST` | `/api/comments/:postId` | Sí | Crea un comentario |
+| `PUT` | `/api/comments/item/:id` | Sí | Edita un comentario propio |
+| `DELETE` | `/api/comments/item/:id` | Sí | Elimina un comentario (autora o admin) |
+
+### Inteligencia artificial
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `POST` | `/api/ai/suggest` | Sí | Mejora el borrador de un post |
+| `GET` | `/api/ai/inspiracion` | Sí | Genera una pregunta inspiradora |
+| `GET` | `/api/ai/resumen` | No | Resumen semanal de la comunidad |
+
+### WebSocket (Socket.IO)
+
+| Evento | Dirección | Descripción |
+|--------|-----------|-------------|
+| `conectar_usuaria` | Cliente → servidor | Une a la usuaria a su sala personal |
+| `nueva_notificacion` | Servidor → cliente | Avisa de un nuevo comentario relevante |
+
+---
+
+## URLs de producción
+
+| Servicio | URL |
+|----------|-----|
+| **Frontend (Vercel)** | [https://bloom-app-pied-eight.vercel.app](https://bloom-app-pied-eight.vercel.app) |
+| **Backend API (Render)** | URL configurada en la variable `VITE_API_URL` del dashboard de Vercel |
+
+> **Nota:** El backend en Render (plan gratuito) puede tardar unos segundos en despertar tras inactividad. Comprueba su estado con `GET /api/health`.
+
+---
 
 ## Autora
 
-Lorena — Full Stack Developer en formación  
+**Lorena Lugo** — Full Stack Developer en formación
 
-GitHub: [@lital-lorena]([https://github.com/lital-lorena](https://github.com/lital-lorena))
-
-## API Endpoints
-
-Base URL local: `http://localhost:5000`
-
-Todas las rutas que reciben datos esperan cuerpo **JSON** (`Content-Type: application/json`).
+GitHub: [github.com/lital-lorena](https://github.com/lital-lorena)
 
 ---
 
-### Comprobar estado del servidor
+## Licencia
 
-
-|                 |                                                                   |
-| --------------- | ----------------------------------------------------------------- |
-| **Método**      | `GET`                                                             |
-| **URL**         | `/api/health`                                                     |
-| **Descripción** | Verifica que la API está en ejecución. No requiere autenticación. |
-| **Body**        | No aplica                                                         |
-
-
-**Ejemplo de respuesta** `200 OK`:
-
-```json
-{
-  "status": "ok",
-  "app": "Bloom API"
-}
-```
-
----
-
-### Registro de usuaria
-
-
-|                 |                                                                                             |
-| --------------- | ------------------------------------------------------------------------------------------- |
-| **Método**      | `POST`                                                                                      |
-| **URL**         | `/api/auth/register`                                                                        |
-| **Descripción** | Crea una cuenta nueva, guarda la contraseña hasheada en PostgreSQL y devuelve un token JWT. |
-| **Body**        | `nombre`, `email`, `password`, `pais`, `ciudad` (todos obligatorios)                        |
-
-
-**Body de ejemplo:**
-
-```json
-{
-  "nombre": "Ana García",
-  "email": "ana@ejemplo.com",
-  "password": "miClaveSegura123",
-  "pais": "España",
-  "ciudad": "Madrid"
-}
-```
-
-**Ejemplo de respuesta** `201 Created`:
-
-```json
-{
-  "message": "Registro exitoso.",
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": 1,
-    "nombre": "Ana García",
-    "email": "ana@ejemplo.com",
-    "rol": "usuaria",
-    "pais": "España",
-    "ciudad": "Madrid"
-  }
-}
-```
-
-**Errores frecuentes:**
-
-
-| Código | Motivo                                        |
-| ------ | --------------------------------------------- |
-| `400`  | Falta algún campo o el body no es JSON válido |
-| `409`  | El email ya está registrado                   |
-
-
----
-
-### Inicio de sesión
-
-
-|                 |                                                                                      |
-| --------------- | ------------------------------------------------------------------------------------ |
-| **Método**      | `POST`                                                                               |
-| **URL**         | `/api/auth/login`                                                                    |
-| **Descripción** | Valida email y contraseña y devuelve un token JWT si las credenciales son correctas. |
-| **Body**        | `email`, `password` (ambos obligatorios)                                             |
-
-
-**Body de ejemplo:**
-
-```json
-{
-  "email": "ana@ejemplo.com",
-  "password": "miClaveSegura123"
-}
-```
-
-**Ejemplo de respuesta** `200 OK`:
-
-```json
-{
-  "message": "Inicio de sesión exitoso.",
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": 1,
-    "nombre": "Ana García",
-    "email": "ana@ejemplo.com",
-    "rol": "usuaria",
-    "pais": "España",
-    "ciudad": "Madrid"
-  }
-}
-```
-
-**Errores frecuentes:**
-
-
-| Código | Motivo                         |
-| ------ | ------------------------------ |
-| `400`  | Falta `email` o `password`     |
-| `401`  | Email o contraseña incorrectos |
-
-
-## Posts
-
-### Ver todos los posts
-
-| Campo | Valor |
-
-|---|---|
-
-| Método | GET |
-
-| URL | /api/posts |
-
-| Autenticación | No requerida |
-
-| Body | No aplica |
-
-Ejemplo de respuesta 200 OK:
-
-```json
-
-[
-
-  {
-
-    "id": 1,
-
-    "texto": "Mi primer post en Bloom 🌸",
-
-    "url": null,
-
-    "fecha": "2026-06-07T17:18:59.482409+00:00",
-
-    "autora": {
-
-      "id": 6,
-
-      "nombre": "Prueba",
-
-      "avatar": null
-
-    }
-
-  }
-
-]
-
-```
-
-### Crear post
-
-| Campo | Valor |
-
-|---|---|
-
-| Método | POST |
-
-| URL | /api/posts |
-
-| Autenticación | Bearer Token (JWT) |
-
-| Body | texto (obligatorio), url (opcional) |
-
-Body de ejemplo:
-
-```json
-
-{
-
-  "texto": "Mi primer post en Bloom 🌸",
-
-  "url": "[https://ejemplo.com](https://ejemplo.com)"
-
-}
-
-```
-
-Respuesta 201 Created:
-
-```json
-
-{
-
-  "message": "Post creado.",
-
-  "id": 1
-
-}
-
-```
-
-### Borrar post
-
-| Campo | Valor |
-
-|---|---|
-
-| Método | DELETE |
-
-| URL | /api/posts/<id> |
-
-| Autenticación | Bearer Token (JWT) |
-
-| Body | No aplica |
-
-Respuesta 200 OK:
-
-```json
-
-{
-
-  "message": "Post eliminado."
-
-}
-
-```
-
-Errores frecuentes:
-
-| Código | Motivo |
-
-|---|---|
-
-| 400 | El texto es obligatorio |
-
-| 403 | No puedes borrar un post que no es tuyo |
-
-| 404 | Post no encontrado |
-
-### Editar post
-
-| Campo | Valor |
-
-|---|---|
-
-| Método | PUT |
-
-| URL | /api/posts/<id>|
-
-| Autenticación | Bearer Token (JWT) |
-
-| Body | texto (obligatorio) |
-
-Body de ejemplo:
-
-```json
-
-{
-
-  "texto": "Texto actualizado 🌸"
-
-}
-
-```
-
-Respuesta 200 OK:
-
-```json
-
-{
-
-  "message": "Post actualizado.",
-
-  "id": 2
-
-}
-
-```
-
-Errores frecuentes:
-
-| Código | Motivo |
-
-|---|---|
-
-| 400 | El texto es obligatorio |
-
-| 403 | No puedes editar un post que no es tuyo |
-
-| 404 | Post no encontrado |
-
-
-
+Proyecto académico / portfolio. Todos los derechos reservados.
