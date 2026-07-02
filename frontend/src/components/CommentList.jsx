@@ -1,10 +1,25 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { PURPLE, PLUM, GRAY } from '../theme/bloomTheme'
 import ConfirmModal from './ConfirmModal'
 import Avatar from './Avatar'
 import { API_URL } from '../config/api'
 import { formatRelativeTime, getCommentDate } from '../utils/formatRelativeTime'
+
+function CommentRelativeTime({ commentId, date }) {
+  const label = useMemo(
+    () => (date ? formatRelativeTime(date) : ''),
+    [commentId, date]
+  )
+
+  if (!label) return null
+
+  return (
+    <span className="ml-2 text-xs font-normal" style={{ color: GRAY }}>
+      {label}
+    </span>
+  )
+}
 
 export default function CommentList({ postId, comentarios = [], token, userId, isAdmin = false, onCommentsChange }) {
   const [editingId, setEditingId] = useState(null)
@@ -132,11 +147,7 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
               <>
                 <div className="rounded-xl bg-gradient-to-r from-white to-bloom-pink/30 px-3 py-2 text-sm" style={{ color: PLUM }}>
                   <span className="font-semibold" style={{ color: PURPLE }}>{c.autora.nombre}</span>
-                  {getCommentDate(c) && (
-                    <span className="ml-2 text-xs font-normal" style={{ color: GRAY }}>
-                      {formatRelativeTime(getCommentDate(c))}
-                    </span>
-                  )}
+                  <CommentRelativeTime commentId={c.id} date={getCommentDate(c)} />
                   <span className="ml-1">{c.contenido}</span>
                 </div>
                 {(token && isOwner(c)) || (token && isAdmin && !isOwner(c)) ? (

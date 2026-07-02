@@ -6,21 +6,23 @@ export function formatRelativeTime(value) {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return ''
 
-  const diffSec = Math.round((date.getTime() - Date.now()) / 1000)
-  const absSec = Math.abs(diffSec)
+  const diffSec = Math.floor((Date.now() - date.getTime()) / 1000)
+  if (diffSec < 0) return 'ahora'
   const rtf = new Intl.RelativeTimeFormat('es', { numeric: 'always' })
 
-  if (absSec < 60) return rtf.format(diffSec, 'second')
-  const diffMin = Math.round(diffSec / 60)
-  if (Math.abs(diffMin) < 60) return rtf.format(diffMin, 'minute')
-  const diffHour = Math.round(diffSec / 3600)
-  if (Math.abs(diffHour) < 24) return rtf.format(diffHour, 'hour')
-  const diffDay = Math.round(diffSec / 86400)
-  if (Math.abs(diffDay) < 30) return rtf.format(diffDay, 'day')
-  const diffMonth = Math.round(diffSec / (86400 * 30))
-  if (Math.abs(diffMonth) < 12) return rtf.format(diffMonth, 'month')
+  // Sin granularidad de segundos: evita textos que cambian en cada render
+  if (diffSec < 60) return 'hace un momento'
 
-  return rtf.format(Math.round(diffSec / (86400 * 365)), 'year')
+  const diffMin = Math.floor(diffSec / 60)
+  if (diffMin < 60) return rtf.format(-diffMin, 'minute')
+  const diffHour = Math.floor(diffSec / 3600)
+  if (diffHour < 24) return rtf.format(-diffHour, 'hour')
+  const diffDay = Math.floor(diffSec / 86400)
+  if (diffDay < 30) return rtf.format(-diffDay, 'day')
+  const diffMonth = Math.floor(diffSec / (86400 * 30))
+  if (diffMonth < 12) return rtf.format(-diffMonth, 'month')
+
+  return rtf.format(-Math.floor(diffSec / (86400 * 365)), 'year')
 }
 
 /**
