@@ -246,6 +246,7 @@ function InspiracionCard({ inspiracion, loading, error, onUsar, onOtra, classNam
 
 function Feed() {
   const [posts, setPosts] = useState([])
+  const [postsLoading, setPostsLoading] = useState(true)
   const [text, setText] = useState("")
   const [postImage, setPostImage] = useState(null)
   const [postImageError, setPostImageError] = useState("")
@@ -339,9 +340,14 @@ function Feed() {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await fetch(`${API_URL}/api/posts`)
-      const data = await response.json()
-      setPosts(data)
+      setPostsLoading(true)
+      try {
+        const response = await fetch(`${API_URL}/api/posts`)
+        const data = await response.json()
+        setPosts(data)
+      } finally {
+        setPostsLoading(false)
+      }
     }
     const fetchProfile = async () => {
       const response = await fetch(`${API_URL}/api/users/me`, {
@@ -802,7 +808,13 @@ function Feed() {
 
           {/* ── POSTS ── */}
           <div className="flex flex-col gap-4">
-            {posts.length === 0 && (
+            {postsLoading && (
+              <p className="py-12 text-center text-sm" style={{ color: GRAY }}>
+                Cargando publicaciones...
+              </p>
+            )}
+
+            {!postsLoading && posts.length === 0 && (
               <p className="py-12 text-center text-sm" style={{ color: GRAY }}>
                 Aún no hay publicaciones. ¡Sé la primera en compartir!
               </p>
@@ -821,7 +833,7 @@ function Feed() {
               </div>
             )}
 
-            {posts.filter((post) => {
+            {!postsLoading && posts.filter((post) => {
               const porTema = !filtroTema || (post.temas && post.temas.includes(filtroTema))
               const porPais = !filtroPais || post.autora.pais?.trim() === filtroPais
               const porCiudad = !filtroCiudad || post.autora.ciudad?.trim() === filtroCiudad
