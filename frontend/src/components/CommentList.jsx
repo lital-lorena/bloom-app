@@ -1,31 +1,18 @@
-import { useMemo, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { PURPLE, PLUM, GRAY } from '../theme/bloomTheme'
 import ConfirmModal from './ConfirmModal'
 import Avatar from './Avatar'
 import { API_URL } from '../config/api'
-import { formatRelativeTime, getCommentDate } from '../utils/formatRelativeTime'
-
-function CommentRelativeTime({ commentId, date }) {
-  const label = useMemo(
-    () => (date ? formatRelativeTime(date) : ''),
-    [commentId, date]
-  )
-
-  if (!label) return null
-
-  return (
-    <span className="ml-2 text-xs font-normal" style={{ color: GRAY }}>
-      {label}
-    </span>
-  )
-}
+import { getCommentDate, getFrozenRelativeTime } from '../utils/formatRelativeTime'
 
 export default function CommentList({ postId, comentarios = [], token, userId, isAdmin = false, onCommentsChange }) {
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState("")
   const [error, setError] = useState("")
   const [pendingModerationCommentId, setPendingModerationCommentId] = useState(null)
+  // Etiquetas de fecha calculadas una sola vez por comentario (sin intervalos ni efectos)
+  const relativeTimeCache = useRef(new Map())
 
   const isOwner = (comment) =>
     userId && String(comment.autora.id) === String(userId)
@@ -108,7 +95,14 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
       {error && !editingId && (
         <p className="mb-2 text-sm text-red-500">{error}</p>
       )}
-      {comentarios.map((c) => (
+      {comentarios.map((c) => {
+        const timeLabel = getFrozenRelativeTime(
+          relativeTimeCache.current,
+          c.id,
+          getCommentDate(c)
+        )
+
+        return (
         <div key={c.id} className="flex items-start gap-2">
           <Avatar name={c.autora.nombre} foto={c.autora.avatar} />
           <div className="min-w-0 flex-1">
@@ -147,7 +141,11 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
               <>
                 <div className="rounded-xl bg-gradient-to-r from-white to-bloom-pink/30 px-3 py-2 text-sm" style={{ color: PLUM }}>
                   <span className="font-semibold" style={{ color: PURPLE }}>{c.autora.nombre}</span>
-                  <CommentRelativeTime commentId={c.id} date={getCommentDate(c)} />
+                  {timeLabel && (
+                    <span className="ml-2 text-xs font-normal" style={{ color: GRAY }}>
+                      {timeLabel}
+                    </span>
+                  )}
                   <span className="ml-1">{c.contenido}</span>
                 </div>
                 {(token && isOwner(c)) || (token && isAdmin && !isOwner(c)) ? (
@@ -179,7 +177,8 @@ export default function CommentList({ postId, comentarios = [], token, userId, i
             )}
           </div>
         </div>
-      ))}
+        )
+      })}
       <ConfirmModal
         open={pendingModerationCommentId !== null}
         title="Moderación de contenido"
