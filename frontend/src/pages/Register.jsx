@@ -31,25 +31,19 @@ function Register() {
       password,
     }
 
-    console.log('[Register] API_URL:', API_URL)
-    console.log('[Register] POST URL:', url)
-    console.log('[Register] VITE_API_URL (raw):', import.meta.env.VITE_API_URL)
-
     try {
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       })
-      console.log('[Register] response status:', response.status)
       const data = await response.json().catch(() => ({}))
       if (response.ok) {
         navigate("/login")
       } else {
         setError(data.error || "No se pudo crear la cuenta. Inténtalo de nuevo.")
       }
-    } catch (err) {
-      console.error('[Register] fetch error:', err)
+    } catch {
       setError("No se pudo conectar con el servidor. Inténtalo de nuevo.")
     } finally {
       setLoading(false)
