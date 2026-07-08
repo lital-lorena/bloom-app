@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
+from sqlalchemy import func
 from app.routes.ai import clasificar_post
 import cloudinary
 import cloudinary.uploader
@@ -25,24 +26,45 @@ def _configurar_cloudinary():
 @posts_bp.route("", methods=["GET"])
 @jwt_required(optional=True)
 def get_posts():
+    # Antes se hacían hasta 3 consultas por post (likes, comentarios, liked_by_me).
+    # Ahora se precalculan con 3 consultas agregadas y el bucle solo lee diccionarios/set.
     user_id = get_jwt_identity()
     posts = Post.query.order_by(Post.fecha_creacion.desc()).all()
+
+    likes_por_post = {
+        post_id: count
+        for post_id, count in db.session.query(Like.post_id, func.count())
+        .group_by(Like.post_id)
+        .all()
+    }
+
+    comments_por_post = {
+        post_id: count
+        for post_id, count in db.session.query(Comment.post_id, func.count())
+        .group_by(Comment.post_id)
+        .all()
+    }
+
+    likes_de_usuaria = set()
+    if user_id:
+        likes_de_usuaria = {
+            post_id
+            for (post_id,) in db.session.query(Like.post_id)
+            .filter_by(user_id=user_id)
+            .all()
+        }
+
     result = []
     for post in posts:
-        likes_count = Like.query.filter_by(post_id=post.id).count()
-        comments_count = Comment.query.filter_by(post_id=post.id).count()
-        liked_by_me = False
-        if user_id:
-            liked_by_me = Like.query.filter_by(post_id=post.id, user_id=user_id).first() is not None
         result.append({
             "id": post.id,
             "texto": post.texto,
             "url": post.url,
             "fecha": post.fecha_creacion.isoformat(),
             "temas": post.temas,
-            "likes_count": likes_count,
-            "comments_count": comments_count,
-            "liked_by_me": liked_by_me,
+            "likes_count": likes_por_post.get(post.id, 0),
+            "comments_count": comments_por_post.get(post.id, 0),
+            "liked_by_me": post.id in likes_de_usuaria,
             "autora": {
                 "id": post.autora.id,
                 "nombre": post.autora.nombre,

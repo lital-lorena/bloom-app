@@ -197,7 +197,7 @@ function InspiracionCard({ inspiracion, loading, error, onUsar, onOtra, classNam
 
   return (
     <div className={`rounded-2xl border border-black/5 bg-white p-5 shadow-sm ${className}`}>
-      <h3 className="mb-3 font-subtitle text-sm font-semibold" style={{ color: PLUM }}>
+      <h3 className="mb-3 font-sans text-sm font-semibold" style={{ color: PLUM }}>
         💡 ¿Sin ideas hoy?
       </h3>
       {loading ? (
@@ -654,7 +654,7 @@ function Feed() {
           <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
             <div className="flex flex-col items-center">
               <Avatar name={profile?.nombre || user?.nombre} size="lg" foto={profile?.avatar || user?.avatar} />
-              <h2 className="mt-3 font-title text-lg font-semibold" style={{ color: PLUM }}>
+              <h2 className="mt-3 font-sans text-lg font-semibold" style={{ color: PLUM }}>
                 {profile?.nombre || user?.nombre || "Usuaria"}
               </h2>
               {(profile?.ciudad || user?.ciudad) && (
@@ -674,7 +674,7 @@ function Feed() {
 
           {/* Temas */}
           <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 font-subtitle text-sm font-semibold" style={{ color: PLUM }}>Temas para ti</h3>
+            <h3 className="mb-3 font-sans text-sm font-semibold" style={{ color: PLUM }}>Temas para ti</h3>
             <div className="flex flex-wrap gap-2">
               {["Cambio Profesional", "Nuevos Comienzos", "Habilidades Transferibles", "Confianza Profesional", "Aprendizaje Continuo", "Entrevistas Laborales", "Emprendimiento", "Logros y Avances"].map((tag) => (
                 <PeachTag key={tag} onClick={() => setFiltroTema(tag)}>
@@ -687,7 +687,7 @@ function Feed() {
           {/* Filtro por ubicación */}
           <div className="mt-5 rounded-2xl border border-black/5 bg-white shadow-[0_16px_48px_-8px_rgba(255,95,168,0.15)]">
             <div className="rounded-t-2xl border-b border-black/5 bg-gradient-to-r from-white to-bloom-pink/10 px-5 py-4">
-              <h3 className="font-subtitle flex items-center gap-2.5 text-sm font-semibold text-bloom-dark">
+              <h3 className="font-sans flex items-center gap-2.5 text-sm font-semibold text-bloom-dark">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-bloom-pink/10 text-bloom-pink">
                   <LocationIcon />
                 </span>
@@ -722,7 +722,7 @@ function Feed() {
         <div className="min-w-0 flex-1">
 
           <div className="mb-6">
-            <h1 className="font-title text-3xl font-semibold" style={{ color: PLUM }}>Comunidad</h1>
+            <h1 className="font-sans text-3xl font-semibold" style={{ color: PLUM }}>Comunidad</h1>
             <p className="mt-1 text-sm" style={{ color: GRAY }}>Comparte tu historia. Alguien aquí ha pasado por lo mismo.</p>
           </div>
 
@@ -848,7 +848,7 @@ function Feed() {
                     <Avatar name={post.autora.nombre} foto={post.autora.avatar} />
                     <div className="min-w-0 flex-1">
                       <button onClick={() => navigate(`/usuario/${post.autora.id}`)}
-                        className="font-title text-sm font-semibold hover:underline text-left capitalize"
+                        className="font-sans text-sm font-semibold hover:underline text-left capitalize"
                         style={{ color: PURPLE }}>
                         {post.autora.nombre}
                       </button>
@@ -1003,7 +1003,7 @@ function Feed() {
         {/* ── SIDEBAR DERECHA ── */}
         <aside className="hidden w-72 flex-none xl:block">
           <div className="mt-5 rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
-            <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold font-subtitle" style={{ color: PLUM }}>
+            <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold font-sans" style={{ color: PLUM }}>
               <SparkleIcon /> Esta semana en Bloom
             </h3>
             {resumen ? (

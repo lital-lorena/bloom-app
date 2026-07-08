@@ -11,6 +11,7 @@
   --color-bloom-cream: #FFF9F5;
   --color-bloom-lime: #D4FF00;
 
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-title: "Playfair Display", Georgia, "Times New Roman", serif; /* The Seasons cuando esté licenciada */
   --font-subtitle: "Playfair Display", Georgia, serif;
   --font-body: "Montserrat", system-ui, sans-serif;
